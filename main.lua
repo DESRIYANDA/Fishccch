@@ -1,8 +1,25 @@
---// Services
-local Players = cloneref(game:GetService('Players'))
-local ReplicatedStorage = cloneref(game:GetService('ReplicatedStorage'))
-local RunService = cloneref(game:GetService('RunService'))
-local GuiService = cloneref(game:GetService('GuiService'))
+--// Services (Safe Loading)
+local function safeGetService(serviceName)
+    local success, service = pcall(function()
+        if cloneref then
+            return cloneref(game:GetService(serviceName))
+        else
+            return game:GetService(serviceName)
+        end
+    end)
+    
+    if success then
+        return service
+    else
+        print("⚠️ Failed to get service: " .. serviceName)
+        return game:GetService(serviceName) -- Fallback to regular service
+    end
+end
+
+local Players = safeGetService('Players')
+local ReplicatedStorage = safeGetService('ReplicatedStorage')
+local RunService = safeGetService('RunService')
+local GuiService = safeGetService('GuiService')
 
 -- Protect TweenService from workspace errors
 pcall(function()
@@ -832,39 +849,94 @@ table.sort(NPCNames)
 table.sort(MarianaVeilNames)
 table.sort(AllLocationNames)
 
---// Functions
+--// Functions (Safe)
 FindChildOfClass = function(parent, classname)
-    return parent:FindFirstChildOfClass(classname)
+    if not parent then return nil end
+    local success, result = pcall(function()
+        return parent:FindFirstChildOfClass(classname)
+    end)
+    return success and result or nil
 end
+
 FindChild = function(parent, child)
-    return parent:FindFirstChild(child)
+    if not parent then return nil end
+    local success, result = pcall(function()
+        return parent:FindFirstChild(child)
+    end)
+    return success and result or nil
 end
+
 FindChildOfType = function(parent, childname, classname)
-    child = parent:FindFirstChild(childname)
-    if child and child.ClassName == classname then
+    if not parent then return nil end
+    local success, child = pcall(function()
+        return parent:FindFirstChild(childname)
+    end)
+    if success and child and child.ClassName == classname then
         return child
     end
+    return nil
 end
+
 CheckFunc = function(func)
     return typeof(func) == 'function'
 end
 
---// Custom Functions
+--// Custom Functions (Safe)
 getchar = function()
-    return lp.Character or lp.CharacterAdded:Wait()
-end
-gethrp = function()
-    return getchar():WaitForChild('HumanoidRootPart')
-end
-gethum = function()
-    return getchar():WaitForChild('Humanoid')
-end
-FindRod = function()
-    if FindChildOfClass(getchar(), 'Tool') and FindChild(FindChildOfClass(getchar(), 'Tool'), 'values') then
-        return FindChildOfClass(getchar(), 'Tool')
+    local success, char = pcall(function()
+        return lp.Character or lp.CharacterAdded:Wait()
+    end)
+    if success and char then
+        return char
     else
+        print("⚠️ Failed to get character")
         return nil
     end
+end
+
+gethrp = function()
+    local char = getchar()
+    if not char then return nil end
+    
+    local success, hrp = pcall(function()
+        return char:WaitForChild('HumanoidRootPart', 5)
+    end)
+    if success and hrp then
+        return hrp
+    else
+        print("⚠️ Failed to get HumanoidRootPart")
+        return nil
+    end
+end
+
+gethum = function()
+    local char = getchar()
+    if not char then return nil end
+    
+    local success, hum = pcall(function()
+        return char:WaitForChild('Humanoid', 5)
+    end)
+    if success and hum then
+        return hum
+    else
+        print("⚠️ Failed to get Humanoid")
+        return nil
+    end
+end
+
+FindRod = function()
+    local char = getchar()
+    if not char then return nil end
+    
+    local success, tool = pcall(function()
+        local tool = FindChildOfClass(char, 'Tool')
+        if tool and FindChild(tool, 'values') then
+            return tool
+        end
+        return nil
+    end)
+    
+    return success and tool or nil
 end
 message = function(text, time)
     if tooltipmessage then tooltipmessage:Remove() end
@@ -1605,12 +1677,40 @@ end)
 
 -- Teleports Section
 local LocationSection = TeleTab:NewSection("Locations")
+-- Safe Teleport Function
+local function safeTeleport(cframe, locationName)
+    if not cframe then
+        print("❌ Invalid teleport location: " .. tostring(locationName))
+        return false
+    end
+    
+    local hrp = gethrp()
+    if not hrp then
+        print("❌ Cannot teleport - HumanoidRootPart not found")
+        return false
+    end
+    
+    local success = pcall(function()
+        hrp.CFrame = cframe
+    end)
+    
+    if success then
+        print("✅ Teleported to: " .. tostring(locationName))
+        return true
+    else
+        print("❌ Failed to teleport to: " .. tostring(locationName))
+        return false
+    end
+end
+
 LocationSection:NewDropdown("Select Zone", "Choose a zone to teleport to", ZoneNames, function(currentOption)
     flags['zones'] = currentOption
 end)
 LocationSection:NewButton("Teleport To Zone", "Teleport to selected zone", function()
-    if flags['zones'] then
-        gethrp().CFrame = TeleportLocations['Zones'][flags['zones']]
+    if flags['zones'] and TeleportLocations['Zones'][flags['zones']] then
+        safeTeleport(TeleportLocations['Zones'][flags['zones']], flags['zones'])
+    else
+        print("❌ No zone selected or invalid zone")
     end
 end)
 
@@ -2063,67 +2163,133 @@ end
 
 --// Loops
 RunService.Heartbeat:Connect(function()
-    -- Autofarm
+    -- Autofarm (Safe)
     if flags['freezechar'] then
         if flags['freezecharmode'] == 'Toggled' then
-            if characterposition == nil then
-                characterposition = gethrp().CFrame
-            else
-                gethrp().CFrame = characterposition
+            local hrp = gethrp()
+            if hrp then
+                if characterposition == nil then
+                    characterposition = hrp.CFrame
+                else
+                    local success = pcall(function()
+                        hrp.CFrame = characterposition
+                    end)
+                    if not success then
+                        print("⚠️ Failed to freeze character position")
+                    end
+                end
             end
         elseif flags['freezecharmode'] == 'Rod Equipped' then
             local rod = FindRod()
-            if rod and characterposition == nil then
-                characterposition = gethrp().CFrame
-            elseif rod and characterposition ~= nil then
-                gethrp().CFrame = characterposition
-            else
-                characterposition = nil
+            local hrp = gethrp()
+            if hrp then
+                if rod and characterposition == nil then
+                    characterposition = hrp.CFrame
+                elseif rod and characterposition ~= nil then
+                    local success = pcall(function()
+                        hrp.CFrame = characterposition
+                    end)
+                    if not success then
+                        print("⚠️ Failed to maintain rod position")
+                    end
+                else
+                    characterposition = nil
+                end
             end
         end
     else
         characterposition = nil
     end
+    
+    -- Auto Shake (Safe)
     if flags['autoshake'] then
-        if FindChild(lp.PlayerGui, 'shakeui') and FindChild(lp.PlayerGui['shakeui'], 'safezone') and FindChild(lp.PlayerGui['shakeui']['safezone'], 'button') then
-            GuiService.SelectedObject = lp.PlayerGui['shakeui']['safezone']['button']
-            if GuiService.SelectedObject == lp.PlayerGui['shakeui']['safezone']['button'] then
-                game:GetService('VirtualInputManager'):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
-                game:GetService('VirtualInputManager'):SendKeyEvent(false, Enum.KeyCode.Return, false, game)
+        local success = pcall(function()
+            if FindChild(lp.PlayerGui, 'shakeui') and 
+               FindChild(lp.PlayerGui['shakeui'], 'safezone') and 
+               FindChild(lp.PlayerGui['shakeui']['safezone'], 'button') then
+                GuiService.SelectedObject = lp.PlayerGui['shakeui']['safezone']['button']
+                if GuiService.SelectedObject == lp.PlayerGui['shakeui']['safezone']['button'] then
+                    game:GetService('VirtualInputManager'):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
+                    game:GetService('VirtualInputManager'):SendKeyEvent(false, Enum.KeyCode.Return, false, game)
+                end
             end
-        end
-    end
-    if flags['autocast'] then
-        local rod = FindRod()
-        local currentDelay = flags['autocastdelay'] or 0.5
-        if rod ~= nil and rod['values']['lure'].Value <= .001 then
-            task.wait(currentDelay)
-            -- Use instant bobber if enabled (short distance cast)
-            if flags['instantbobber'] then
-                rod.events.cast:FireServer(100, 0.1) -- Very short distance
-            -- Use random bobber if enabled (random distance cast)
-            elseif flags['randombobber'] then
-                local randomDistance = math.random(10, 100) / 100 -- Random between 0.1 and 1.0
-                rod.events.cast:FireServer(100, randomDistance)
-            else
-                rod.events.cast:FireServer(100, 1) -- Normal distance
-            end
-        end
-    end
-    -- Auto Reel Logic
-    if flags['autoreel'] and not flags['instantreelmode'] then
-        local rod = FindRod()
-        local currentDelay = flags['autoreeldelay'] or 0.5
-        if rod ~= nil and rod['values']['lure'].Value == 100 then
-            task.wait(currentDelay)
-            ReplicatedStorage.events.reelfinished:FireServer(100, true)
+        end)
+        if not success then
+            -- Shake UI not found or error occurred, continue silently
         end
     end
     
-    -- Legacy Instant Reel (No Delay) - RISKY but very fast
+    -- Auto Cast (Safe)
+    if flags['autocast'] then
+        local rod = FindRod()
+        local currentDelay = flags['autocastdelay'] or 0.5
+        if rod ~= nil then
+            local success, lureValue = pcall(function()
+                return rod['values']['lure'].Value
+            end)
+            
+            if success and lureValue and lureValue <= 0.001 then
+                task.wait(currentDelay)
+                
+                local castSuccess = pcall(function()
+                    -- Use instant bobber if enabled (short distance cast)
+                    if flags['instantbobber'] then
+                        rod.events.cast:FireServer(100, 0.1) -- Very short distance
+                    -- Use random bobber if enabled (random distance cast)
+                    elseif flags['randombobber'] then
+                        local randomDistance = math.random(10, 100) / 100 -- Random between 0.1 and 1.0
+                        rod.events.cast:FireServer(100, randomDistance)
+                    else
+                        rod.events.cast:FireServer(100, 1) -- Normal distance
+                    end
+                end)
+                
+                if not castSuccess then
+                    print("⚠️ Auto cast failed")
+                end
+            end
+        end
+    end
+    
+    -- Auto Reel Logic (Safe)
+    if flags['autoreel'] and not flags['instantreelmode'] then
+        local rod = FindRod()
+        local currentDelay = flags['autoreeldelay'] or 0.5
+        if rod ~= nil then
+            local success, lureValue = pcall(function()
+                return rod['values']['lure'].Value
+            end)
+            
+            if success and lureValue and lureValue == 100 then
+                task.wait(currentDelay)
+                local reelSuccess = pcall(function()
+                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                end)
+                if not reelSuccess then
+                    print("⚠️ Auto reel failed")
+                end
+            end
+        end
+    end
+    
+    -- Legacy Instant Reel (Safe)
     if flags['instantreel'] and not flags['instantreelmode'] then
         local rod = FindRod()
-        if rod ~= nil and rod['values']['lure'].Value == 100 then
+        if rod ~= nil then
+            local success, lureValue = pcall(function()
+                return rod['values']['lure'].Value
+            end)
+            
+            if success and lureValue and lureValue == 100 then
+                local reelSuccess = pcall(function()
+                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                end)
+                if not reelSuccess then
+                    print("⚠️ Instant reel failed")
+                end
+            end
+        end
+    end
             ReplicatedStorage.events.reelfinished:FireServer(100, true)
         end
     end
