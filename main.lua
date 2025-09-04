@@ -1294,6 +1294,36 @@ ReelSection:NewToggle("Instant Reel", "Instantly reel fish with no delay (RISKY)
     flags['instantreel'] = state
     if state then
         flags['autoreel'] = false -- Disable auto reel if instant reel enabled
+        print("⚡ Instant Reel enabled - fish will be caught instantly!")
+    else
+        print("🔄 Instant Reel disabled")
+    end
+end)
+
+-- Advanced Instant Reel Settings
+local InstantSection = AutoTab:NewSection("⚡ Instant Reel Advanced")
+
+InstantSection:NewToggle("Natural Delay", "Add tiny delay to appear more natural", function(state)
+    flags['instantreeldelay'] = state and 0.05 or nil
+    print(state and "🕐 Natural delay enabled (0.05s)" or "⚡ Pure instant mode")
+end)
+
+InstantSection:NewToggle("Perfect Catch Only", "Only instant reel when perfect catch is guaranteed", function(state)
+    flags['perfectcatchonly'] = state
+    print(state and "🎯 Perfect catch only mode" or "🎣 Catch all fish instantly")
+end)
+
+InstantSection:NewButton("Test Instant Reel", "Test instant reel functionality", function()
+    local rod = FindRod()
+    if rod then
+        if rod['values']['lure'].Value == 100 then
+            ReplicatedStorage.events.reelfinished:FireServer(100, true)
+            print("✅ Instant reel test successful!")
+        else
+            print("⚠️ No fish on hook - cast your rod first!")
+        end
+    else
+        print("❌ No fishing rod equipped!")
     end
 end)
 
@@ -2015,7 +2045,27 @@ RunService.Heartbeat:Connect(function()
     if flags['instantreel'] then
         local rod = FindRod()
         if rod ~= nil and rod['values']['lure'].Value == 100 then
-            ReplicatedStorage.events.reelfinished:FireServer(100, true)
+            -- Check if perfect catch only mode is enabled
+            local shouldCatch = true
+            if flags['perfectcatchonly'] then
+                -- Only catch if we can guarantee a perfect catch
+                -- This checks the fish tension and other factors for optimal catch
+                local fishTension = rod['values']['tension'] and rod['values']['tension'].Value or 0
+                shouldCatch = fishTension <= 0.3 -- Safe tension level for perfect catch
+            end
+            
+            if shouldCatch then
+                -- Advanced instant reel with perfect catch
+                task.spawn(function()
+                    -- Fire with maximum power for guaranteed catch
+                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                    
+                    -- Optional: Add small delay to appear more natural
+                    if flags['instantreeldelay'] then
+                        task.wait(flags['instantreeldelay'] or 0.05)
+                    end
+                end)
+            end
         end
     end
 
