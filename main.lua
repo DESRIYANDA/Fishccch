@@ -1228,11 +1228,26 @@ CastSection:NewToggle("Instant Bobber", "Cast bobber close to player (short dist
     flags['instantbobber'] = state
 end)
 
+CastSection:NewToggle("Random Bobber", "Cast bobber at random distances for variation", function(state)
+    flags['randombobber'] = state
+end)
+
 CastSection:NewButton("Manual Instant Cast", "Manually cast with instant bobber", function()
     local rod = FindRod()
     if rod ~= nil then
         rod.events.cast:FireServer(100, 0.1) -- Perfect cast with very short distance
         print("[Instant Bobber] Manual cast executed!")
+    else
+        print("[Error] No fishing rod equipped!")
+    end
+end)
+
+CastSection:NewButton("Manual Random Cast", "Manually cast with random bobber distance", function()
+    local rod = FindRod()
+    if rod ~= nil then
+        local randomDistance = math.random(10, 100) / 100 -- Random between 0.1 and 1.0
+        rod.events.cast:FireServer(100, randomDistance)
+        print("[Random Bobber] Manual cast executed with distance: " .. randomDistance)
     else
         print("[Error] No fishing rod equipped!")
     end
@@ -1421,6 +1436,10 @@ RunService.Heartbeat:Connect(function()
             -- Use instant bobber if enabled (short distance cast)
             if flags['instantbobber'] then
                 rod.events.cast:FireServer(100, 0.1) -- Very short distance
+            -- Use random bobber if enabled (random distance cast)
+            elseif flags['randombobber'] then
+                local randomDistance = math.random(10, 100) / 100 -- Random between 0.1 and 1.0
+                rod.events.cast:FireServer(100, randomDistance)
             else
                 rod.events.cast:FireServer(100, 1) -- Normal distance
             end
@@ -1626,6 +1645,9 @@ if CheckFunc(hookmetamethod) then
             -- Apply instant bobber if enabled
             if flags['instantbobber'] then
                 args[2] = 0.1 -- Very short distance
+            -- Apply random bobber if enabled
+            elseif flags['randombobber'] then
+                args[2] = math.random(10, 100) / 100 -- Random between 0.1 and 1.0
             end
             return old(self, unpack(args))
         elseif method == 'FireServer' and self.Name == 'reelfinished' and flags['alwayscatch'] then
