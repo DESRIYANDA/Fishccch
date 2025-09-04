@@ -1,4 +1,8 @@
---// Services
+-- Enhanced Fishing Script v2.1 with improved error handling
+print("🚀 Starting Enhanced Fishing Script v2.1")
+print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+
+-- Safe game service access with multiple fallback methods
 local function safeGetService(serviceName)
     local success, service = pcall(function()
         if cloneref then
@@ -10,10 +14,30 @@ local function safeGetService(serviceName)
     return success and service or game:GetService(serviceName)
 end
 
+print("✅ Service access function initialized")
+
 local Players = safeGetService('Players')
 local ReplicatedStorage = safeGetService('ReplicatedStorage')
 local RunService = safeGetService('RunService')
 local GuiService = safeGetService('GuiService')
+
+-- Wait for LocalPlayer to be available
+local lp = Players.LocalPlayer
+if not lp then
+    local timeout = 0
+    repeat 
+        wait(0.1) 
+        timeout = timeout + 0.1
+        lp = Players.LocalPlayer
+    until lp or timeout > 10
+    
+    if not lp then
+        error("❌ Failed to get LocalPlayer after 10 seconds")
+        return
+    end
+end
+
+print("✅ LocalPlayer found:", lp.Name)
 
 -- Protect TweenService from workspace errors
 pcall(function()
@@ -34,13 +58,46 @@ pcall(function()
     end
 end)
 
---// Variables
+print("✅ TweenService protection enabled")
+
+--// Variables initialization
 local flags = {}
 local characterposition
-local lp = Players.LocalPlayer
+local autoEquip = false
+local autoFish = false
+local autoTreasure = false
+
+-- Initialize executor specific features with error handling
+local clickDetectorAvailable = true
+local hookMetamethodAvailable = true
+
+pcall(function()
+    if not fireclickdetector then
+        clickDetectorAvailable = false
+        warn("⚠️ fireclickdetector not available - some features may be limited")
+    end
+end)
+
+pcall(function()
+    if not hookmetamethod then
+        hookMetamethodAvailable = false 
+        warn("⚠️ hookmetamethod not available - visual mods may be limited")
+    end
+end)
+
+print("✅ Variables and executor features initialized")
 local fishabundancevisible = false
 local deathcon
 local tooltipmessage
+
+-- Wait for LocalPlayer to be available
+if not lp then
+    lp = Players:WaitForChild("LocalPlayer", 10)
+end
+
+if not lp then
+    error("❌ LocalPlayer not found!")
+end
 
 -- Default delay values
 flags['autocastdelay'] = 0.5
@@ -65,6 +122,10 @@ local function FindChild(parent, name)
     return parent and parent:FindFirstChild(name)
 end
 
+local function FindChildOfClass(parent, classname)
+    return parent and parent:FindFirstChildOfClass(classname)
+end
+
 local function FindChildOfType(parent, name, className)
     if not parent then return nil end
     for _, child in pairs(parent:GetChildren()) do
@@ -79,14 +140,16 @@ local function FindRod()
     local character = getchar()
     if not character then return nil end
     
+    -- Check character first
     for _, tool in pairs(character:GetChildren()) do
-        if tool:IsA("Tool") and (tool.Name:lower():find("rod") or tool:FindFirstChild("events")) then
+        if tool:IsA("Tool") and (tool.Name:lower():find("rod") or tool:FindFirstChild("events") or tool:FindFirstChild("values")) then
             return tool
         end
     end
     
+    -- Then check backpack
     for _, tool in pairs(lp.Backpack:GetChildren()) do
-        if tool:IsA("Tool") and (tool.Name:lower():find("rod") or tool:FindFirstChild("events")) then
+        if tool:IsA("Tool") and (tool.Name:lower():find("rod") or tool:FindFirstChild("events") or tool:FindFirstChild("values")) then
             return tool
         end
     end
@@ -96,6 +159,23 @@ end
 
 local function CheckFunc(func)
     return type(func) == "function"
+end
+
+-- Message function
+local function message(text, time)
+    if tooltipmessage then 
+        pcall(function() tooltipmessage:Remove() end)
+    end
+    pcall(function()
+        tooltipmessage = require(lp.PlayerGui:WaitForChild("GeneralUIModule")):GiveToolTip(lp, text)
+        task.spawn(function()
+            task.wait(time or 3)
+            if tooltipmessage then 
+                pcall(function() tooltipmessage:Remove() end)
+                tooltipmessage = nil 
+            end
+        end)
+    end)
 end
 
 -- Executor compatibility functions
@@ -412,49 +492,6 @@ for i,v in pairs(TeleportLocations['Items']) do table.insert(ItemNames, i) end
 for i,v in pairs(TeleportLocations['Fishing Spots']) do table.insert(FishingSpotNames, i) end
 for i,v in pairs(TeleportLocations['NPCs']) do table.insert(NPCNames, i) end
 
---// Functions
-FindChildOfClass = function(parent, classname)
-    return parent:FindFirstChildOfClass(classname)
-end
-FindChild = function(parent, child)
-    return parent:FindFirstChild(child)
-end
-FindChildOfType = function(parent, childname, classname)
-    child = parent:FindFirstChild(childname)
-    if child and child.ClassName == classname then
-        return child
-    end
-end
-CheckFunc = function(func)
-    return typeof(func) == 'function'
-end
-
---// Custom Functions
-getchar = function()
-    return lp.Character or lp.CharacterAdded:Wait()
-end
-gethrp = function()
-    return getchar():WaitForChild('HumanoidRootPart')
-end
-gethum = function()
-    return getchar():WaitForChild('Humanoid')
-end
-FindRod = function()
-    if FindChildOfClass(getchar(), 'Tool') and FindChild(FindChildOfClass(getchar(), 'Tool'), 'values') then
-        return FindChildOfClass(getchar(), 'Tool')
-    else
-        return nil
-    end
-end
-message = function(text, time)
-    if tooltipmessage then tooltipmessage:Remove() end
-    tooltipmessage = require(lp.PlayerGui:WaitForChild("GeneralUIModule")):GiveToolTip(lp, text)
-    task.spawn(function()
-        task.wait(time)
-        if tooltipmessage then tooltipmessage:Remove(); tooltipmessage = nil end
-    end)
-end
-
 --// UI
 local library
 local Window
@@ -468,10 +505,12 @@ local kavoUrl = 'https://raw.githubusercontent.com/DESRIYANDA/Fishccch/main/Kavo
 local success = false
 local library = nil
 
+print("🔄 Loading UI library...")
+
 -- Method 1: Load directly from current repo
 pcall(function()
     local scriptContent = game:HttpGet(kavoUrl)
-    if scriptContent and scriptContent ~= "" then
+    if scriptContent and scriptContent ~= "" and not scriptContent:find("404") then
         library = loadstring(scriptContent)()
         if library and library.CreateLib then
             success = true
@@ -490,7 +529,7 @@ if not success then
     for i, url in ipairs(backupUrls) do
         pcall(function()
             local scriptContent = game:HttpGet(url)
-            if scriptContent and scriptContent ~= "" then
+            if scriptContent and scriptContent ~= "" and not scriptContent:find("404") then
                 library = loadstring(scriptContent)()
                 if library and library.CreateLib then
                     success = true
@@ -507,25 +546,40 @@ if not success or not library then
     warn("⚠️ Failed to load Kavo UI library, using fallback UI")
     library = {
         CreateLib = function(name, theme)
+            print("📱 Creating fallback UI window:", name)
             return {
-                NewTab = function(name)
+                NewTab = function(tabName)
+                    print("📂 Creating fallback tab:", tabName)
                     return {
-                        NewSection = function(name)
+                        NewSection = function(sectionName)
+                            print("📄 Creating fallback section:", sectionName)
                             return {
                                 NewToggle = function(name, desc, callback) 
+                                    print("🔘 Toggle:", name)
                                     if callback then callback(false) end
-                                    return {UpdateToggle = function() end}
+                                    return {UpdateToggle = function(state) if callback then callback(state) end end}
                                 end,
                                 NewSlider = function(name, desc, min, max, callback) 
+                                    print("🎚️ Slider:", name, "Range:", min, "-", max)
                                     if callback then callback(min) end
-                                    return {}
+                                    return {UpdateSlider = function(value) if callback then callback(value) end end}
                                 end,
                                 NewDropdown = function(name, desc, options, callback) 
-                                    if callback then callback(options[1]) end
-                                    return {Refresh = function() end}
+                                    print("📋 Dropdown:", name, "Options:", #options)
+                                    if callback and options[1] then callback(options[1]) end
+                                    return {
+                                        Refresh = function(newOptions) 
+                                            print("🔄 Dropdown refreshed:", name)
+                                        end
+                                    }
                                 end,
                                 NewButton = function(name, desc, callback) 
-                                    return {UpdateButton = function() end}
+                                    print("🔲 Button:", name)
+                                    return {
+                                        UpdateButton = function() 
+                                            print("🔄 Button updated:", name)
+                                        end
+                                    }
                                 end
                             }
                         end
