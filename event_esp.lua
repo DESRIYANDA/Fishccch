@@ -15,71 +15,162 @@ local camera = Workspace.CurrentCamera
 local flags = {}
 local espObjects = {}
 
--- Event Types and Detection
-local EventTypes = {
-    -- Weather Events
-    ["Aurora"] = {
-        color = Color3.fromRGB(0, 255, 150),
-        description = "Aurora Event - Rare fish spawn",
-        detection = "Aurora",
+-- Event Types and Detection - Focus on Localized Events only
+local LocalizedEvents = {
+    -- Hunt Events
+    ["Shark Hunt"] = {
+        color = Color3.fromRGB(128, 128, 128),
+        description = "Shark Hunt Event",
+        detection = {"Shark", "shark"},
+        priority = 4
+    },
+    ["Megalodon Hunt"] = {
+        color = Color3.fromRGB(200, 0, 0),
+        description = "Megalodon Hunt Event",
+        detection = {"Megalodon", "megalodon"},
         priority = 5
+    },
+    ["Kraken Event"] = {
+        color = Color3.fromRGB(100, 0, 150),
+        description = "Kraken Event",
+        detection = {"Kraken", "kraken"},
+        priority = 5
+    },
+    ["Scylla Hunt"] = {
+        color = Color3.fromRGB(150, 100, 0),
+        description = "Scylla Hunt Event",
+        detection = {"Scylla", "scylla"},
+        priority = 4
+    },
+    
+    -- Migration Events
+    ["Orca Migration"] = {
+        color = Color3.fromRGB(0, 0, 0),
+        description = "Orca Migration Event",
+        detection = {"Orca", "orca"},
+        priority = 3
+    },
+    ["Whale Migration"] = {
+        color = Color3.fromRGB(100, 150, 200),
+        description = "Whale Migration Event",
+        detection = {"Whale", "whale"},
+        priority = 3
+    },
+    
+    -- Special Hunt Events
+    ["Sea Leviathan Hunt"] = {
+        color = Color3.fromRGB(0, 100, 150),
+        description = "Sea Leviathan Hunt",
+        detection = {"Leviathan", "leviathan"},
+        priority = 5
+    },
+    ["Apex Fish Hunt"] = {
+        color = Color3.fromRGB(255, 200, 0),
+        description = "Apex Fish Hunt Event",
+        detection = {"Apex", "apex"},
+        priority = 4
+    },
+    
+    -- Pool/Area Events
+    ["Fish Abundance"] = {
+        color = Color3.fromRGB(0, 255, 100),
+        description = "Fish Abundance Event",
+        detection = {"Abundance", "abundance"},
+        priority = 3
+    },
+    ["Lucky Pool"] = {
+        color = Color3.fromRGB(255, 215, 0),
+        description = "Lucky Pool Event",
+        detection = {"Lucky", "lucky"},
+        priority = 4
+    },
+    
+    -- Environmental Events
+    ["Absolute Darkness"] = {
+        color = Color3.fromRGB(50, 0, 50),
+        description = "Absolute Darkness Event",
+        detection = {"Darkness", "darkness"},
+        priority = 4
+    },
+    ["Strange Whirlpool"] = {
+        color = Color3.fromRGB(100, 200, 255),
+        description = "Strange Whirlpool Event",
+        detection = {"StrangeWhirlpool", "strange"},
+        priority = 4
+    },
+    ["Whirlpool"] = {
+        color = Color3.fromRGB(0, 150, 255),
+        description = "Whirlpool Event",
+        detection = {"Whirlpool", "whirlpool"},
+        priority = 3
+    },
+    
+    -- Disaster Events
+    ["Nuke"] = {
+        color = Color3.fromRGB(255, 0, 0),
+        description = "Nuke Event",
+        detection = {"Nuke", "nuke"},
+        priority = 5
+    },
+    ["Comet Storm"] = {
+        color = Color3.fromRGB(255, 150, 0),
+        description = "Comet Storm Event",
+        detection = {"Comet", "comet"},
+        priority = 4
+    },
+    ["Blizzard"] = {
+        color = Color3.fromRGB(200, 200, 255),
+        description = "Blizzard Event",
+        detection = {"Blizzard", "blizzard"},
+        priority = 3
+    },
+    ["Avalanche"] = {
+        color = Color3.fromRGB(255, 255, 255),
+        description = "Avalanche Event",
+        detection = {"Avalanche", "avalanche"},
+        priority = 4
+    },
+    
+    -- Mythological Events
+    ["Poseidon Wrath"] = {
+        color = Color3.fromRGB(0, 100, 200),
+        description = "Poseidon Wrath Event",
+        detection = {"Poseidon", "poseidon"},
+        priority = 5
+    },
+    ["Zeus Storm"] = {
+        color = Color3.fromRGB(255, 255, 0),
+        description = "Zeus Storm Event",
+        detection = {"Zeus", "zeus"},
+        priority = 5
+    },
+    
+    -- Celestial Events
+    ["Blue Moon"] = {
+        color = Color3.fromRGB(100, 150, 255),
+        description = "Blue Moon Event",
+        detection = {"BlueMoon", "blue moon"},
+        priority = 4
     },
     ["Meteor"] = {
         color = Color3.fromRGB(255, 100, 0),
-        description = "Meteor Event - Meteorite drops",
-        detection = "Meteor",
+        description = "Meteor Event",
+        detection = {"Meteor", "meteor"},
         priority = 4
     },
-    ["Windset"] = {
-        color = Color3.fromRGB(100, 200, 255),
-        description = "Windset Event - Wind patterns",
-        detection = "Windset",
+    
+    -- Special Events
+    ["Traveling Merchant"] = {
+        color = Color3.fromRGB(150, 100, 50),
+        description = "Traveling Merchant",
+        detection = {"Merchant", "merchant"},
         priority = 3
     },
-    -- Localized Events
-    ["Tsunami"] = {
-        color = Color3.fromRGB(0, 100, 255),
-        description = "Tsunami Event - Ocean waves",
-        detection = "Tsunami",
-        priority = 5
-    },
-    ["Brine Pool"] = {
-        color = Color3.fromRGB(100, 0, 200),
-        description = "Brine Pool - Deep ocean event",
-        detection = "BrinePool",
-        priority = 4
-    },
-    ["The Depths"] = {
-        color = Color3.fromRGB(50, 0, 100),
-        description = "The Depths Event - Deep sea access",
-        detection = "TheDepths",
-        priority = 5
-    },
-    -- Fishing Events
-    ["Great White Shark"] = {
-        color = Color3.fromRGB(150, 150, 150),
-        description = "Great White Shark Event",
-        detection = "GreatWhite",
-        priority = 4
-    },
-    ["Megalodon"] = {
-        color = Color3.fromRGB(200, 0, 0),
-        description = "Megalodon Event - Ancient shark",
-        detection = "Megalodon",
-        priority = 5
-    },
-    -- Special Events
-    ["FischFright24"] = {
-        color = Color3.fromRGB(255, 165, 0),
-        description = "Halloween Event Zone",
-        detection = "FischFright24",
-        priority = 5
-    },
-    ["Isonade"] = {
-        color = Color3.fromRGB(0, 255, 255),
-        description = "Isonade Event - Legendary fish",
-        detection = "Isonade",
-        priority = 5
+    ["Sunken Chests"] = {
+        color = Color3.fromRGB(150, 100, 0),
+        description = "Sunken Chests Event",
+        detection = {"Chest", "chest", "Sunken"},
+        priority = 3
     }
 }
 
@@ -161,31 +252,31 @@ end
 function EventESP:ScanForEvents()
     local foundEvents = {}
     
-    -- Scan workspace zones for events
+    -- Scan workspace zones for localized events
     if Workspace:FindFirstChild("zones") then
         local zones = Workspace.zones
         
-        -- Check for event zones
+        -- Check for event zones in fishing areas
         if zones:FindFirstChild("fishing") then
             for _, zone in pairs(zones.fishing:GetChildren()) do
                 if zone:IsA("BasePart") then
                     local zoneName = zone.Name
                     
-                    -- Check if it's a known event
-                    for eventType, eventInfo in pairs(EventTypes) do
-                        if string.find(zoneName:lower(), eventType:lower()) or 
-                           string.find(zoneName, eventInfo.detection) then
-                            
-                            -- Check if event is active (has special attributes or children)
-                            local isActive = self:CheckEventActive(zone, eventType)
-                            
-                            if isActive then
-                                foundEvents[eventType] = {
-                                    zone = zone,
-                                    position = zone.Position,
-                                    eventInfo = eventInfo
-                                }
-                                print("🌟 Event detected: " .. eventType .. " at " .. zoneName)
+                    -- Check if it's a known localized event
+                    for eventType, eventInfo in pairs(LocalizedEvents) do
+                        for _, detection in pairs(eventInfo.detection) do
+                            if string.find(zoneName:lower(), detection:lower()) then
+                                -- Check if event is active
+                                local isActive = self:CheckEventActive(zone, eventType)
+                                
+                                if isActive then
+                                    foundEvents[eventType] = {
+                                        zone = zone,
+                                        position = zone.Position,
+                                        eventInfo = eventInfo
+                                    }
+                                    print("🌟 Localized Event detected: " .. eventType .. " at " .. zoneName)
+                                end
                             end
                         end
                     end
@@ -193,20 +284,25 @@ function EventESP:ScanForEvents()
             end
         end
         
-        -- Check for special event folders
-        if zones:FindFirstChild("events") then
-            for _, eventZone in pairs(zones.events:GetChildren()) do
-                if eventZone:IsA("Model") or eventZone:IsA("BasePart") then
-                    local eventName = eventZone.Name
-                    
-                    for eventType, eventInfo in pairs(EventTypes) do
-                        if string.find(eventName:lower(), eventType:lower()) then
-                            foundEvents[eventType] = {
-                                zone = eventZone,
-                                position = eventZone:FindFirstChild("HumanoidRootPart") and 
-                                         eventZone.HumanoidRootPart.Position or eventZone.Position,
-                                eventInfo = eventInfo
-                            }
+        -- Check for special event folders and models
+        for _, folder in pairs(zones:GetChildren()) do
+            if folder:IsA("Folder") or folder:IsA("Model") then
+                local folderName = folder.Name:lower()
+                
+                -- Check for event-specific folders
+                for eventType, eventInfo in pairs(LocalizedEvents) do
+                    for _, detection in pairs(eventInfo.detection) do
+                        if string.find(folderName, detection:lower()) then
+                            -- Find the main part or center of the event
+                            local eventPart = self:FindEventCenter(folder)
+                            if eventPart then
+                                foundEvents[eventType] = {
+                                    zone = eventPart,
+                                    position = eventPart.Position,
+                                    eventInfo = eventInfo
+                                }
+                                print("🌟 Event folder detected: " .. eventType)
+                            end
                         end
                     end
                 end
@@ -214,28 +310,175 @@ function EventESP:ScanForEvents()
         end
     end
     
-    -- Check Lighting for weather events
-    local lighting = game:GetService("Lighting")
-    for eventType, eventInfo in pairs(EventTypes) do
-        if eventType == "Aurora" and lighting:FindFirstChild("Aurora") then
-            -- Aurora is typically a lighting effect
-            foundEvents[eventType] = {
-                zone = nil,
-                position = Vector3.new(0, 200, 0), -- Sky position
-                eventInfo = eventInfo,
-                isWeatherEvent = true
-            }
-        elseif eventType == "Meteor" and self:CheckMeteorEvent() then
-            foundEvents[eventType] = {
-                zone = nil,
-                position = self:GetMeteorPosition(),
-                eventInfo = eventInfo,
-                isWeatherEvent = true
-            }
+    -- Check ReplicatedStorage for event information
+    local replicatedStorage = game:GetService("ReplicatedStorage")
+    
+    -- Check for TimeEvent system (from dump.txt analysis)
+    if replicatedStorage:FindFirstChild("packages") then
+        local packages = replicatedStorage.packages
+        if packages:FindFirstChild("Net") then
+            -- Try to get current event information
+            pcall(function()
+                local timeEventRF = packages.Net:FindFirstChild("RF/TimeEvent/GetEventTime")
+                if timeEventRF then
+                    -- Event system exists, scan for active events
+                    self:ScanTimeEvents(foundEvents)
+                end
+            end)
         end
     end
     
+    -- Check for event bestiary information
+    pcall(function()
+        local eventBestiary = replicatedStorage:FindFirstChild("shared")
+        if eventBestiary then
+            local timeEvents = eventBestiary:FindFirstChild("modules")
+            if timeEvents then
+                local timeEventsModule = timeEvents:FindFirstChild("library")
+                if timeEventsModule and timeEventsModule:FindFirstChild("timeevents") then
+                    -- Time events module exists, can potentially get event data
+                    self:ScanBestiaryEvents(foundEvents)
+                end
+            end
+        end
+    end)
+    
     return foundEvents
+end
+
+function EventESP:FindEventCenter(folder)
+    -- Try to find the center part of an event
+    local centerPart = folder:FindFirstChild("Center") or 
+                      folder:FindFirstChild("Main") or 
+                      folder:FindFirstChild("Core")
+    
+    if centerPart then return centerPart end
+    
+    -- Find the largest part
+    local largestPart = nil
+    local largestSize = 0
+    
+    for _, child in pairs(folder:GetDescendants()) do
+        if child:IsA("BasePart") then
+            local size = child.Size.Magnitude
+            if size > largestSize then
+                largestSize = size
+                largestPart = child
+            end
+        end
+    end
+    
+    return largestPart
+end
+
+function EventESP:ScanTimeEvents(foundEvents)
+    -- Scan for active time events using the TimeEvent system
+    -- This connects to the system found in dump.txt
+    
+    local lighting = game:GetService("Lighting")
+    
+    -- Check lighting conditions for different events
+    if lighting.ClockTime < 6 or lighting.ClockTime > 20 then
+        -- Night time events more likely
+        self:CheckNightEvents(foundEvents)
+    end
+    
+    -- Check for storm conditions (Zeus Storm, Blizzard)
+    if lighting.ColorShift_Bottom.B > 0.5 then
+        self:CheckStormEvents(foundEvents)
+    end
+    
+    -- Check for special lighting (Blue Moon, etc.)
+    if lighting.ColorShift_Top.B > 0.7 then
+        foundEvents["Blue Moon"] = {
+            zone = nil,
+            position = Vector3.new(0, 200, 0),
+            eventInfo = LocalizedEvents["Blue Moon"],
+            isGlobalEvent = true
+        }
+    end
+end
+
+function EventESP:ScanBestiaryEvents(foundEvents)
+    -- Scan using bestiary system for event information
+    -- This uses the TimeEventController found in dump.txt
+    
+    -- Check for active creature events by scanning workspace
+    for _, obj in pairs(Workspace:GetChildren()) do
+        if obj:IsA("Model") then
+            local objName = obj.Name:lower()
+            
+            -- Check for creature spawns that indicate events
+            if string.find(objName, "kraken") then
+                foundEvents["Kraken Event"] = {
+                    zone = obj.PrimaryPart or obj:FindFirstChild("HumanoidRootPart"),
+                    position = obj:GetModelCFrame().Position,
+                    eventInfo = LocalizedEvents["Kraken Event"]
+                }
+            elseif string.find(objName, "megalodon") then
+                foundEvents["Megalodon Hunt"] = {
+                    zone = obj.PrimaryPart or obj:FindFirstChild("HumanoidRootPart"),
+                    position = obj:GetModelCFrame().Position,
+                    eventInfo = LocalizedEvents["Megalodon Hunt"]
+                }
+            end
+        end
+    end
+end
+
+function EventESP:CheckNightEvents(foundEvents)
+    -- Events that are more likely at night
+    local nightEvents = {"Kraken Event", "Absolute Darkness", "Blue Moon"}
+    
+    for _, eventType in pairs(nightEvents) do
+        -- Check workspace for signs of these events
+        if self:CheckEventIndicators(eventType) then
+            foundEvents[eventType] = {
+                zone = nil,
+                position = Vector3.new(0, 150, 0),
+                eventInfo = LocalizedEvents[eventType],
+                isNightEvent = true
+            }
+        end
+    end
+end
+
+function EventESP:CheckStormEvents(foundEvents)
+    -- Storm-related events
+    local stormEvents = {"Zeus Storm", "Blizzard", "Comet Storm"}
+    
+    for _, eventType in pairs(stormEvents) do
+        if self:CheckEventIndicators(eventType) then
+            foundEvents[eventType] = {
+                zone = nil,
+                position = Vector3.new(0, 200, 0),
+                eventInfo = LocalizedEvents[eventType],
+                isStormEvent = true
+            }
+        end
+    end
+end
+
+function EventESP:CheckEventIndicators(eventType)
+    -- Check for various indicators that an event might be active
+    local lighting = game:GetService("Lighting")
+    
+    if eventType == "Zeus Storm" then
+        return lighting.Brightness > 2 and lighting.ColorShift_Top.R > 0.8
+    elseif eventType == "Blizzard" then
+        return lighting.ColorShift_Bottom.B > 0.8 and lighting.Brightness < 1
+    elseif eventType == "Comet Storm" then
+        return lighting.ColorShift_Top.G < 0.3 and lighting.Brightness > 1.5
+    elseif eventType == "Absolute Darkness" then
+        return lighting.Brightness < 0.5
+    elseif eventType == "Blue Moon" then
+        return lighting.ColorShift_Top.B > 0.7
+    elseif eventType == "Kraken Event" then
+        -- Check for kraken-related objects in workspace
+        return Workspace:FindFirstChild("Kraken") ~= nil
+    end
+    
+    return false
 end
 
 function EventESP:CheckEventActive(zone, eventType)
@@ -322,7 +565,7 @@ function EventESP:TeleportToEvent(eventType)
     local eventData = events[eventType]
     
     if not eventData then
-        print("❌ Event not found: " .. eventType)
+        print("❌ Localized Event not found: " .. eventType)
         return false
     end
     
@@ -345,8 +588,27 @@ function EventESP:TeleportToEvent(eventType)
     -- Teleport with safety offset
     lp.Character.HumanoidRootPart.CFrame = CFrame.new(targetPosition + Vector3.new(0, 5, 0))
     
-    print("✅ Teleported to " .. eventType .. " event!")
+    print("✅ Teleported to " .. eventType .. " localized event!")
     return true
+end
+
+function EventESP:Initialize(tab)
+    print("🌟 Initializing Localized Event ESP...")
+    
+    -- Set default values
+    flags['eventesp'] = false
+    flags['autoscan'] = false
+    flags['selectedevent'] = nil
+    flags['espactive'] = false
+    flags['showhunts'] = true
+    flags['showmigrations'] = true
+    flags['showenvironmental'] = true
+    
+    -- Create UI
+    self:CreateUI(tab)
+    
+    print("🌟 Localized Event ESP initialized successfully!")
+    return self
 end
 
 function EventESP:GetActiveEvents()
@@ -377,17 +639,17 @@ end
 
 function EventESP:CreateUI(tab)
     if not tab then 
-        warn("❌ Tab not available for Event ESP")
+        warn("❌ Tab not available for Localized Event ESP")
         return 
     end
     
-    print("🌟 Creating Event ESP UI...")
+    print("🌟 Creating Localized Event ESP UI...")
     
-    -- Event ESP Section
-    local EventSection = tab:NewSection("🌟 Event ESP & Detection")
+    -- Localized Event ESP Section
+    local EventSection = tab:NewSection("🌟 Localized Event ESP")
     
     -- Main ESP toggle
-    EventSection:NewToggle("Event ESP", "Show ESP for active events", function(state)
+    EventSection:NewToggle("Localized Event ESP", "Show ESP for active localized events", function(state)
         flags['eventesp'] = state
         if state then
             EventESP:StartESP()
@@ -397,21 +659,39 @@ function EventESP:CreateUI(tab)
     end)
     
     -- Auto scan toggle
-    EventSection:NewToggle("Auto Event Scan", "Automatically scan for new events", function(state)
+    EventSection:NewToggle("Auto Event Scan", "Automatically scan for new localized events", function(state)
         flags['autoscan'] = state
-        print(state and "🔄 Auto event scan enabled" or "⏹️ Auto event scan disabled")
+        print(state and "🔄 Auto localized event scan enabled" or "⏹️ Auto localized event scan disabled")
     end)
     
     -- Manual scan button
-    EventSection:NewButton("Manual Scan", "Manually scan for events", function()
+    EventSection:NewButton("Manual Scan Events", "Manually scan for localized events", function()
         local events = EventESP:GetActiveEvents()
         local count = 0
         for _ in pairs(events) do count = count + 1 end
-        print("🔍 Scan complete: " .. count .. " events found")
+        print("🔍 Localized Event scan complete: " .. count .. " events found")
         
         if flags['eventesp'] then
             EventESP:UpdateESP()
         end
+    end)
+    
+    -- Event Categories Section
+    local CategorySection = tab:NewSection("📂 Event Categories")
+    
+    -- Hunt Events toggle
+    CategorySection:NewToggle("Show Hunt Events", "Display hunt-type events (Shark, Megalodon, Kraken, etc.)", function(state)
+        flags['showhunts'] = state
+    end)
+    
+    -- Migration Events toggle
+    CategorySection:NewToggle("Show Migration Events", "Display migration events (Orca, Whale)", function(state)
+        flags['showmigrations'] = state
+    end)
+    
+    -- Environmental Events toggle
+    CategorySection:NewToggle("Show Environmental Events", "Display environmental events (Storms, Disasters)", function(state)
+        flags['showenvironmental'] = state
     end)
     
     -- Teleport Section
@@ -419,18 +699,18 @@ function EventESP:CreateUI(tab)
     
     -- Event dropdown
     local eventNames = {}
-    for eventType, _ in pairs(EventTypes) do
+    for eventType, _ in pairs(LocalizedEvents) do
         table.insert(eventNames, eventType)
     end
     table.sort(eventNames)
     
-    TeleportSection:NewDropdown("Select Event", "Choose event to teleport to", eventNames, function(event)
+    TeleportSection:NewDropdown("Select Event", "Choose localized event to teleport to", eventNames, function(event)
         flags['selectedevent'] = event
         print("📍 Selected event: " .. event)
     end)
     
     -- Teleport button
-    TeleportSection:NewButton("Teleport to Event", "Teleport to selected event", function()
+    TeleportSection:NewButton("Teleport to Event", "Teleport to selected localized event", function()
         if flags['selectedevent'] then
             EventESP:TeleportToEvent(flags['selectedevent'])
         else
@@ -438,45 +718,93 @@ function EventESP:CreateUI(tab)
         end
     end)
     
-    -- Quick teleport buttons for common events
-    TeleportSection:NewButton("🌊 Find Tsunami", "Quick scan and teleport to Tsunami", function()
-        EventESP:TeleportToEvent("Tsunami")
+    -- Quick Hunt Teleports
+    local HuntSection = tab:NewSection("🦈 Quick Hunt Teleports")
+    
+    HuntSection:NewButton("🦈 Find Shark Hunt", "Quick scan and teleport to Shark Hunt", function()
+        EventESP:TeleportToEvent("Shark Hunt")
     end)
     
-    TeleportSection:NewButton("🌌 Find Aurora", "Quick scan and teleport to Aurora", function()
-        EventESP:TeleportToEvent("Aurora")
+    HuntSection:NewButton("🦈 Find Megalodon Hunt", "Quick scan and teleport to Megalodon Hunt", function()
+        EventESP:TeleportToEvent("Megalodon Hunt")
     end)
     
-    TeleportSection:NewButton("☄️ Find Meteor", "Quick scan and teleport to Meteor", function()
-        EventESP:TeleportToEvent("Meteor")
+    HuntSection:NewButton("🐙 Find Kraken Event", "Quick scan and teleport to Kraken Event", function()
+        EventESP:TeleportToEvent("Kraken Event")
+    end)
+    
+    HuntSection:NewButton("🦅 Find Scylla Hunt", "Quick scan and teleport to Scylla Hunt", function()
+        EventESP:TeleportToEvent("Scylla Hunt")
+    end)
+    
+    -- Environmental Events
+    local EnviroSection = tab:NewSection("🌪️ Environmental Events")
+    
+    EnviroSection:NewButton("💥 Find Nuke Event", "Quick scan and teleport to Nuke", function()
+        EventESP:TeleportToEvent("Nuke")
+    end)
+    
+    EnviroSection:NewButton("⚡ Find Zeus Storm", "Quick scan and teleport to Zeus Storm", function()
+        EventESP:TeleportToEvent("Zeus Storm")
+    end)
+    
+    EnviroSection:NewButton("🌊 Find Poseidon Wrath", "Quick scan and teleport to Poseidon Wrath", function()
+        EventESP:TeleportToEvent("Poseidon Wrath")
+    end)
+    
+    EnviroSection:NewButton("☄️ Find Comet Storm", "Quick scan and teleport to Comet Storm", function()
+        EventESP:TeleportToEvent("Comet Storm")
+    end)
+    
+    -- Special Events
+    local SpecialSection = tab:NewSection("✨ Special Events")
+    
+    SpecialSection:NewButton("� Find Blue Moon", "Quick scan and teleport to Blue Moon", function()
+        EventESP:TeleportToEvent("Blue Moon")
+    end)
+    
+    SpecialSection:NewButton("🐠 Find Fish Abundance", "Quick scan and teleport to Fish Abundance", function()
+        EventESP:TeleportToEvent("Fish Abundance")
+    end)
+    
+    SpecialSection:NewButton("🍀 Find Lucky Pool", "Quick scan and teleport to Lucky Pool", function()
+        EventESP:TeleportToEvent("Lucky Pool")
+    end)
+    
+    SpecialSection:NewButton("💰 Find Traveling Merchant", "Quick scan and teleport to Traveling Merchant", function()
+        EventESP:TeleportToEvent("Traveling Merchant")
     end)
     
     -- Info Section
-    local InfoSection = tab:NewSection("ℹ️ Event Information")
+    local InfoSection = tab:NewSection("ℹ️ Localized Event Information")
     
-    InfoSection:NewLabel("🌟 Detects: Aurora, Meteor, Tsunami, Brine Pool")
-    InfoSection:NewLabel("🎃 Special: FischFright24, Isonade Events")
-    InfoSection:NewLabel("🦈 Marine: Great White, Megalodon")
+    InfoSection:NewLabel("🦈 Hunt Events: Shark, Megalodon, Kraken, Scylla")
+    InfoSection:NewLabel("🐋 Migration: Orca, Whale, Sea Leviathan")
+    InfoSection:NewLabel("🌪️ Environmental: Storms, Disasters, Darkness")
+    InfoSection:NewLabel("✨ Special: Lucky Pool, Fish Abundance, Merchant")
     InfoSection:NewLabel("🔄 Auto-updates every 5 seconds")
-    InfoSection:NewLabel("📍 Shows distance and event info")
+    InfoSection:NewLabel("📍 Shows distance and event details")
+    InfoSection:NewLabel("📚 Based on Fischipedia Localized Events")
     
-    print("✅ Event ESP UI created successfully!")
+    print("✅ Localized Event ESP UI created successfully!")
 end
 
--- Initialize function
 function EventESP:Initialize(tab)
-    print("🌟 Initializing Event ESP...")
+    print("🌟 Initializing Localized Event ESP...")
     
     -- Set default values
     flags['eventesp'] = false
     flags['autoscan'] = false
     flags['selectedevent'] = nil
     flags['espactive'] = false
+    flags['showhunts'] = true
+    flags['showmigrations'] = true
+    flags['showenvironmental'] = true
     
     -- Create UI
     self:CreateUI(tab)
     
-    print("🌟 Event ESP initialized successfully!")
+    print("🌟 Localized Event ESP initialized successfully!")
     return self
 end
 
