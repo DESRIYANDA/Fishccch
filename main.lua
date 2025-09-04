@@ -1,6 +1,6 @@
 -- Enhanced Fishing Script v2.1 with improved error handling
-print("🚀 Starting Enhanced Fishing Script v2.1")
-print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+print("Starting Enhanced Fishing Script v2.1")
+print("=" .. string.rep("=", 60))
 
 -- Safe game service access with multiple fallback methods
 local function safeGetService(serviceName)
@@ -14,7 +14,7 @@ local function safeGetService(serviceName)
     return success and service or game:GetService(serviceName)
 end
 
-print("✅ Service access function initialized")
+print("[OK] Service access function initialized")
 
 local Players = safeGetService('Players')
 local ReplicatedStorage = safeGetService('ReplicatedStorage')
@@ -33,12 +33,12 @@ if not lp then
     until lp or timeout > 10
     
     if not lp then
-        error("❌ Failed to get LocalPlayer after 10 seconds")
+        error("[ERROR] Failed to get LocalPlayer after 10 seconds")
         return
     end
 end
 
-print("✅ LocalPlayer found:", lp.Name)
+print("[OK] LocalPlayer found:", lp.Name)
 
 -- Protect TweenService from workspace errors
 pcall(function()
@@ -59,7 +59,7 @@ pcall(function()
     end
 end)
 
-print("✅ TweenService protection enabled")
+print("[OK] TweenService protection enabled")
 
 --// Variables initialization
 local flags = {}
@@ -75,18 +75,18 @@ local hookMetamethodAvailable = true
 pcall(function()
     if not fireclickdetector then
         clickDetectorAvailable = false
-        warn("⚠️ fireclickdetector not available - some features may be limited")
+        warn("[WARN] fireclickdetector not available - some features may be limited")
     end
 end)
 
 pcall(function()
     if not hookmetamethod then
         hookMetamethodAvailable = false 
-        warn("⚠️ hookmetamethod not available - visual mods may be limited")
+        warn("[WARN] hookmetamethod not available - visual mods may be limited")
     end
 end)
 
-print("✅ Variables and executor features initialized")
+print("[OK] Variables and executor features initialized")
 local fishabundancevisible = false
 local deathcon
 local tooltipmessage
@@ -97,7 +97,7 @@ if not lp then
 end
 
 if not lp then
-    error("❌ LocalPlayer not found!")
+    error("[ERROR] LocalPlayer not found!")
 end
 
 -- Default delay values
@@ -216,7 +216,7 @@ local function safeHookMetamethod(...)
     if hookmetamethod then
         return hookmetamethod(...)
     else
-        warn("⚠️ hookmetamethod not available in this executor")
+        warn("[WARN] hookmetamethod not available in this executor")
         return function() end
     end
 end
@@ -239,7 +239,7 @@ local function EquipBait(baitName)
     pcall(function()
         if lp.Backpack:FindFirstChild(baitName) then
             ReplicatedStorage.packages.Net.RE.Bait.Equip:FireServer(baitName)
-            print("🎣 Equipped", baitName)
+            print("[FISHING] Equipped", baitName)
         end
     end)
 end
@@ -300,7 +300,7 @@ local function FindNearbyTreasures()
     return treasures
 end
 
-print("✅ Helper functions and teleport locations initialized")
+print("[OK] Helper functions and teleport locations initialized")
 
 local TeleportLocations = {
     ['Zones'] = {
@@ -529,7 +529,7 @@ local kavoUrl = 'https://raw.githubusercontent.com/DESRIYANDA/Fishccch/main/Kavo
 local success = false
 local library = nil
 
-print("🔄 Loading UI library...")
+print("[LOADING] Loading UI library...")
 
 -- Method 1: Load directly from current repo
 pcall(function()
@@ -538,7 +538,7 @@ pcall(function()
         library = loadstring(scriptContent)()
         if library and library.CreateLib then
             success = true
-            print("✅ Kavo loaded from GitHub repo")
+            print("[OK] Kavo loaded from GitHub repo")
         end
     end
 end)
@@ -557,7 +557,7 @@ if not success then
                 library = loadstring(scriptContent)()
                 if library and library.CreateLib then
                     success = true
-                    print("✅ Kavo loaded from backup URL " .. i)
+                    print("[OK] Kavo loaded from backup URL " .. i)
                 end
             end
         end)
@@ -567,41 +567,41 @@ end
 
 -- Method 3: Use fallback UI if Kavo fails
 if not success or not library then
-    warn("⚠️ Failed to load Kavo UI library, using fallback UI")
+    warn("[WARN] Failed to load Kavo UI library, using fallback UI")
     library = {
         CreateLib = function(name, theme)
-            print("📱 Creating fallback UI window:", name)
+            print("[UI] Creating fallback UI window:", name)
             return {
                 NewTab = function(tabName)
-                    print("📂 Creating fallback tab:", tabName)
+                    print("[TAB] Creating fallback tab:", tabName)
                     return {
                         NewSection = function(sectionName)
-                            print("📄 Creating fallback section:", sectionName)
+                            print("[SECTION] Creating fallback section:", sectionName)
                             return {
                                 NewToggle = function(name, desc, callback) 
-                                    print("🔘 Toggle:", name)
+                                    print("[TOGGLE] Toggle:", name)
                                     if callback then callback(false) end
                                     return {UpdateToggle = function(state) if callback then callback(state) end end}
                                 end,
                                 NewSlider = function(name, desc, min, max, callback) 
-                                    print("🎚️ Slider:", name, "Range:", min, "-", max)
+                                    print("[SLIDER] Slider:", name, "Range:", min, "-", max)
                                     if callback then callback(min) end
                                     return {UpdateSlider = function(value) if callback then callback(value) end end}
                                 end,
                                 NewDropdown = function(name, desc, options, callback) 
-                                    print("📋 Dropdown:", name, "Options:", #options)
+                                    print("[DROPDOWN] Dropdown:", name, "Options:", #options)
                                     if callback and options[1] then callback(options[1]) end
                                     return {
                                         Refresh = function(newOptions) 
-                                            print("🔄 Dropdown refreshed:", name)
+                                            print("[REFRESH] Dropdown refreshed:", name)
                                         end
                                     }
                                 end,
                                 NewButton = function(name, desc, callback) 
-                                    print("🔲 Button:", name)
+                                    print("[BUTTON] Button:", name)
                                     return {
                                         UpdateButton = function() 
-                                            print("🔄 Button updated:", name)
+                                            print("[UPDATE] Button updated:", name)
                                         end
                                     }
                                 end
@@ -615,7 +615,7 @@ if not success or not library then
     success = true
 end
 
-print("🎣 UI library loaded successfully!")
+print("[OK] UI library loaded successfully!")
 
 -- Function to create floating button
 local function createFloatingButton()
@@ -646,7 +646,7 @@ local function createFloatingButton()
     button.Size = UDim2.new(1, 0, 1, 0)
     button.Position = UDim2.new(0, 0, 0, 0)
     button.BackgroundTransparency = 1
-    button.Text = "🎣"
+    button.Text = "[FISH]"
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
     button.TextSize = 24
     button.Font = Enum.Font.SourceSansBold
@@ -728,24 +728,24 @@ local success = pcall(function()
             end
         end
         
-        Window = library.CreateLib("🎣 Fisch Script", "Ocean")
-        print("✅ Main UI window created successfully")
+        Window = library.CreateLib("Fisch Script", "Ocean")
+        print("[OK] Main UI window created successfully")
     else
-        error("❌ Library not available")
+        error("[ERROR] Library not available")
     end
 end)
 
 if not success or not Window then
-    warn("⚠️ Failed to create UI window, retrying with alternative method...")
+    warn("[WARN] Failed to create UI window, retrying with alternative method...")
     
     -- Try alternative creation
     pcall(function()
         task.wait(1)
-        Window = library.CreateLib("🎣 Fisch Script", "Ocean")
+        Window = library.CreateLib("Fisch Script", "Ocean")
     end)
     
     if not Window then
-        warn("⚠️ UI window creation failed, script will continue without GUI")
+        warn("[WARN] UI window creation failed, script will continue without GUI")
     end
 end
 
@@ -754,16 +754,16 @@ local AutoTab, ModTab, TeleTab, VisualTab
 
 if Window and Window.NewTab then
     pcall(function()
-        AutoTab = Window:NewTab("🎣 Automation")
-        ModTab = Window:NewTab("⚙️ Modifications") 
-        TeleTab = Window:NewTab("🌍 Teleports")
-        VisualTab = Window:NewTab("👁️ Visuals")
-        ShopTab = Window:NewTab("🛒 Shop")
-        TreasureTab = Window:NewTab("🏴‍☠️ Auto Treasure")
-        print("✅ All tabs created successfully")
+        AutoTab = Window:NewTab("Automation")
+        ModTab = Window:NewTab("Modifications") 
+        TeleTab = Window:NewTab("Teleports")
+        VisualTab = Window:NewTab("Visuals")
+        ShopTab = Window:NewTab("Shop")
+        TreasureTab = Window:NewTab("Auto Treasure")
+        print("[OK] All tabs created successfully")
     end)
 else
-    warn("⚠️ Window not available, creating fallback functionality")
+    warn("[WARN] Window not available, creating fallback functionality")
     -- Create dummy tabs that won't break the script
     local dummyTab = {
         NewSection = function(name)
@@ -792,7 +792,7 @@ else
     VisualTab = dummyTab
     ShopTab = dummyTab
     TreasureTab = dummyTab
-    print("⚠️ Using fallback tabs - script functionality preserved")
+    print("[INFO] Using fallback tabs - script functionality preserved")
 end
 
 -- Automation Section
@@ -951,14 +951,14 @@ flags['autobuy'] = false
 
 BaitShopSection:NewDropdown("Select Bait Type", "Choose which bait to buy", BaitNames, function(currentOption)
     flags['selectedbait'] = currentOption
-    print("🎣 Selected bait:", currentOption, "| Price:", BaitTypes[currentOption].price, "| Location:", BaitTypes[currentOption].location)
+    print("[BAIT] Selected bait:", currentOption, "| Price:", BaitTypes[currentOption].price, "| Location:", BaitTypes[currentOption].location)
 end)
 
 BaitShopSection:NewSlider("Quantity", "Amount of bait to buy", 1, 100, function(value)
     flags['baitquantity'] = value
     if flags['selectedbait'] then
         local totalPrice = BaitTypes[flags['selectedbait']].price * value
-        print("🛒 Quantity:", value, "| Total cost:", totalPrice, "coins")
+        print("[SHOP] Quantity:", value, "| Total cost:", totalPrice, "coins")
     end
 end)
 
@@ -967,8 +967,8 @@ BaitShopSection:NewButton("Buy Bait Now", "Purchase selected bait immediately", 
         local baitInfo = BaitTypes[flags['selectedbait']]
         local totalPrice = baitInfo.price * flags['baitquantity']
         
-        print("🛒 Buying", flags['baitquantity'], "x", flags['selectedbait'], "for", totalPrice, "coins")
-        print("📍 Teleporting to", baitInfo.location)
+        print("[SHOP] Buying", flags['baitquantity'], "x", flags['selectedbait'], "for", totalPrice, "coins")
+        print("[TP] Teleporting to", baitInfo.location)
         
         -- Teleport ke merchant yang tepat
         if baitInfo.location == "Daily Shopkeeper" then
@@ -1011,18 +1011,18 @@ BaitShopSection:NewButton("Buy Bait Now", "Purchase selected bait immediately", 
             end
         end)
         
-        print("✅ Purchase attempt completed!")
+        print("[OK] Purchase attempt completed!")
     else
-        print("❌ Please select a bait type first!")
+        print("[ERROR] Please select a bait type first!")
     end
 end)
 
 BaitShopSection:NewToggle("Auto Buy Mode", "Automatically buy bait when running low", function(state)
     flags['autobuy'] = state
     if state then
-        print("🔄 Auto buy mode enabled - will buy", flags['selectedbait'], "when needed")
+        print("[AUTO] Auto buy mode enabled - will buy", flags['selectedbait'], "when needed")
     else
-        print("⏹️ Auto buy mode disabled")
+        print("[STOP] Auto buy mode disabled")
     end
 end)
 
@@ -1141,7 +1141,7 @@ end)
 BaitCrateSection:NewToggle("Auto Collect Crates", "Automatically collect from nearby bait crates", function(state)
     flags['autocollectcrates'] = state
     if state then
-        print("🔄 Auto collect crates enabled")
+        print("[AUTO] Auto collect crates enabled")
     else
         print("⏹️ Auto collect crates disabled")
     end
@@ -1171,7 +1171,7 @@ end)
 TreasureMapSection:NewToggle("Auto Unlock Maps", "Automatically unlock treasure maps", function(state)
     flags['autounlockmap'] = state
     if state then
-        print("🔄 Auto unlock treasure maps enabled")
+        print("[AUTO] Auto unlock treasure maps enabled")
     else
         print("⏹️ Auto unlock treasure maps disabled")
     end
