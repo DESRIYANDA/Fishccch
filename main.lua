@@ -438,7 +438,275 @@ local TeleportLocations = {
         ['AFK Rewards'] = CFrame.new(232, 139, 38),
         
         -- Treasure Hunting
-        ['Treasure Hunting'] = CFrame.new(-2825, 215, 1515)
+        ['Treasure Hunting'] = CFrame.new(-2825, 215, 1515),
+        
+        -- Additional Missing Locations from gpsv2.txt
+        
+        -- Cthulhu Boss Locations
+        ['Cthulhu Boss #1'] = CFrame.new(-200, 130, 1925),
+        ['Cthulhu Boss #2'] = CFrame.new(10, 155, 2000),
+        ['Cthulhu Boss #3'] = CFrame.new(160, 125, 1970),
+        ['Cthulhu Boss #4'] = CFrame.new(25, 140, 1860),
+        ['Cthulhu Boss #5'] = CFrame.new(140, 150, 2050),
+        ['Cthulhu Boss #6'] = CFrame.new(-200, 130, 1930),
+        ['Cthulhu Boss #7'] = CFrame.new(-175, 145, 1935),
+        ['Cthulhu Boss #8'] = CFrame.new(35, 130, 1945),
+        
+        -- Ancient Archives
+        ['Ancient Archives #1'] = CFrame.new(5833, 125, 401),
+        ['Ancient Archives #2'] = CFrame.new(5870, 160, 415),
+        ['Ancient Archives #3'] = CFrame.new(5487, 143, -316),
+        ['Ancient Archives #4'] = CFrame.new(5966, 274, 846),
+        ['Ancient Archives #5'] = CFrame.new(6075, 195, 260),
+        ['Ancient Archives #6'] = CFrame.new(6000, 230, 591),
+        
+        -- Ancient Isle
+        ['Ancient Isle #1'] = CFrame.new(5833, 125, 401),
+        ['Ancient Isle #2'] = CFrame.new(5870, 160, 415),
+        ['Ancient Isle #3'] = CFrame.new(5487, 143, -316),
+        ['Ancient Isle #4'] = CFrame.new(5966, 274, 846),
+        ['Ancient Isle #5'] = CFrame.new(6075, 195, 260),
+        ['Ancient Isle #6'] = CFrame.new(6000, 230, 591),
+        
+        -- Atlantean Storm
+        ['Atlantean Storm #1'] = CFrame.new(-3530, 130, 550),
+        ['Atlantean Storm #2'] = CFrame.new(-3820, 135, 575),
+        
+        -- Additional Atlantis Locations
+        ['Atlantis Extra #1'] = CFrame.new(-4300, -580, 1800),
+        ['Atlantis Extra #2'] = CFrame.new(-2522, 138, 1593),
+        ['Atlantis Extra #3'] = CFrame.new(-2551, 150, 1667),
+        ['Atlantis Extra #4'] = CFrame.new(-2729, 168, 1730),
+        ['Atlantis Extra #5'] = CFrame.new(-2881, 317, 1607),
+        ['Atlantis Extra #6'] = CFrame.new(-2835, 131, 1510),
+        ['Atlantis Extra #7'] = CFrame.new(-3576, 148, 524),
+        ['Atlantis Extra #8'] = CFrame.new(-4606, -594, 1843),
+        ['Atlantis Extra #9'] = CFrame.new(-5167, -680, 1710),
+        ['Atlantis Extra #10'] = CFrame.new(-4107, -603, 1823),
+        ['Atlantis Extra #11'] = CFrame.new(-4299, -604, 1587),
+        ['Atlantis Extra #12'] = CFrame.new(-4295, -583, 2021),
+        ['Atlantis Extra #13'] = CFrame.new(-4295, -991, 1792),
+        ['Atlantis Extra #14'] = CFrame.new(-4465, -604, 1874),
+        ['Atlantis Extra #15'] = CFrame.new(-4277, -606, 1838),
+        ['Atlantis Extra #16'] = CFrame.new(-4928, -595, 1857),
+        ['Atlantis Extra #17'] = CFrame.new(-3804, -567, 1870),
+        ['Atlantis Extra #18'] = CFrame.new(-4086, -559, 895),
+        ['Atlantis Extra #19'] = CFrame.new(-4272, -629, 2665),
+        ['Atlantis Extra #20'] = CFrame.new(-4415, -997, 2055),
+        ['Atlantis Extra #21'] = CFrame.new(-3953, -556, 853),
+        ['Atlantis Extra #22'] = CFrame.new(-4325, -630, 2687),
+        ['Atlantis Extra #23'] = CFrame.new(-177, 144, 1933),
+        ['Atlantis Extra #24'] = CFrame.new(-4462, -605, 1875),
+        ['Atlantis Extra #25'] = CFrame.new(-4463, -603, 1876),
+        ['Atlantis Extra #26'] = CFrame.new(-4452, -603, 1877),
+        ['Atlantis Extra #27'] = CFrame.new(-4450, -605, 1874),
+        ['Atlantis Extra #28'] = CFrame.new(-4446, -605, 1866),
+        
+        -- Brine Pool
+        ['Brine Pool #1'] = CFrame.new(-790, 125, -3100),
+        ['Brine Pool #2'] = CFrame.new(-1710, -235, -3075),
+        ['Brine Pool #3'] = CFrame.new(-1725, -175, -3125),
+        ['Brine Pool #4'] = CFrame.new(-1600, -110, -2845),
+        ['Brine Pool #5'] = CFrame.new(-1795, -140, -3310),
+        ['Brine Pool #6'] = CFrame.new(-1810, -140, -3300),
+        ['Brine Pool #7'] = CFrame.new(-1625, -205, -2785),
+        ['Brine Pool #8'] = CFrame.new(-1470, -240, -2550),
+        ['Brine Pool #9'] = CFrame.new(-975, -245, -2700),
+        ['Brine Pool #10'] = CFrame.new(-1485, -225, -2195),
+        ['Brine Pool #11'] = CFrame.new(-1655, -210, -2825),
+        ['Brine Pool #12'] = CFrame.new(-980, -240, -2690),
+        ['Brine Pool #13'] = CFrame.new(-1645, -210, -2855),
+        ['Brine Pool #14'] = CFrame.new(-1650, -210, -2840),
+        ['Brine Pool #15'] = CFrame.new(-1630, -210, -2860),
+        ['Brine Pool #16'] = CFrame.new(-1470, -225, -2225),
+        ['Brine Pool #17'] = CFrame.new(-1800, -135, -3280),
+        
+        -- Desolate Deep
+        ['Desolate Deep #1'] = CFrame.new(-790, 125, -3100),
+        ['Desolate Deep #2'] = CFrame.new(-1710, -235, -3075),
+        ['Desolate Deep #3'] = CFrame.new(-1725, -175, -3125),
+        ['Desolate Deep #4'] = CFrame.new(-1600, -110, -2845),
+        ['Desolate Deep #5'] = CFrame.new(-1795, -140, -3310),
+        ['Desolate Deep #6'] = CFrame.new(-1810, -140, -3300),
+        ['Desolate Deep #7'] = CFrame.new(-1625, -205, -2785),
+        ['Desolate Deep #8'] = CFrame.new(-1470, -240, -2550),
+        ['Desolate Deep #9'] = CFrame.new(-975, -245, -2700),
+        ['Desolate Deep #10'] = CFrame.new(-1485, -225, -2195),
+        ['Desolate Deep #11'] = CFrame.new(-1655, -210, -2825),
+        ['Desolate Deep #12'] = CFrame.new(-980, -240, -2690),
+        ['Desolate Deep #13'] = CFrame.new(-1645, -210, -2855),
+        ['Desolate Deep #14'] = CFrame.new(-1650, -210, -2840),
+        ['Desolate Deep #15'] = CFrame.new(-1630, -210, -2860),
+        ['Desolate Deep #16'] = CFrame.new(-1470, -225, -2225),
+        ['Desolate Deep #17'] = CFrame.new(-1800, -135, -3280),
+        
+        -- The Depths
+        ['The Depths #1'] = CFrame.new(472, -706, 1231),
+        ['The Depths #2'] = CFrame.new(1210, -715, 1315),
+        ['The Depths #3'] = CFrame.new(1705, -900, 1445),
+        ['The Depths #4'] = CFrame.new(-970, -710, 1300),
+        
+        -- Forsaken Shores
+        ['Forsaken Shores #1'] = CFrame.new(-2425, 135, 1555),
+        ['Forsaken Shores #2'] = CFrame.new(-3600, 125, 1605),
+        ['Forsaken Shores #3'] = CFrame.new(-2830, 215, 1510),
+        ['Forsaken Shores #4'] = CFrame.new(-2490, 130, 1535),
+        ['Forsaken Shores #5'] = CFrame.new(-2525, 135, -1575),
+        
+        -- Mariana's Veil
+        ['Marianas Veil #1'] = CFrame.new(1500, 125, 530),
+        ['Marianas Veil #2'] = CFrame.new(-1305, 130, 310),
+        ['Marianas Veil #3'] = CFrame.new(-3175, -2035, 4020),
+        ['Marianas Veil #4'] = CFrame.new(740, -3355, -1530),
+        ['Marianas Veil #5'] = CFrame.new(-1480, 137, 382),
+        ['Marianas Veil #6'] = CFrame.new(-3365, -2260, 3850),
+        ['Marianas Veil #7'] = CFrame.new(-760, -3280, -715),
+        ['Marianas Veil #8'] = CFrame.new(-800, -3280, -625),
+        ['Marianas Veil #9'] = CFrame.new(-3180, -2035, 4020),
+        
+        -- Mushgrove Swamp
+        ['Mushgrove Swamp #1'] = CFrame.new(2425, 130, -670),
+        ['Mushgrove Swamp #2'] = CFrame.new(2730, 130, -825),
+        ['Mushgrove Swamp #3'] = CFrame.new(2520, 160, -895),
+        ['Mushgrove Swamp #4'] = CFrame.new(2790, 140, -625),
+        ['Mushgrove Swamp #5'] = CFrame.new(2520, 135, -895),
+        
+        -- Northern Expedition
+        ['Northern Expedition #1'] = CFrame.new(400, 135, 265),
+        ['Northern Expedition #2'] = CFrame.new(5506, 147, -315),
+        ['Northern Expedition #3'] = CFrame.new(2930, 281, 2594),
+        ['Northern Expedition #4'] = CFrame.new(-1715, 149, 737),
+        ['Northern Expedition #5'] = CFrame.new(-2566, 181, 1353),
+        ['Northern Expedition #6'] = CFrame.new(-1750, 130, 3750),
+        
+        -- Roslit Bay
+        ['Roslit Bay #1'] = CFrame.new(-1450, 135, 750),
+        ['Roslit Bay #2'] = CFrame.new(-1775, 150, 680),
+        ['Roslit Bay #3'] = CFrame.new(-1875, 165, 380),
+        ['Roslit Bay #4'] = CFrame.new(-1515, 141, 765),
+        ['Roslit Bay #5'] = CFrame.new(-1945, 275, 230),
+        ['Roslit Bay #6'] = CFrame.new(-1710, 150, 740),
+        ['Roslit Bay #7'] = CFrame.new(-1465, 130, 680),
+        ['Roslit Bay #8'] = CFrame.new(-1485, 130, 640),
+        ['Roslit Bay #9'] = CFrame.new(-1785, 165, 400),
+        
+        -- Roslit Volcano
+        ['Roslit Volcano #1'] = CFrame.new(-1450, 135, 750),
+        ['Roslit Volcano #2'] = CFrame.new(-1775, 150, 680),
+        ['Roslit Volcano #3'] = CFrame.new(-1875, 165, 380),
+        ['Roslit Volcano #4'] = CFrame.new(-1515, 141, 765),
+        ['Roslit Volcano #5'] = CFrame.new(-1945, 275, 230),
+        ['Roslit Volcano #6'] = CFrame.new(-1710, 150, 740),
+        ['Roslit Volcano #7'] = CFrame.new(-1465, 130, 680),
+        ['Roslit Volcano #8'] = CFrame.new(-1485, 130, 640),
+        ['Roslit Volcano #9'] = CFrame.new(-1785, 165, 400),
+        
+        -- Snowcap Island
+        ['Snowcap Island #1'] = CFrame.new(2600, 150, 2400),
+        ['Snowcap Island #2'] = CFrame.new(2900, 150, 2500),
+        ['Snowcap Island #3'] = CFrame.new(2710, 190, 2560),
+        ['Snowcap Island #4'] = CFrame.new(2750, 135, 2505),
+        ['Snowcap Island #5'] = CFrame.new(2800, 280, 2565),
+        ['Snowcap Island #6'] = CFrame.new(2845, 180, 2700),
+        
+        -- Sunstone Island
+        ['Sunstone Island #1'] = CFrame.new(-935, 130, -1105),
+        ['Sunstone Island #2'] = CFrame.new(-1045, 135, -1140),
+        ['Sunstone Island #3'] = CFrame.new(-1215, 190, -1040),
+        ['Sunstone Island #4'] = CFrame.new(-1145, 135, -1075),
+        ['Sunstone Island #5'] = CFrame.new(-1045, 200, -1100),
+        ['Sunstone Island #6'] = CFrame.new(-920, 130, -1105),
+        
+        -- Statue of Sovereignty
+        ['Statue of Sovereignty #1'] = CFrame.new(20, 160, -1040),
+        ['Statue of Sovereignty #2'] = CFrame.new(1380, -805, -300),
+        
+        -- Keepers Altar
+        ['Keepers Altar #1'] = CFrame.new(20, 160, -1040),
+        ['Keepers Altar #2'] = CFrame.new(1380, -805, -300),
+        
+        -- Vertigo
+        ['Vertigo #1'] = CFrame.new(-110, -515, 1040),
+        ['Vertigo #2'] = CFrame.new(-75, -530, 1285),
+        ['Vertigo #3'] = CFrame.new(1210, -715, 1315),
+        ['Vertigo #4'] = CFrame.new(-145, -515, 1140),
+        ['Vertigo #5'] = CFrame.new(1705, -900, 1445),
+        ['Vertigo #6'] = CFrame.new(-100, -730, 1210),
+        ['Vertigo #7'] = CFrame.new(-970, -710, 1300),
+        
+        -- Winter Village
+        ['Winter Village #1'] = CFrame.new(5815, 145, 270),
+        ['Winter Village #2'] = CFrame.new(-2490, 135, 1470),
+        ['Winter Village #3'] = CFrame.new(400, 135, 305),
+        ['Winter Village #4'] = CFrame.new(2410, 135, -730),
+        ['Winter Village #5'] = CFrame.new(-1920, 500, 160),
+        ['Winter Village #6'] = CFrame.new(2640, 140, 2425),
+        ['Winter Village #7'] = CFrame.new(45, 140, -1030),
+        ['Winter Village #8'] = CFrame.new(-890, 135, -1110),
+        ['Winter Village #9'] = CFrame.new(-160, 140, 1895),
+        ['Winter Village #10'] = CFrame.new(-190, 370, -9445),
+        ['Winter Village #11'] = CFrame.new(-15, 365, -9590),
+        
+        -- Additional Ocean/Deep Ocean Spots
+        ['Deep Ocean #1'] = CFrame.new(-1270, 125, 1580),
+        ['Deep Ocean #2'] = CFrame.new(1000, 125, -1250),
+        ['Deep Ocean #3'] = CFrame.new(-530, 125, -425),
+        ['Deep Ocean #4'] = CFrame.new(1230, 125, 575),
+        ['Deep Ocean #5'] = CFrame.new(1700, 125, -2500),
+        
+        -- Earmark Island (same as Ocean spots)
+        ['Earmark Island #1'] = CFrame.new(-1270, 125, 1580),
+        ['Earmark Island #2'] = CFrame.new(1000, 125, -1250),
+        ['Earmark Island #3'] = CFrame.new(-530, 125, -425),
+        ['Earmark Island #4'] = CFrame.new(1230, 125, 575),
+        ['Earmark Island #5'] = CFrame.new(1700, 125, -2500),
+        
+        -- The Arch (same as Ocean spots)
+        ['The Arch #1'] = CFrame.new(-1270, 125, 1580),
+        ['The Arch #2'] = CFrame.new(1000, 125, -1250),
+        ['The Arch #3'] = CFrame.new(-530, 125, -425),
+        ['The Arch #4'] = CFrame.new(1230, 125, 575),
+        ['The Arch #5'] = CFrame.new(1700, 125, -2500),
+        
+        -- Haddock Rock (same as Ocean spots)
+        ['Haddock Rock #1'] = CFrame.new(-1270, 125, 1580),
+        ['Haddock Rock #2'] = CFrame.new(1000, 125, -1250),
+        ['Haddock Rock #3'] = CFrame.new(-530, 125, -425),
+        ['Haddock Rock #4'] = CFrame.new(1230, 125, 575),
+        ['Haddock Rock #5'] = CFrame.new(1700, 125, -2500),
+        
+        -- Birch Cay (same as Ocean spots) 
+        ['Birch Cay #1'] = CFrame.new(-1270, 125, 1580),
+        ['Birch Cay #2'] = CFrame.new(1000, 125, -1250),
+        ['Birch Cay #3'] = CFrame.new(-530, 125, -425),
+        ['Birch Cay #4'] = CFrame.new(1230, 125, 575),
+        ['Birch Cay #5'] = CFrame.new(1700, 125, -2500),
+        
+        -- Harvesters Spike (same as Ocean spots)
+        ['Harvesters Spike #1'] = CFrame.new(-1270, 125, 1580),
+        ['Harvesters Spike #2'] = CFrame.new(1000, 125, -1250),
+        ['Harvesters Spike #3'] = CFrame.new(-530, 125, -425),
+        ['Harvesters Spike #4'] = CFrame.new(1230, 125, 575),
+        ['Harvesters Spike #5'] = CFrame.new(1700, 125, -2500),
+        
+        -- Lobster Fishing
+        ['Lobster Fishing #1'] = CFrame.new(-552, 153, 2651),
+        ['Lobster Fishing #2'] = CFrame.new(-571, 153, 2638),
+        ['Lobster Fishing #3'] = CFrame.new(-575, 85, 1000),
+        
+        -- Net Fishing
+        ['Net Fishing #1'] = CFrame.new(-635, 85, 1005),
+        ['Net Fishing #2'] = CFrame.new(-630, 85, 1005),
+        ['Net Fishing #3'] = CFrame.new(-610, 85, 1005),
+        ['Net Fishing #4'] = CFrame.new(-820, 90, 995),
+        
+        -- Oxygen Locations
+        ['Oxygen #1'] = CFrame.new(-1655, -210, -2825),
+        ['Oxygen #2'] = CFrame.new(370, 135, 250),
+        ['Oxygen #3'] = CFrame.new(-790, 125, -3100),
+        ['Oxygen #4'] = CFrame.new(-980, -240, -2690),
+        ['Oxygen #5'] = CFrame.new(-4452, -603, 1877),
+        ['Oxygen #6'] = CFrame.new(-3550, 130, 568)
     }
 }
 local ZoneNames = {}
@@ -947,6 +1215,20 @@ pcall(function()
     end
 end)
 
+CastSection:NewToggle("Instant Bobber", "Cast bobber close to player (short distance)", function(state)
+    flags['instantbobber'] = state
+end)
+
+CastSection:NewButton("Manual Instant Cast", "Manually cast with instant bobber", function()
+    local rod = FindRod()
+    if rod ~= nil then
+        rod.events.cast:FireServer(100, 0.1) -- Perfect cast with very short distance
+        print("[Instant Bobber] Manual cast executed!")
+    else
+        print("[Error] No fishing rod equipped!")
+    end
+end)
+
 local ShakeSection = AutoTab:NewSection("Auto Shake Settings")
 ShakeSection:NewToggle("Auto Shake", "Automatically shake when fish bites", function(state)
     flags['autoshake'] = state
@@ -1127,7 +1409,12 @@ RunService.Heartbeat:Connect(function()
         local currentDelay = flags['autocastdelay'] or 0.5
         if rod ~= nil and rod['values']['lure'].Value <= .001 then
             task.wait(currentDelay)
-            rod.events.cast:FireServer(100, 1)
+            -- Use instant bobber if enabled (short distance cast)
+            if flags['instantbobber'] then
+                rod.events.cast:FireServer(100, 0.1) -- Very short distance
+            else
+                rod.events.cast:FireServer(100, 1) -- Normal distance
+            end
         end
     end
     if flags['autoreel'] then
@@ -1327,6 +1614,10 @@ if CheckFunc(hookmetamethod) then
             return old(self, unpack(args))
         elseif method == 'FireServer' and self.Name == 'cast' and flags['perfectcast'] then
             args[1] = 100
+            -- Apply instant bobber if enabled
+            if flags['instantbobber'] then
+                args[2] = 0.1 -- Very short distance
+            end
             return old(self, unpack(args))
         elseif method == 'FireServer' and self.Name == 'reelfinished' and flags['alwayscatch'] then
             args[1] = 100
