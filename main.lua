@@ -340,11 +340,28 @@ print("🎣 Kavo UI library loaded successfully!")
 
 -- Load Shop Module
 local Shop
+print("🔄 Attempting to load Shop module...")
+
+-- Enable HttpService if possible
+pcall(function()
+    game:GetService("HttpService").HttpEnabled = true
+end)
+
 pcall(function()
     -- Try to load from the same workspace
+    print("📡 Downloading shop module from GitHub...")
     local shopContent = game:HttpGet('https://raw.githubusercontent.com/DESRIYANDA/Fishccch/main/shop.lua')
-    Shop = loadstring(shopContent)()
-    print("✅ Shop module loaded from repository!")
+    if shopContent and #shopContent > 100 then
+        print("✅ Shop content downloaded successfully, size: " .. #shopContent)
+        Shop = loadstring(shopContent)()
+        if Shop then
+            print("✅ Shop module loaded from repository!")
+        else
+            warn("❌ Failed to execute shop module code")
+        end
+    else
+        warn("❌ Shop content download failed or too small")
+    end
 end)
 
 -- Fallback: Try to load from local file
@@ -352,10 +369,100 @@ if not Shop then
     warn("⚠️ Shop module not found from repository, trying local file...")
     pcall(function()
         if readfile and isfile and isfile("shop.lua") then
-            Shop = loadstring(readfile("shop.lua"))()
+            local localContent = readfile("shop.lua")
+            Shop = loadstring(localContent)()
             print("✅ Shop module loaded from local file!")
+        else
+            warn("❌ Local shop.lua file not found")
         end
     end)
+end
+
+if Shop then
+    print("✅ Shop module is ready!")
+else
+    warn("❌ Shop module failed to load from all sources")
+    print("🔧 Creating embedded shop module as final fallback...")
+    
+    -- Embedded shop module as final fallback
+    Shop = {}
+    Shop.createShopTab = function(self, Window)
+        local ShopTab = Window:NewTab("🛒 Shop")
+        local ShopSection = ShopTab:NewSection("Auto Buy Bait Crates")
+        
+        local shopFlags = {selectedbaitcrate = 'Bait Crate (Moosewood)', baitamount = 10}
+        
+        local crateLocations = {
+            ['Bait Crate (Moosewood)'] = CFrame.new(315, 135, 335),
+            ['Bait Crate (Roslit)'] = CFrame.new(-1465, 130, 680),
+            ['Quality Bait Crate (Atlantis)'] = CFrame.new(-177, 144, 1933),
+            ['Bait Crate (Forsaken)'] = CFrame.new(-2490, 130, 1535),
+            ['Bait Crate (Ancient)'] = CFrame.new(6075, 195, 260),
+            ['Bait Crate (Sunstone)'] = CFrame.new(-1045, 200, -1100),
+            ['Quality Bait Crate (Terrapin)'] = CFrame.new(-175, 145, 1935)
+        }
+        
+        ShopSection:NewDropdown("Select Bait Crate", "Choose bait crate to buy from", {
+            'Bait Crate (Moosewood)', 'Bait Crate (Roslit)', 'Bait Crate (Forsaken)', 
+            'Bait Crate (Ancient)', 'Bait Crate (Sunstone)',
+            'Quality Bait Crate (Atlantis)', 'Quality Bait Crate (Terrapin)'
+        }, function(crate)
+            shopFlags.selectedbaitcrate = crate
+            print("Selected: " .. crate)
+        end)
+        
+        ShopSection:NewTextBox("Amount", "Enter amount (1-1000)", function(txt)
+            local amount = tonumber(txt)
+            if amount and amount > 0 and amount <= 1000 then
+                shopFlags.baitamount = amount
+                print("Set amount: " .. amount)
+            end
+        end)
+        
+        ShopSection:NewButton("💰 Buy Bait", "Buy bait from selected crate", function()
+            print("🛒 Buying " .. shopFlags.baitamount .. "x from " .. shopFlags.selectedbaitcrate)
+            
+            if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") and crateLocations[shopFlags.selectedbaitcrate] then
+                lp.Character.HumanoidRootPart.CFrame = crateLocations[shopFlags.selectedbaitcrate]
+                wait(1)
+                
+                pcall(function()
+                    local buyRemote = ReplicatedStorage:FindFirstChild("packages")
+                    if buyRemote and buyRemote:FindFirstChild("Net") then
+                        local showRemote = buyRemote.Net:FindFirstChild("RE/BuyBait/Show")
+                        if showRemote then
+                            showRemote:FireServer()
+                            wait(0.5)
+                        end
+                        
+                        local purchaseRemote = buyRemote.Net:FindFirstChild("RE/DailyShop/Purchase")
+                        if purchaseRemote then
+                            purchaseRemote:FireServer(shopFlags.selectedbaitcrate, shopFlags.baitamount)
+                            print("✅ Purchase request sent!")
+                        end
+                    end
+                end)
+            end
+        end)
+        
+        -- Quick teleport section
+        local TeleSection = ShopTab:NewSection("Quick Teleport")
+        
+        TeleSection:NewButton("📍 Daily Shopkeeper", "Teleport to Daily Shopkeeper", function()
+            if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+                lp.Character.HumanoidRootPart.CFrame = CFrame.new(229, 139, 42)
+            end
+        end)
+        
+        TeleSection:NewButton("📍 Angus McBait", "Teleport to Angus McBait", function()
+            if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+                lp.Character.HumanoidRootPart.CFrame = CFrame.new(236, 222, 461)
+            end
+        end)
+        
+        return ShopTab
+    end
+    print("✅ Embedded shop module created!")
 end
 
 -- Function to create floating button
@@ -501,11 +608,14 @@ if Window and Window.NewTab then
         VisualTab = Window:NewTab("👁️ Visuals")
         
         -- Create Shop Tab using Shop Module
+        print("🛒 Creating Shop tab...")
         if Shop and Shop.createShopTab then
+            print("✅ Shop module found, creating advanced shop tab...")
             ShopTab = Shop:createShopTab(Window)
             print("✅ Shop tab created successfully")
         else
             warn("⚠️ Shop module not available, creating basic shop tab...")
+            print("🔧 Creating fallback shop tab...")
             -- Fallback: Create basic shop tab
             ShopTab = Window:NewTab("🛒 Shop")
             local ShopSection = ShopTab:NewSection("Auto Buy Bait")
