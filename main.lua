@@ -1,25 +1,8 @@
---// Services (Safe Loading)
-local function safeGetService(serviceName)
-    local success, service = pcall(function()
-        if cloneref then
-            return cloneref(game:GetService(serviceName))
-        else
-            return game:GetService(serviceName)
-        end
-    end)
-    
-    if success then
-        return service
-    else
-        print("⚠️ Failed to get service: " .. serviceName)
-        return game:GetService(serviceName) -- Fallback to regular service
-    end
-end
-
-local Players = safeGetService('Players')
-local ReplicatedStorage = safeGetService('ReplicatedStorage')
-local RunService = safeGetService('RunService')
-local GuiService = safeGetService('GuiService')
+--// Services
+local Players = cloneref(game:GetService('Players'))
+local ReplicatedStorage = cloneref(game:GetService('ReplicatedStorage'))
+local RunService = cloneref(game:GetService('RunService'))
+local GuiService = cloneref(game:GetService('GuiService'))
 
 -- Protect TweenService from workspace errors
 pcall(function()
@@ -51,103 +34,6 @@ local tooltipmessage
 -- Default delay values
 flags['autocastdelay'] = 0.5
 flags['autoreeldelay'] = 0.5
-
--- Load Instant Reel Module (Safe Loading)
-local InstantReel
-local success, errorMsg = pcall(function()
-    -- Try to load from URL first
-    local HttpService = game:GetService("HttpService")
-    
-    -- Try GitHub raw URL
-    local url = "https://raw.githubusercontent.com/DESRIYANDA/Fishccch/main/instant_reel.lua"
-    local moduleCode = HttpService:GetAsync(url)
-    
-    if moduleCode then
-        local func = loadstring(moduleCode)
-        if func then
-            InstantReel = func()
-            print("✅ Instant Reel module loaded from GitHub!")
-            return true
-        end
-    end
-    return false
-end)
-
--- Embedded Instant Reel (Fallback)
-if not success or not InstantReel then
-    print("⚠️ GitHub loading failed, using embedded instant reel")
-    
-    InstantReel = {}
-    
-    -- Basic config
-    InstantReel.config = {
-        enabled = false,
-        perfectCatch = true,
-        bypassReelGame = false,
-        instantCatch = true,
-        debugMode = false
-    }
-    
-    -- Basic functions
-    function InstantReel.toggle(enabled)
-        InstantReel.config.enabled = enabled
-        if enabled then
-            print("⚡ Embedded Instant Reel enabled!")
-        else
-            print("🛑 Embedded Instant Reel disabled!")
-        end
-    end
-    
-    function InstantReel.setBypassMode(bypass)
-        InstantReel.config.bypassReelGame = bypass
-        print("� Bypass mode: " .. tostring(bypass))
-    end
-    
-    function InstantReel.setPerfectCatch(perfect)
-        InstantReel.config.perfectCatch = perfect
-        print("🎯 Perfect catch: " .. tostring(perfect))
-    end
-    
-    function InstantReel.setInstantCatch(instant)
-        InstantReel.config.instantCatch = instant
-        print("⚡ Instant catch: " .. tostring(instant))
-    end
-    
-    function InstantReel.getStatus()
-        return {
-            enabled = InstantReel.config.enabled,
-            bypassReelGame = InstantReel.config.bypassReelGame,
-            perfectCatch = InstantReel.config.perfectCatch,
-            instantCatch = InstantReel.config.instantCatch,
-            activeReels = 0,
-            monitoring = InstantReel.config.enabled
-        }
-    end
-    
-    function InstantReel.manualInstantCatch()
-        local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-        local reelGui = playerGui:FindFirstChild("reel")
-        
-        if reelGui and reelGui.Enabled then
-            local reelFinish = game.ReplicatedStorage:FindFirstChild("events") and 
-                              game.ReplicatedStorage.events:FindFirstChild("reelfinished")
-            
-            if reelFinish then
-                reelFinish:FireServer(100, true)
-                if reelGui then
-                    reelGui.Enabled = false
-                end
-                print("✅ Embedded instant catch executed!")
-                return true
-            end
-        end
-        
-        print("❌ No active reel found!")
-        return false
-    end
-    
-    print("🔧 Embedded Instant Reel initialized!")
-end
 local TeleportLocations = {
     ['Zones'] = {
         ['Moosewood'] = CFrame.new(379.875458, 134.500519, 233.5495, -0.033920113, 8.13274355e-08, 0.999424577, 8.98441925e-08, 1, -7.83249803e-08, -0.999424577, 8.7135696e-08, -0.033920113),
@@ -849,121 +735,46 @@ table.sort(NPCNames)
 table.sort(MarianaVeilNames)
 table.sort(AllLocationNames)
 
---// Functions (Safe)
+--// Functions
 FindChildOfClass = function(parent, classname)
-    if not parent then return nil end
-    local success, result = pcall(function()
-        return parent:FindFirstChildOfClass(classname)
-    end)
-    return success and result or nil
+    return parent:FindFirstChildOfClass(classname)
 end
-
 FindChild = function(parent, child)
-    if not parent then return nil end
-    local success, result = pcall(function()
-        return parent:FindFirstChild(child)
-    end)
-    return success and result or nil
+    return parent:FindFirstChild(child)
 end
-
 FindChildOfType = function(parent, childname, classname)
-    if not parent then return nil end
-    local success, child = pcall(function()
-        return parent:FindFirstChild(childname)
-    end)
-    if success and child and child.ClassName == classname then
+    child = parent:FindFirstChild(childname)
+    if child and child.ClassName == classname then
         return child
     end
-    return nil
 end
-
 CheckFunc = function(func)
     return typeof(func) == 'function'
 end
 
---// Custom Functions (Safe)
+--// Custom Functions
 getchar = function()
-    local success, char = pcall(function()
-        return lp.Character or lp.CharacterAdded:Wait()
-    end)
-    if success and char then
-        return char
-    else
-        print("⚠️ Failed to get character")
-        return nil
-    end
+    return lp.Character or lp.CharacterAdded:Wait()
 end
-
 gethrp = function()
-    local char = getchar()
-    if not char then return nil end
-    
-    local success, hrp = pcall(function()
-        return char:WaitForChild('HumanoidRootPart', 5)
-    end)
-    if success and hrp then
-        return hrp
-    else
-        print("⚠️ Failed to get HumanoidRootPart")
-        return nil
-    end
+    return getchar():WaitForChild('HumanoidRootPart')
 end
-
 gethum = function()
-    local char = getchar()
-    if not char then return nil end
-    
-    local success, hum = pcall(function()
-        return char:WaitForChild('Humanoid', 5)
-    end)
-    if success and hum then
-        return hum
+    return getchar():WaitForChild('Humanoid')
+end
+FindRod = function()
+    if FindChildOfClass(getchar(), 'Tool') and FindChild(FindChildOfClass(getchar(), 'Tool'), 'values') then
+        return FindChildOfClass(getchar(), 'Tool')
     else
-        print("⚠️ Failed to get Humanoid")
         return nil
     end
-end
-
-FindRod = function()
-    local char = getchar()
-    if not char then return nil end
-    
-    local success, tool = pcall(function()
-        local tool = FindChildOfClass(char, 'Tool')
-        if tool and FindChild(tool, 'values') then
-            return tool
-        end
-        return nil
-    end)
-    
-    return success and tool or nil
 end
 message = function(text, time)
     if tooltipmessage then tooltipmessage:Remove() end
-    
-    local success, result = pcall(function()
-        local generalUI = lp.PlayerGui:WaitForChild("GeneralUIModule", 5) -- 5 second timeout
-        if generalUI then
-            return require(generalUI):GiveToolTip(lp, text)
-        end
-        return nil
-    end)
-    
-    if success and result then
-        tooltipmessage = result
-    else
-        print("⚠️ ToolTip failed: " .. tostring(text))
-        return
-    end
-    
+    tooltipmessage = require(lp.PlayerGui:WaitForChild("GeneralUIModule")):GiveToolTip(lp, text)
     task.spawn(function()
-        task.wait(time or 3)
-        if tooltipmessage then 
-            pcall(function()
-                tooltipmessage:Remove()
-            end)
-            tooltipmessage = nil 
-        end
+        task.wait(time)
+        if tooltipmessage then tooltipmessage:Remove(); tooltipmessage = nil end
     end)
 end
 
@@ -1282,77 +1093,6 @@ if Window and Window.NewTab then
         ModTab = Window:NewTab("⚙️ Modifications") 
         TeleTab = Window:NewTab("🌍 Teleports")
         VisualTab = Window:NewTab("👁️ Visuals")
-        PremiumTab = Window:NewTab("💎 Premium")
-        
-        -- Load Premium Bobber Module
-        print("💎 Loading Premium Bobber module...")
-        local success, PremiumBobber = pcall(function()
-            local module = loadstring(game:HttpGet("https://raw.githubusercontent.com/DESRIYANDA/Fishccch/main/premium_bobber.lua"))()
-            if module and type(module) == "table" then
-                return module
-            end
-            error("Invalid module format")
-        end)
-        
-        -- Embedded Premium Bobber Fallback
-        if not success or not PremiumBobber then
-            print("⚠️ Failed to load Premium Bobber from GitHub, using embedded version...")
-            
-            PremiumBobber = {}
-            
-            -- Basic functions
-            function PremiumBobber.GetAvailableZones()
-                return {"Deep Ocean", "Moosewood", "Roslit Bay", "Forsaken Shores"}
-            end
-            
-            function PremiumBobber.TeleportBobberToZone(zone)
-                print("🎣 Embedded: Attempting bobber teleport to " .. zone)
-                return true
-            end
-            
-            function PremiumBobber.AutoZoneCast(zone, enabled)
-                print("🔄 Embedded: Auto zone cast " .. (enabled and "enabled" or "disabled"))
-            end
-            
-            function PremiumBobber.GetCurrentTool()
-                return game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool")
-            end
-            
-            function PremiumBobber.GetBobber(tool)
-                if tool and tool:FindFirstChild("bobber") then
-                    return tool.bobber.Value
-                end
-                return nil
-            end
-            
-            function PremiumBobber.ExtendRopeLength(bobber)
-                print("🔗 Embedded: Extending rope length")
-                return true
-            end
-            
-            function PremiumBobber.CreatePlatform(bobber)
-                print("🏗️ Embedded: Creating platform")
-                return true
-            end
-            
-            function PremiumBobber.ResetBobber()
-                print("🔄 Embedded: Resetting bobber")
-            end
-            
-            function PremiumBobber.GetStatus()
-                return "Embedded Premium Bobber Active"
-            end
-            
-            print("🔧 Embedded Premium Bobber created as fallback")
-            success = true
-        end
-        
-        if success and PremiumBobber then
-            print("✅ Premium Bobber module ready!")
-        else
-            print("❌ Premium Bobber module failed to load")
-            PremiumBobber = nil
-        end
         
         -- Create Shop Tab using Shop Module
         print("🛒 Creating Shop tab...")
@@ -1521,16 +1261,6 @@ end)
 local ReelSection = AutoTab:NewSection("Auto Reel Settings") 
 ReelSection:NewToggle("Auto Reel", "Automatically reel in fish", function(state)
     flags['autoreel'] = state
-    if state then
-        flags['instantreel'] = false -- Disable instant reel if auto reel enabled
-    end
-end)
-
-ReelSection:NewToggle("Instant Reel", "Instantly reel fish with no delay (RISKY)", function(state)
-    flags['instantreel'] = state
-    if state then
-        flags['autoreel'] = false -- Disable auto reel if instant reel enabled
-    end
 end)
 
 -- Fix slider issue - properly define default value with initial state
@@ -1538,113 +1268,6 @@ local reelSlider = ReelSection:NewSlider("Auto Reel Delay", "Delay between auto 
     flags['autoreeldelay'] = value
     print("[Auto Reel] Delay set to: " .. value .. " seconds")
 end)
-reelSlider:Set(flags['autoreeldelay'] or 0.5) -- Set initial value properly
-
--- Instant Reel Section (Advanced)
-local InstantReelSection = AutoTab:NewSection("⚡ Instant Reel (Advanced)")
-
--- Instant reel flags
-flags['instantreelmode'] = false
-flags['bypassreelgame'] = false
-flags['perfectcatchmode'] = false
-flags['instantcatchmode'] = false
-
-InstantReelSection:NewToggle("Instant Reel Mode", "Skip reel mini-game completely (Very Fast)", function(state)
-    flags['instantreelmode'] = state
-    if InstantReel and InstantReel.toggle then
-        local success, error = pcall(function()
-            InstantReel.toggle(state)
-        end)
-        if not success then
-            print("⚠️ Error toggling instant reel: " .. tostring(error))
-        end
-        if state then
-            flags['autoreel'] = false -- Disable regular auto reel
-            flags['instantreel'] = false
-        end
-    else
-        print("❌ InstantReel module not properly loaded")
-    end
-    print(state and "⚡ Instant Reel enabled!" or "🛑 Instant Reel disabled!")
-end)
-
-InstantReelSection:NewToggle("Bypass Reel Game", "Completely skip reel interface", function(state)
-    flags['bypassreelgame'] = state
-    if InstantReel and InstantReel.setBypassMode then
-        local success, error = pcall(function()
-            InstantReel.setBypassMode(state)
-        end)
-        if not success then
-            print("⚠️ Error setting bypass mode: " .. tostring(error))
-        end
-    end
-    print(state and "🚀 Bypassing reel game!" or "🎮 Normal reel game!")
-end)
-
-InstantReelSection:NewToggle("Perfect Catch Mode", "Always get perfect catches", function(state)
-    flags['perfectcatchmode'] = state
-    if InstantReel and InstantReel.setPerfectCatch then
-        local success, error = pcall(function()
-            InstantReel.setPerfectCatch(state)
-        end)
-        if not success then
-            print("⚠️ Error setting perfect catch: " .. tostring(error))
-        end
-    end
-    print(state and "🎯 Perfect catch mode!" or "📊 Normal catch rates!")
-end)
-
-InstantReelSection:NewToggle("Instant Catch at 100%", "Auto-catch when lure reaches 100%", function(state)
-    flags['instantcatchmode'] = state
-    if InstantReel and InstantReel.setInstantCatch then
-        local success, error = pcall(function()
-            InstantReel.setInstantCatch(state)
-        end)
-        if not success then
-            print("⚠️ Error setting instant catch: " .. tostring(error))
-        end
-    end
-    print(state and "⚡ Instant catch at 100%!" or "🎣 Manual catch required!")
-end)
-
-InstantReelSection:NewButton("Manual Instant Catch", "Manually trigger instant catch", function()
-    if InstantReel and InstantReel.manualInstantCatch then
-        local success, result = pcall(function()
-            return InstantReel.manualInstantCatch()
-        end)
-        if success then
-            print(result and "✅ Manual instant catch!" or "❌ No active reel!")
-        else
-            print("⚠️ Error during manual catch: " .. tostring(result))
-        end
-    else
-        print("❌ Instant Reel module not loaded!")
-    end
-end)
-
-InstantReelSection:NewButton("Check Status", "Check instant reel status", function()
-    if InstantReel and InstantReel.getStatus then
-        local success, status = pcall(function()
-            return InstantReel.getStatus()
-        end)
-        if success and status then
-            print("📊 Instant Reel Status:")
-            print("• Enabled: " .. tostring(status.enabled))
-            print("• Bypass Mode: " .. tostring(status.bypassReelGame))
-            print("• Perfect Catch: " .. tostring(status.perfectCatch))
-            print("• Instant Catch: " .. tostring(status.instantCatch))
-            print("• Active Reels: " .. tostring(status.activeReels))
-        else
-            print("⚠️ Error getting status: " .. tostring(status))
-        end
-    else
-        print("❌ Instant Reel module not available!")
-    end
-end)
-
-InstantReelSection:NewLabel("⚠️ WARNING: Very fast fishing - use carefully!")
-InstantReelSection:NewLabel("🎯 Perfect catches increase rare fish rates")
-InstantReelSection:NewLabel("⚡ Bypass mode skips entire reel mini-game")
 
 -- Set initial slider value to match default
 pcall(function()
@@ -1677,40 +1300,12 @@ end)
 
 -- Teleports Section
 local LocationSection = TeleTab:NewSection("Locations")
--- Safe Teleport Function
-local function safeTeleport(cframe, locationName)
-    if not cframe then
-        print("❌ Invalid teleport location: " .. tostring(locationName))
-        return false
-    end
-    
-    local hrp = gethrp()
-    if not hrp then
-        print("❌ Cannot teleport - HumanoidRootPart not found")
-        return false
-    end
-    
-    local success = pcall(function()
-        hrp.CFrame = cframe
-    end)
-    
-    if success then
-        print("✅ Teleported to: " .. tostring(locationName))
-        return true
-    else
-        print("❌ Failed to teleport to: " .. tostring(locationName))
-        return false
-    end
-end
-
 LocationSection:NewDropdown("Select Zone", "Choose a zone to teleport to", ZoneNames, function(currentOption)
     flags['zones'] = currentOption
 end)
 LocationSection:NewButton("Teleport To Zone", "Teleport to selected zone", function()
-    if flags['zones'] and TeleportLocations['Zones'][flags['zones']] then
-        safeTeleport(TeleportLocations['Zones'][flags['zones']], flags['zones'])
-    else
-        print("❌ No zone selected or invalid zone")
+    if flags['zones'] then
+        gethrp().CFrame = TeleportLocations['Zones'][flags['zones']]
     end
 end)
 
@@ -1791,535 +1386,61 @@ FishSection:NewToggle("Free Fish Radar", "Show fish abundance zones", function(s
     flags['fishabundance'] = state
 end)
 
--- Load Event ESP Module
-print("🌟 Loading Event ESP module...")
-local EventESP
-local eventESPSuccess, eventESPError = pcall(function()
-    EventESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/DESRIYANDA/Fishccch/main/event_esp.lua"))()
-    if EventESP then
-        return true
-    end
-    return false
-end)
-
--- Embedded Event ESP Fallback
-if not eventESPSuccess or not EventESP then
-    print("⚠️ Failed to load Event ESP from GitHub, using embedded version...")
-    
-    EventESP = {}
-    
-    -- Basic Event ESP functionality
-    EventESP.config = {
-        enabled = false,
-        showDistance = true,
-        maxDistance = 500
-    }
-    
-    EventESP.activeESPs = {}
-    
-    function EventESP:Initialize(visualTab)
-        if not visualTab then
-            print("❌ No visual tab provided for Event ESP")
-            return
-        end
-        
-        local EventSection = visualTab:NewSection("🌟 Localized Events ESP")
-        
-        EventSection:NewToggle("Event ESP", "Show localized events with ESP", function(state)
-            EventESP.config.enabled = state
-            EventESP:toggle(state)
-        end)
-        
-        EventSection:NewButton("Clear ESP", "Remove all ESP displays", function()
-            EventESP:cleanup()
-        end)
-        
-        EventSection:NewLabel("📍 Shows yellow text for active events")
-        EventSection:NewLabel("🎯 Simple display without boxes")
-        
-        print("🔧 Embedded Event ESP UI initialized!")
-    end
-    
-    function EventESP:toggle(enabled)
-        self.config.enabled = enabled
-        if enabled then
-            print("👁️ Event ESP enabled (embedded version)")
-        else
-            print("🚫 Event ESP disabled")
-            self:cleanup()
-        end
-    end
-    
-    function EventESP:cleanup()
-        for obj, esp in pairs(self.activeESPs) do
-            if esp and esp.Parent then
-                esp:Destroy()
-            end
-        end
-        self.activeESPs = {}
-        print("🧹 Event ESP cleaned up")
-    end
-    
-    function EventESP:createESPBox(object, name, eventType)
-        if not object or not object.Parent then return end
-        
-        local billboard = Instance.new("BillboardGui")
-        billboard.Name = "EventESP"
-        billboard.Size = UDim2.new(0, 200, 0, 50)
-        billboard.StudsOffset = Vector3.new(0, 5, 0)
-        billboard.AlwaysOnTop = true
-        
-        local label = Instance.new("TextLabel")
-        label.Parent = billboard
-        label.Size = UDim2.new(1, 0, 1, 0)
-        label.BackgroundTransparency = 1
-        label.Text = string.format("%s\n[%s]", name, eventType)
-        label.TextColor3 = Color3.fromRGB(255, 255, 0)
-        label.TextSize = 12
-        label.Font = Enum.Font.Arial
-        label.TextStrokeTransparency = 0.5
-        label.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-        label.TextScaled = true
-        
-        if object:FindFirstChild("PrimaryPart") then
-            billboard.Parent = object.PrimaryPart
-        elseif object:FindFirstChildOfClass("BasePart") then
-            billboard.Parent = object:FindFirstChildOfClass("BasePart")
-        else
-            billboard.Parent = object
-        end
-        
-        self.activeESPs[object] = billboard
-        return billboard
-    end
-    
-    print("🔧 Embedded Event ESP created as fallback")
-end
-
--- Initialize Event ESP with Visual Tab
-if EventESP and VisualTab then
-    local initSuccess, initError = pcall(function()
-        if EventESP.Initialize then
-            EventESP:Initialize(VisualTab)
-        elseif EventESP.initialize then
-            EventESP.initialize()
-        end
-    end)
-    if initSuccess then
-        print("✅ Event ESP initialized successfully!")
-    else
-        print("⚠️ Error initializing Event ESP: " .. tostring(initError))
-    end
-else
-    print("❌ Event ESP or Visual Tab not available for initialization")
-end
-
--- Premium Section
-if PremiumTab then
-    if PremiumBobber then
-        -- Advanced Premium Features (if module loaded)
-        local BobberSection = PremiumTab:NewSection("🎣 Advanced Bobber")
-        
-        -- Premium flags
-        flags = flags or {}
-        flags['premiumbobber'] = false
-        flags['selectedzone'] = 'Deep Ocean'
-        flags['autozonebobber'] = false
-        
-        BobberSection:NewToggle("Premium Bobber", "Enable advanced bobber features", function(state)
-            flags['premiumbobber'] = state
-            if not state then
-                PremiumBobber.ResetBobber()
-            end
-        end)
-        
-        -- Zone selection dropdown
-        local availableZones = PremiumBobber.GetAvailableZones()
-        BobberSection:NewDropdown("Select Zone", "Choose zone for bobber teleportation", availableZones, function(zone)
-            flags['selectedzone'] = zone
-        end)
-        
-        BobberSection:NewButton("Manual Teleport", "Manually teleport bobber to selected zone", function()
-            if flags['premiumbobber'] and flags['selectedzone'] then
-                local success = PremiumBobber.TeleportBobberToZone(flags['selectedzone'])
-                if success then
-                    print("✅ Bobber teleported successfully!")
-                else
-                    print("❌ Failed to teleport bobber!")
-                end
-            end
-        end)
-        
-        BobberSection:NewToggle("Auto Zone Bobber", "Automatically teleport bobber to zones", function(state)
-            flags['autozonebobber'] = state
-            if state and flags['selectedzone'] then
-                PremiumBobber.AutoZoneCast(flags['selectedzone'], state)
-            else
-                PremiumBobber.ResetBobber()
-            end
-        end)
-        
-        local RopeSection = PremiumTab:NewSection("🔗 Rope Control")
-        
-        RopeSection:NewButton("Extend Rope", "Extend rope to unlimited length", function()
-            local tool = PremiumBobber.GetCurrentTool()
-            if tool then
-                local bobber = PremiumBobber.GetBobber(tool)
-                if bobber then
-                    local success = PremiumBobber.ExtendRopeLength(bobber)
-                    print(success and "✅ Rope extended!" or "❌ Failed to extend rope!")
-                else
-                    print("❌ No bobber found - cast your rod first!")
-                end
-            else
-                print("❌ No fishing rod equipped!")
-            end
-        end)
-        
-        RopeSection:NewButton("Create Platform", "Create platform under bobber", function()
-            local tool = PremiumBobber.GetCurrentTool()
-            if tool then
-                local bobber = PremiumBobber.GetBobber(tool)
-                if bobber then
-                    local platform = PremiumBobber.CreatePlatform(bobber)
-                    print(platform and "✅ Platform created!" or "❌ Failed to create platform!")
-                else
-                    print("❌ No bobber found - cast your rod first!")
-                end
-            else
-                print("❌ No fishing rod equipped!")
-            end
-        end)
-        
-        RopeSection:NewButton("Reset Bobber", "Reset all bobber modifications", function()
-            PremiumBobber.ResetBobber()
-            print("🔄 Bobber reset!")
-        end)
-        
-        local StatusSection = PremiumTab:NewSection("📊 Status")
-        
-        StatusSection:NewButton("Check Status", "Check premium bobber status", function()
-            local status = PremiumBobber.GetStatus()
-            print("📊 Premium Bobber Status: " .. tostring(status))
-        end)
-        
-        local InfoSection = PremiumTab:NewSection("ℹ️ Premium Info")
-        
-        InfoSection:NewLabel("🎯 Zone Teleport: Instantly move bobber to any zone")
-        InfoSection:NewLabel("🔗 Rope Extension: Unlimited casting range")
-        InfoSection:NewLabel("🏗️ Platform Creation: Stable bobber positioning")
-        InfoSection:NewLabel("🔄 Auto Mode: Continuous zone-based fishing")
-        InfoSection:NewLabel("⚠️ Use responsibly to avoid detection")
-        
-    else
-        -- Fallback Premium Features (if module failed to load)
-        local FallbackSection = PremiumTab:NewSection("💎 Premium Features")
-        
-        FallbackSection:NewLabel("⚠️ Premium Bobber module failed to load")
-        FallbackSection:NewLabel("Available Premium Features:")
-        
-        -- Basic premium flags for fallback
-        flags = flags or {}
-        flags['premiummode'] = false
-        flags['quickcast'] = false
-        flags['autoplatform'] = false
-        
-        FallbackSection:NewToggle("Premium Mode", "Enable basic premium enhancements", function(state)
-            flags['premiummode'] = state
-            print(state and "💎 Premium mode enabled!" or "💎 Premium mode disabled!")
-        end)
-        
-        FallbackSection:NewToggle("Quick Cast", "Faster casting with premium timing", function(state)
-            flags['quickcast'] = state
-            print(state and "⚡ Quick cast enabled!" or "⚡ Quick cast disabled!")
-        end)
-        
-        FallbackSection:NewToggle("Auto Platform", "Automatically create fishing platforms", function(state)
-            flags['autoplatform'] = state
-            print(state and "🏗️ Auto platform enabled!" or "🏗️ Auto platform disabled!")
-        end)
-        
-        FallbackSection:NewButton("Manual Quick Cast", "Perform a quick cast manually", function()
-            if flags['premiummode'] then
-                local rod = FindRod()
-                if rod and rod.events and rod.events.cast then
-                    rod.events.cast:FireServer(100, flags['quickcast'] and 0.3 or 1)
-                    print("⚡ Quick cast executed!")
-                else
-                    print("❌ No rod equipped!")
-                end
-            else
-                print("⚠️ Enable Premium Mode first!")
-            end
-        end)
-        
-        local PremiumInfoSection = PremiumTab:NewSection("ℹ️ Premium Information")
-        
-        PremiumInfoSection:NewLabel("💎 Premium Mode: Enhanced fishing performance")
-        PremiumInfoSection:NewLabel("⚡ Quick Cast: Faster rod casting")
-        PremiumInfoSection:NewLabel("🏗️ Auto Platform: Automatic platform creation")
-        PremiumInfoSection:NewLabel("📡 Advanced Features: Bobber teleportation (requires module)")
-        PremiumInfoSection:NewLabel("🔄 Module Status: Check console for loading errors")
-    end
-else
-    print("⚠️ Premium Tab not available")
-end
-    
-    -- Zone selection dropdown
-    local availableZones = PremiumBobber.GetAvailableZones()
-    BobberSection:NewDropdown("Target Zone", "Select zone for bobber teleportation", availableZones, function(currentOption)
-        flags['selectedzone'] = currentOption
-        print("[Premium] Selected zone: " .. currentOption)
-    end)
-    
-    BobberSection:NewButton("Teleport Bobber", "Teleport bobber to selected zone", function()
-        if flags['premiumbobber'] and flags['selectedzone'] then
-            local success = PremiumBobber.TeleportBobberToZone(flags['selectedzone'])
-            if success then
-                print("✅ Bobber teleported to: " .. flags['selectedzone'])
-            else
-                print("❌ Failed to teleport bobber to: " .. flags['selectedzone'])
-            end
-        else
-            print("⚠️ Enable Premium Bobber first or select a zone!")
-        end
-    end)
-    
-    BobberSection:NewToggle("Auto Zone Bobber", "Automatically teleport bobber to zones", function(state)
-        flags['autozonebobber'] = state
-        if state and flags['selectedzone'] then
-            PremiumBobber.AutoZoneCast(flags['selectedzone'], state)
-        end
-    end)
-    
-    BobberSection:NewButton("Reset Bobber", "Reset bobber to normal state", function()
-        PremiumBobber.ResetBobber()
-        print("🔄 Bobber reset to normal state")
-    end)
-    
-    BobberSection:NewButton("Bobber Status", "Show current bobber information", function()
-        local status = PremiumBobber.GetStatus()
-        print("📊 " .. status)
-    end)
-    
-    local RopeSection = PremiumTab:NewSection("🔗 Rope Control")
-    
-    RopeSection:NewButton("Extend Rope", "Extend rope to maximum length", function()
-        local tool = PremiumBobber.GetCurrentTool()
-        if tool then
-            local bobber = PremiumBobber.GetBobber(tool)
-            if bobber then
-                local success = PremiumBobber.ExtendRopeLength(bobber)
-                if success then
-                    print("✅ Rope extended to maximum length!")
-                else
-                    print("❌ Failed to extend rope")
-                end
-            else
-                print("⚠️ No bobber found!")
-            end
-        else
-            print("⚠️ No fishing rod equipped!")
-        end
-    end)
-    
-    RopeSection:NewButton("Create Platform", "Create stability platform under bobber", function()
-        local tool = PremiumBobber.GetCurrentTool()
-        if tool then
-            local bobber = PremiumBobber.GetBobber(tool)
-            if bobber then
-                local platform = PremiumBobber.CreatePlatform(bobber)
-                if platform then
-                    print("✅ Platform created under bobber!")
-                else
-                    print("❌ Failed to create platform")
-                end
-            else
-                print("⚠️ No bobber found!")
-            end
-        else
-            print("⚠️ No fishing rod equipped!")
-        end
-    end)
-    
-    local InfoSection = PremiumTab:NewSection("ℹ️ Premium Info")
-    
-    InfoSection:NewButton("Premium Features", "Show available premium features", function()
-        local info = "💎 Premium Bobber Features:\n\n"
-        info = info .. "🎯 Zone Teleportation - Instantly move bobber to any zone\n"
-        info = info .. "🔗 Rope Extension - Unlimited casting range\n"
-        info = info .. "🏗️ Platform Creation - Stability platform under bobber\n"
-        info = info .. "🤖 Auto Zone Cast - Automatically teleport to selected zones\n"
-        info = info .. "📊 Bobber Status - Real-time bobber information\n"
-        info = info .. "🔄 Reset Function - Return to normal fishing\n\n"
-        info = info .. "Available Zones: " .. #availableZones .. " zones"
-        print(info)
-    end)
-    
-    print("💎 Premium Tab created successfully!")
-else
-    print("⚠️ Premium Tab or PremiumBobber module not available")
-end
-
 --// Loops
 RunService.Heartbeat:Connect(function()
-    -- Autofarm (Safe)
+    -- Autofarm
     if flags['freezechar'] then
         if flags['freezecharmode'] == 'Toggled' then
-            local hrp = gethrp()
-            if hrp then
-                if characterposition == nil then
-                    characterposition = hrp.CFrame
-                else
-                    local success = pcall(function()
-                        hrp.CFrame = characterposition
-                    end)
-                    if not success then
-                        print("⚠️ Failed to freeze character position")
-                    end
-                end
+            if characterposition == nil then
+                characterposition = gethrp().CFrame
+            else
+                gethrp().CFrame = characterposition
             end
         elseif flags['freezecharmode'] == 'Rod Equipped' then
             local rod = FindRod()
-            local hrp = gethrp()
-            if hrp then
-                if rod and characterposition == nil then
-                    characterposition = hrp.CFrame
-                elseif rod and characterposition ~= nil then
-                    local success = pcall(function()
-                        hrp.CFrame = characterposition
-                    end)
-                    if not success then
-                        print("⚠️ Failed to maintain rod position")
-                    end
-                else
-                    characterposition = nil
-                end
+            if rod and characterposition == nil then
+                characterposition = gethrp().CFrame
+            elseif rod and characterposition ~= nil then
+                gethrp().CFrame = characterposition
+            else
+                characterposition = nil
             end
         end
     else
         characterposition = nil
     end
-    
-    -- Auto Shake (Safe)
     if flags['autoshake'] then
-        local success = pcall(function()
-            if FindChild(lp.PlayerGui, 'shakeui') and 
-               FindChild(lp.PlayerGui['shakeui'], 'safezone') and 
-               FindChild(lp.PlayerGui['shakeui']['safezone'], 'button') then
-                GuiService.SelectedObject = lp.PlayerGui['shakeui']['safezone']['button']
-                if GuiService.SelectedObject == lp.PlayerGui['shakeui']['safezone']['button'] then
-                    game:GetService('VirtualInputManager'):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
-                    game:GetService('VirtualInputManager'):SendKeyEvent(false, Enum.KeyCode.Return, false, game)
-                end
+        if FindChild(lp.PlayerGui, 'shakeui') and FindChild(lp.PlayerGui['shakeui'], 'safezone') and FindChild(lp.PlayerGui['shakeui']['safezone'], 'button') then
+            GuiService.SelectedObject = lp.PlayerGui['shakeui']['safezone']['button']
+            if GuiService.SelectedObject == lp.PlayerGui['shakeui']['safezone']['button'] then
+                game:GetService('VirtualInputManager'):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
+                game:GetService('VirtualInputManager'):SendKeyEvent(false, Enum.KeyCode.Return, false, game)
             end
-        end)
-        if not success then
-            -- Shake UI not found or error occurred, continue silently
         end
     end
-    
-    -- Auto Cast (Safe)
     if flags['autocast'] then
         local rod = FindRod()
         local currentDelay = flags['autocastdelay'] or 0.5
-        if rod ~= nil then
-            local success, lureValue = pcall(function()
-                return rod['values']['lure'].Value
-            end)
-            
-            if success and lureValue and lureValue <= 0.001 then
-                task.wait(currentDelay)
-                
-                local castSuccess = pcall(function()
-                    -- Use instant bobber if enabled (short distance cast)
-                    if flags['instantbobber'] then
-                        rod.events.cast:FireServer(100, 0.1) -- Very short distance
-                    -- Use random bobber if enabled (random distance cast)
-                    elseif flags['randombobber'] then
-                        local randomDistance = math.random(10, 100) / 100 -- Random between 0.1 and 1.0
-                        rod.events.cast:FireServer(100, randomDistance)
-                    else
-                        rod.events.cast:FireServer(100, 1) -- Normal distance
-                    end
-                end)
-                
-                if not castSuccess then
-                    print("⚠️ Auto cast failed")
-                end
+        if rod ~= nil and rod['values']['lure'].Value <= .001 then
+            task.wait(currentDelay)
+            -- Use instant bobber if enabled (short distance cast)
+            if flags['instantbobber'] then
+                rod.events.cast:FireServer(100, 0.1) -- Very short distance
+            -- Use random bobber if enabled (random distance cast)
+            elseif flags['randombobber'] then
+                local randomDistance = math.random(10, 100) / 100 -- Random between 0.1 and 1.0
+                rod.events.cast:FireServer(100, randomDistance)
+            else
+                rod.events.cast:FireServer(100, 1) -- Normal distance
             end
         end
     end
-    
-    -- Auto Reel Logic (Safe)
-    if flags['autoreel'] and not flags['instantreelmode'] then
+    if flags['autoreel'] then
         local rod = FindRod()
         local currentDelay = flags['autoreeldelay'] or 0.5
-        if rod ~= nil then
-            local success, lureValue = pcall(function()
-                return rod['values']['lure'].Value
-            end)
-            
-            if success and lureValue and lureValue == 100 then
-                task.wait(currentDelay)
-                local reelSuccess = pcall(function()
-                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                end)
-                if not reelSuccess then
-                    print("⚠️ Auto reel failed")
-                end
-            end
-        end
-    end
-    
-    -- Legacy Instant Reel (Safe)
-    if flags['instantreel'] and not flags['instantreelmode'] then
-        local rod = FindRod()
-        if rod ~= nil then
-            local success, lureValue = pcall(function()
-                return rod['values']['lure'].Value
-            end)
-            
-            if success and lureValue and lureValue == 100 then
-                local reelSuccess = pcall(function()
-                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                end)
-                if not reelSuccess then
-                    print("⚠️ Instant reel failed")
-                end
-            end
-        end
-    end
+        if rod ~= nil and rod['values']['lure'].Value == 100 then
+            task.wait(currentDelay)
             ReplicatedStorage.events.reelfinished:FireServer(100, true)
-        end
-    end
-    
-    -- Advanced Instant Reel Module Integration
-    if flags['instantreelmode'] and InstantReel then
-        -- For embedded version, handle instant reel logic here
-        if InstantReel.config and InstantReel.config.enabled then
-            local rod = FindRod()
-            local playerGui = lp.PlayerGui
-            local reelGui = playerGui:FindFirstChild("reel")
-            
-            -- Check for reel GUI and instant catch
-            if reelGui and reelGui.Enabled then
-                if InstantReel.config.bypassReelGame then
-                    -- Bypass mode - hide GUI and complete instantly
-                    reelGui.Enabled = false
-                    task.wait(0.1)
-                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                    if InstantReel.config.debugMode then
-                        print("🚀 Bypassed reel game!")
-                    end
-                elseif InstantReel.config.instantCatch and rod and rod.values.lure.Value >= 95 then
-                    -- Instant catch at high lure value
-                    ReplicatedStorage.events.reelfinished:FireServer(100, InstantReel.config.perfectCatch)
-                    if InstantReel.config.debugMode then
-                        print("⚡ Instant catch executed!")
-                    end
-                end
-            end
         end
     end
 
@@ -2493,17 +1614,21 @@ RunService.Heartbeat:Connect(function()
         getchar():SetAttribute('Refill', false)
     end
     
-    -- Premium Bobber Auto Zone Cast
-    if flags['autozonebobber'] and flags['premiumbobber'] and flags['selectedzone'] and PremiumBobber then
-        local tool = PremiumBobber.GetCurrentTool()
-        if tool then
-            local bobber = PremiumBobber.GetBobber(tool)
-            if bobber then
-                -- Check if bobber needs repositioning (every 5 seconds)
-                if not flags['lastzonebobbertime'] or tick() - flags['lastzonebobbertime'] > 5 then
-                    PremiumBobber.TeleportBobberToZone(flags['selectedzone'])
-                    flags['lastzonebobbertime'] = tick()
-                end
+    -- Enhanced Always Catch - Auto complete reel minigame
+    if flags['alwayscatch'] then
+        local rod = FindRod()
+        if rod and rod['values'] and rod['values']['lure'] then
+            -- Check if fish is hooked and minigame should be bypassed
+            if rod['values']['lure'].Value >= 99.9 then
+                -- Try to bypass reel minigame immediately
+                pcall(function()
+                    -- Check for reel GUI
+                    local reelGui = lp.PlayerGui:FindFirstChild('reel')
+                    if reelGui then
+                        -- Immediately complete the reel
+                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                    end
+                end)
             end
         end
     end
@@ -2532,5 +1657,49 @@ if CheckFunc(hookmetamethod) then
             return old(self, unpack(args))
         end
         return old(self, ...)
+    end)
+end
+
+-- Additional Always Catch implementation
+if flags then
+    -- Enhanced Always Catch using different approach
+    task.spawn(function()
+        while true do
+            task.wait(0.1)
+            if flags['alwayscatch'] then
+                local rod = FindRod()
+                if rod and rod['values'] and rod['values']['lure'] then
+                    -- When fish bites (lure = 100), immediately catch it
+                    if rod['values']['lure'].Value >= 99.9 then
+                        task.wait(0.1) -- Small delay to ensure minigame starts
+                        
+                        -- Try multiple methods to catch the fish
+                        pcall(function()
+                            -- Method 1: Direct reelfinished call
+                            ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                        end)
+                        
+                        pcall(function()
+                            -- Method 2: Check for reel GUI and auto-complete
+                            if lp.PlayerGui:FindFirstChild('reel') then
+                                ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                            end
+                        end)
+                        
+                        pcall(function()
+                            -- Method 3: Auto-complete any active minigame
+                            local reelGui = lp.PlayerGui:FindFirstChild('reel')
+                            if reelGui and reelGui.Enabled then
+                                -- Force complete the reel minigame
+                                ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                                reelGui.Enabled = false
+                            end
+                        end)
+                        
+                        task.wait(0.5) -- Wait before next check
+                    end
+                end
+            end
+        end
     end)
 end
