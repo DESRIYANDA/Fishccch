@@ -895,14 +895,16 @@ RunService.Heartbeat:Connect(function()
     if flags['autocast'] then
         local rod = FindRod()
         local currentDelay = flags['autocastdelay'] or 0.5
-        if rod ~= nil and rod['values']['lure'].Value <= .001 and task.wait(currentDelay) then
+        if rod ~= nil and rod['values']['lure'].Value <= .001 then
+            task.wait(currentDelay)
             rod.events.cast:FireServer(100, 1)
         end
     end
     if flags['autoreel'] then
         local rod = FindRod()
         local currentDelay = flags['autoreeldelay'] or 0.5
-        if rod ~= nil and rod['values']['lure'].Value == 100 and task.wait(currentDelay) then
+        if rod ~= nil and rod['values']['lure'].Value == 100 then
+            task.wait(currentDelay)
             ReplicatedStorage.events.reelfinished:FireServer(100, true)
         end
     end
