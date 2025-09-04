@@ -403,6 +403,26 @@ function EventESP:ScanBestiaryEvents(foundEvents)
     -- Scan using bestiary system for event information
     -- This uses the TimeEventController found in dump.txt
     
+    -- NEW: Check CoreGui ScreenManager for Localized Events
+    pcall(function()
+        local coreGui = game:GetService("CoreGui")
+        if coreGui:FindFirstChild("RobloxGui") then
+            local robloxGui = coreGui.RobloxGui
+            if robloxGui:FindFirstChild("Modules") then
+                local modules = robloxGui.Modules
+                if modules:FindFirstChild("Shell") then
+                    local shell = modules.Shell
+                    -- Found in dump.txt: ScreenManagerLocalized Events
+                    local screenManager = shell:FindFirstChild("ScreenManagerLocalized Events")
+                    if screenManager then
+                        print("🌟 Found ScreenManagerLocalized Events module!")
+                        self:MonitorScreenManager(screenManager, foundEvents)
+                    end
+                end
+            end
+        end
+    end)
+    
     -- Check for active creature events by scanning workspace
     for _, obj in pairs(Workspace:GetChildren()) do
         if obj:IsA("Model") then
@@ -420,6 +440,95 @@ function EventESP:ScanBestiaryEvents(foundEvents)
                     zone = obj.PrimaryPart or obj:FindFirstChild("HumanoidRootPart"),
                     position = obj:GetModelCFrame().Position,
                     eventInfo = LocalizedEvents["Megalodon Hunt"]
+                }
+            end
+        end
+    end
+end
+
+function EventESP:MonitorScreenManager(screenManager, foundEvents)
+    -- Monitor the ScreenManagerLocalized Events for active events
+    
+    -- Check if it's a ModuleScript and try to require it
+    if screenManager:IsA("ModuleScript") then
+        pcall(function()
+            local screenManagerModule = require(screenManager)
+            
+            -- Try to get current screen state
+            if type(screenManagerModule) == "table" then
+                -- Look for event-related properties
+                for key, value in pairs(screenManagerModule) do
+                    local keyName = tostring(key):lower()
+                    
+                    -- Check for event indicators
+                    if string.find(keyName, "event") or string.find(keyName, "active") then
+                        print("🔍 ScreenManager property found: " .. tostring(key) .. " = " .. tostring(value))
+                        
+                        -- Try to extract event information
+                        self:ProcessScreenManagerData(key, value, foundEvents)
+                    end
+                end
+            end
+        end)
+    end
+    
+    -- Monitor children for event screens
+    for _, child in pairs(screenManager:GetChildren()) do
+        local childName = child.Name:lower()
+        
+        -- Check for event-related screens
+        for eventType, eventInfo in pairs(LocalizedEvents) do
+            for _, detection in pairs(eventInfo.detection) do
+                if string.find(childName, detection:lower()) then
+                    print("🌟 Event screen detected: " .. child.Name .. " for " .. eventType)
+                    
+                    foundEvents[eventType] = {
+                        zone = nil,
+                        position = Vector3.new(0, 100, 0),
+                        eventInfo = eventInfo,
+                        isScreenManagerEvent = true,
+                        screen = child
+                    }
+                end
+            end
+        end
+    end
+end
+
+function EventESP:ProcessScreenManagerData(key, value, foundEvents)
+    -- Process data from ScreenManagerLocalized Events
+    
+    local keyStr = tostring(key):lower()
+    local valueStr = tostring(value):lower()
+    
+    -- Check for specific event types in the data
+    for eventType, eventInfo in pairs(LocalizedEvents) do
+        local eventTypeLower = eventType:lower()
+        
+        -- Check if this data indicates an active event
+        if string.find(keyStr, eventTypeLower) or string.find(valueStr, eventTypeLower) then
+            print("📊 ScreenManager indicates active event: " .. eventType)
+            
+            foundEvents[eventType] = {
+                zone = nil,
+                position = Vector3.new(0, 100, 0),
+                eventInfo = eventInfo,
+                isScreenManagerEvent = true,
+                screenData = {key = key, value = value}
+            }
+        end
+        
+        -- Check detection strings
+        for _, detection in pairs(eventInfo.detection) do
+            if string.find(keyStr, detection:lower()) or string.find(valueStr, detection:lower()) then
+                print("📊 ScreenManager detection match for: " .. eventType)
+                
+                foundEvents[eventType] = {
+                    zone = nil,
+                    position = Vector3.new(0, 100, 0),
+                    eventInfo = eventInfo,
+                    isScreenManagerEvent = true,
+                    screenData = {key = key, value = value}
                 }
             end
         end
