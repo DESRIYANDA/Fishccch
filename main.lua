@@ -4,6 +4,37 @@ local ReplicatedStorage = cloneref(game:GetService('ReplicatedStorage'))
 local RunService = cloneref(game:GetService('RunService'))
 local GuiService = cloneref(game:GetService('GuiService'))
 
+-- Load Speed Booster Module
+local SpeedBooster
+pcall(function()
+    SpeedBooster = loadstring(game:HttpGet("https://raw.githubusercontent.com/DESRIYANDA/Fishccch/main/speed_booster.lua"))()
+end)
+
+-- Fallback if GitHub fails
+if not SpeedBooster then
+    pcall(function()
+        SpeedBooster = require(script.Parent:FindFirstChild("speed_booster"))
+    end)
+end
+
+-- Load FPS Booster Module
+local FPSBooster
+pcall(function()
+    FPSBooster = loadstring(game:HttpGet("https://raw.githubusercontent.com/DESRIYANDA/Fishccch/main/fps_booster_integrated.lua"))()
+end)
+
+-- Fallback if GitHub fails
+if not FPSBooster then
+    pcall(function()
+        FPSBooster = dofile("/workspaces/Fishccch/fps_booster_integrated.lua")
+    end)
+end
+
+-- Also load original FPS script for compatibility
+pcall(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/DESRIYANDA/Fishccch/main/fps.lua"))()
+end)
+
 -- Protect TweenService from workspace errors
 pcall(function()
     local TweenService = game:GetService("TweenService")
@@ -1085,7 +1116,7 @@ if not success or not Window then
 end
 
 -- Create Tabs
-local AutoTab, ModTab, TeleTab, VisualTab, ShopTab
+local AutoTab, ModTab, TeleTab, VisualTab, ShopTab, SpeedTab
 
 if Window and Window.NewTab then
     pcall(function()
@@ -1094,6 +1125,7 @@ if Window and Window.NewTab then
         TeleTab = Window:NewTab("🌍 Teleports")
         VisualTab = Window:NewTab("👁️ Visuals")
         PremiumTab = Window:NewTab("💎 Premium")
+        SpeedTab = Window:NewTab("⚡ Speed Boost")
         
         -- Load Premium Bobber Module
         print("💎 Loading Premium Bobber module...")
@@ -1415,6 +1447,278 @@ end)
 local FishSection = VisualTab:NewSection("Fish Abundance")
 FishSection:NewToggle("Free Fish Radar", "Show fish abundance zones", function(state)
     flags['fishabundance'] = state
+end)
+
+-- FPS Booster Section
+local FPSSection = VisualTab:NewSection("⚡ FPS Booster")
+
+-- FPS flags initialization
+flags = flags or {}
+flags['fpsbooster'] = false
+flags['lowwatergraphics'] = false
+flags['noshadows'] = false
+flags['lowrendering'] = false
+flags['noparticles'] = false
+flags['nocameraeffects'] = false
+flags['noclothes'] = false
+flags['lowqualityparts'] = false
+flags['fpscap'] = 240
+flags['resetmaterials'] = false
+
+-- Initialize FPS Settings (only set if not already set)
+if not _G.Settings then
+    _G.Settings = {
+        Players = {
+            ["Ignore Me"] = true,
+            ["Ignore Others"] = true
+        },
+        Meshes = {
+            Destroy = false,
+            LowDetail = true
+        },
+        Images = {
+            Invisible = true,
+            LowDetail = true,
+            Destroy = false,
+        },
+        Other = {
+            ["No Particles"] = false,
+            ["No Camera Effects"] = false,
+            ["No Explosions"] = true,
+            ["No Clothes"] = false,
+            ["Low Water Graphics"] = false,
+            ["No Shadows"] = false,
+            ["Low Rendering"] = false,
+            ["Low Quality Parts"] = false,
+            ["FPS Cap"] = 240,
+            ["Reset Materials"] = false
+        }
+    }
+end
+
+FPSSection:NewToggle("Enable FPS Booster", "Enable comprehensive FPS optimization", function(state)
+    flags['fpsbooster'] = state
+    if state then
+        -- Apply basic FPS optimizations
+        _G.Settings.Other["No Particles"] = true
+        _G.Settings.Other["No Camera Effects"] = true
+        _G.Settings.Other["Low Water Graphics"] = true
+        _G.Settings.Other["No Shadows"] = true
+        _G.Settings.Other["Low Rendering"] = true
+        _G.Settings.Other["Low Quality Parts"] = true
+        _G.Settings.Other["Reset Materials"] = true
+        
+        print("⚡ FPS Booster enabled - applying optimizations...")
+        
+        -- Apply optimizations to existing objects
+        pcall(function()
+            if FPSBooster then
+                print("✅ FPS optimizations applied!")
+            else
+                -- Manual optimizations if FPS module failed to load
+                local Lighting = game:GetService("Lighting")
+                local MaterialService = game:GetService("MaterialService")
+                
+                -- Apply lighting optimizations
+                Lighting.GlobalShadows = false
+                Lighting.FogEnd = 9e9
+                Lighting.ShadowSoftness = 0
+                
+                -- Apply rendering optimizations
+                settings().Rendering.QualityLevel = 1
+                settings().Rendering.MeshPartDetailLevel = Enum.MeshPartDetailLevel.Level04
+                
+                -- Reset materials
+                MaterialService.Use2022Materials = false
+                
+                -- Apply water optimizations
+                if workspace:FindFirstChildOfClass("Terrain") then
+                    local terrain = workspace:FindFirstChildOfClass("Terrain")
+                    terrain.WaterWaveSize = 0
+                    terrain.WaterWaveSpeed = 0
+                    terrain.WaterReflectance = 0
+                    terrain.WaterTransparency = 0
+                end
+                
+                print("✅ Manual FPS optimizations applied!")
+            end
+        end)
+    else
+        -- Reset to default settings
+        _G.Settings.Other["No Particles"] = false
+        _G.Settings.Other["No Camera Effects"] = false
+        _G.Settings.Other["Low Water Graphics"] = false
+        _G.Settings.Other["No Shadows"] = false
+        _G.Settings.Other["Low Rendering"] = false
+        _G.Settings.Other["Low Quality Parts"] = false
+        _G.Settings.Other["Reset Materials"] = false
+        
+        print("🔄 FPS Booster disabled")
+    end
+end)
+
+local FPSOptimizationSection = VisualTab:NewSection("🔧 FPS Optimization Settings")
+
+FPSOptimizationSection:NewToggle("Low Water Graphics", "Reduce water quality for better FPS", function(state)
+    flags['lowwatergraphics'] = state
+    _G.Settings.Other["Low Water Graphics"] = state
+    
+    if state and workspace:FindFirstChildOfClass("Terrain") then
+        local terrain = workspace:FindFirstChildOfClass("Terrain")
+        terrain.WaterWaveSize = 0
+        terrain.WaterWaveSpeed = 0
+        terrain.WaterReflectance = 0
+        terrain.WaterTransparency = 0
+        if sethiddenproperty then
+            sethiddenproperty(terrain, "Decoration", false)
+        end
+        print("🌊 Low water graphics enabled")
+    end
+end)
+
+FPSOptimizationSection:NewToggle("No Shadows", "Disable shadows for better performance", function(state)
+    flags['noshadows'] = state
+    _G.Settings.Other["No Shadows"] = state
+    
+    if state then
+        local Lighting = game:GetService("Lighting")
+        Lighting.GlobalShadows = false
+        Lighting.FogEnd = 9e9
+        Lighting.ShadowSoftness = 0
+        if sethiddenproperty then
+            sethiddenproperty(Lighting, "Technology", 2)
+        end
+        print("🌑 Shadows disabled")
+    end
+end)
+
+FPSOptimizationSection:NewToggle("Low Rendering", "Lower rendering quality", function(state)
+    flags['lowrendering'] = state
+    _G.Settings.Other["Low Rendering"] = state
+    
+    if state then
+        settings().Rendering.QualityLevel = 1
+        settings().Rendering.MeshPartDetailLevel = Enum.MeshPartDetailLevel.Level04
+        print("📉 Low rendering enabled")
+    end
+end)
+
+FPSOptimizationSection:NewToggle("No Particles", "Disable particle effects", function(state)
+    flags['noparticles'] = state
+    _G.Settings.Other["No Particles"] = state
+    print(state and "✨ Particles disabled" or "✨ Particles enabled")
+end)
+
+FPSOptimizationSection:NewToggle("No Camera Effects", "Disable camera post-effects", function(state)
+    flags['nocameraeffects'] = state
+    _G.Settings.Other["No Camera Effects"] = state
+    print(state and "📷 Camera effects disabled" or "📷 Camera effects enabled")
+end)
+
+FPSOptimizationSection:NewToggle("No Clothes", "Remove clothing for better performance", function(state)
+    flags['noclothes'] = state
+    _G.Settings.Other["No Clothes"] = state
+    print(state and "👔 Clothes disabled" or "👔 Clothes enabled")
+end)
+
+local FPSAdvancedSection = VisualTab:NewSection("⚙️ Advanced FPS Settings")
+
+FPSAdvancedSection:NewSlider("FPS Cap", "Set FPS limit (60-999)", 999, 60, function(value)
+    flags['fpscap'] = value
+    _G.Settings.Other["FPS Cap"] = value
+    
+    if setfpscap then
+        setfpscap(value)
+        print("🎯 FPS capped to " .. value)
+    else
+        print("⚠️ FPS cap not supported by executor")
+    end
+end)
+
+FPSAdvancedSection:NewToggle("Reset Materials", "Reset all materials to plastic", function(state)
+    flags['resetmaterials'] = state
+    _G.Settings.Other["Reset Materials"] = state
+    
+    if state then
+        local MaterialService = game:GetService("MaterialService")
+        for i, v in pairs(MaterialService:GetChildren()) do
+            pcall(function() v:Destroy() end)
+        end
+        MaterialService.Use2022Materials = false
+        print("🎨 Materials reset to plastic")
+    end
+end)
+
+FPSAdvancedSection:NewToggle("Low Quality Parts", "Reduce part quality", function(state)
+    flags['lowqualityparts'] = state
+    _G.Settings.Other["Low Quality Parts"] = state
+    print(state and "🧱 Low quality parts enabled" or "🧱 Normal quality parts")
+end)
+
+local FPSInfoSection = VisualTab:NewSection("ℹ️ FPS Information")
+
+FPSInfoSection:NewLabel("⚡ FPS Booster: Comprehensive performance optimization")
+FPSInfoSection:NewLabel("🌊 Water Graphics: Removes water effects")
+FPSInfoSection:NewLabel("🌑 No Shadows: Disables lighting shadows")
+FPSInfoSection:NewLabel("📉 Low Rendering: Reduces render quality")
+FPSInfoSection:NewLabel("✨ No Particles: Removes particle effects")
+FPSInfoSection:NewLabel("🎯 FPS Cap: Limits maximum FPS")
+FPSInfoSection:NewLabel("⚠️ Lower graphics = higher FPS")
+
+FPSInfoSection:NewButton("Apply All Optimizations", "Enable all FPS optimizations", function()
+    flags['fpsbooster'] = true
+    flags['lowwatergraphics'] = true
+    flags['noshadows'] = true
+    flags['lowrendering'] = true
+    flags['noparticles'] = true
+    flags['nocameraeffects'] = true
+    flags['noclothes'] = true
+    flags['lowqualityparts'] = true
+    flags['resetmaterials'] = true
+    
+    -- Apply all settings
+    for setting, value in pairs({
+        ["Low Water Graphics"] = true,
+        ["No Shadows"] = true,
+        ["Low Rendering"] = true,
+        ["No Particles"] = true,
+        ["No Camera Effects"] = true,
+        ["No Clothes"] = true,
+        ["Low Quality Parts"] = true,
+        ["Reset Materials"] = true
+    }) do
+        _G.Settings.Other[setting] = value
+    end
+    
+    print("🚀 All FPS optimizations applied!")
+end)
+
+FPSInfoSection:NewButton("Reset All Settings", "Reset to default graphics", function()
+    flags['fpsbooster'] = false
+    flags['lowwatergraphics'] = false
+    flags['noshadows'] = false
+    flags['lowrendering'] = false
+    flags['noparticles'] = false
+    flags['nocameraeffects'] = false
+    flags['noclothes'] = false
+    flags['lowqualityparts'] = false
+    flags['resetmaterials'] = false
+    
+    -- Reset all settings
+    for setting, value in pairs({
+        ["Low Water Graphics"] = false,
+        ["No Shadows"] = false,
+        ["Low Rendering"] = false,
+        ["No Particles"] = false,
+        ["No Camera Effects"] = false,
+        ["No Clothes"] = false,
+        ["Low Quality Parts"] = false,
+        ["Reset Materials"] = false
+    }) do
+        _G.Settings.Other[setting] = value
+    end
+    
+    print("🔄 FPS settings reset to default!")
 end)
 
 -- Load Event ESP Module
@@ -1938,6 +2242,130 @@ RunService.Heartbeat:Connect(function()
         end
     end
 end)
+
+-- Speed Booster Section
+if SpeedTab and SpeedBooster then
+    local SpeedSection = SpeedTab:NewSection("⚡ Speed Controls")
+    
+    -- Speed flags
+    flags = flags or {}
+    flags['masterspeed'] = false
+    flags['autospeed'] = false
+    flags['walkspeed'] = 60
+    flags['jumppower'] = 120
+    flags['vehiclespeed'] = 3
+    flags['boostmultiplier'] = 2.5
+    
+    SpeedSection:NewToggle("Master Speed Boost", "Enable all speed enhancements", function(state)
+        flags['masterspeed'] = state
+        if state then
+            local config = {
+                walkSpeed = flags['walkspeed'],
+                jumpPower = flags['jumppower'],
+                vehicleMultiplier = flags['vehiclespeed'],
+                boostMultiplier = flags['boostmultiplier']
+            }
+            SpeedBooster.enableMasterSpeed(config)
+        else
+            SpeedBooster.disableAllSpeed()
+        end
+    end)
+    
+    SpeedSection:NewToggle("Auto Speed Maintenance", "Maintain enhanced speeds automatically", function(state)
+        flags['autospeed'] = state
+        if state then
+            SpeedBooster.startAutoSpeed()
+        else
+            SpeedBooster.stopAutoSpeed()
+        end
+    end)
+    
+    local MovementSection = SpeedTab:NewSection("🏃 Movement Settings")
+    
+    MovementSection:NewSlider("Walk Speed", "Set walk speed (16-100)", 100, 16, function(value)
+        flags['walkspeed'] = value
+        if flags['masterspeed'] then
+            SpeedBooster.enhanceMovement(value, flags['jumppower'])
+        end
+    end)
+    
+    MovementSection:NewSlider("Jump Power", "Set jump power (50-200)", 200, 50, function(value)
+        flags['jumppower'] = value
+        if flags['masterspeed'] then
+            SpeedBooster.enhanceMovement(flags['walkspeed'], value)
+        end
+    end)
+    
+    local VehicleSection = SpeedTab:NewSection("🚤 Vehicle Speed")
+    
+    VehicleSection:NewSlider("Vehicle Multiplier", "Vehicle speed multiplier (1-5)", 5, 1, function(value)
+        flags['vehiclespeed'] = value
+        if flags['masterspeed'] then
+            SpeedBooster.enhanceVehicleSpeed(value)
+        end
+    end)
+    
+    VehicleSection:NewSlider("Boost Multiplier", "General boost multiplier (1-5)", 5, 1, function(value)
+        flags['boostmultiplier'] = value
+        if flags['masterspeed'] then
+            SpeedBooster.applyBoostModifiers(value)
+        end
+    end)
+    
+    local PerformanceSection = SpeedTab:NewSection("🔧 Performance")
+    
+    PerformanceSection:NewButton("Enable Performance Mode", "Optimize game for better speed", function()
+        SpeedBooster.enablePerformanceMode()
+    end)
+    
+    PerformanceSection:NewButton("Disable Performance Flags", "Remove speed limitations", function()
+        SpeedBooster.disablePerformanceFlags()
+    end)
+    
+    PerformanceSection:NewButton("Check Speed Status", "Display current speed configuration", function()
+        local status = SpeedBooster.getStatus()
+        print("📊 Speed Status:")
+        print("   Walk Speed: " .. tostring(status.walkSpeed))
+        print("   Jump Power: " .. tostring(status.jumpPower))
+        print("   Vehicle Multiplier: x" .. tostring(status.vehicleMultiplier))
+        print("   Performance Mode: " .. tostring(status.performanceMode))
+        print("   Auto Speed: " .. tostring(status.autoSpeed))
+    end)
+    
+    local TeleportSection = SpeedTab:NewSection("🌐 Fast Travel")
+    
+    TeleportSection:NewToggle("Instant Teleport", "Enable instant teleportation", function(state)
+        if SpeedBooster then
+            SpeedBooster.config.teleportSpeed = state
+        end
+    end)
+    
+    TeleportSection:NewButton("Teleport to Moosewood", "Fast travel to Moosewood", function()
+        if SpeedBooster then
+            local pos = Vector3.new(379.875458, 134.500519, 233.5495)
+            SpeedBooster.fastTeleport(pos)
+        end
+    end)
+    
+    TeleportSection:NewButton("Teleport to Roslit Bay", "Fast travel to Roslit Bay", function()
+        if SpeedBooster then
+            local pos = Vector3.new(-1472.9812, 132.525513, 707.644531)
+            SpeedBooster.fastTeleport(pos)
+        end
+    end)
+    
+    local InfoSection = SpeedTab:NewSection("ℹ️ Speed Information")
+    
+    InfoSection:NewLabel("⚡ Master Speed: Enhanced movement + vehicles")
+    InfoSection:NewLabel("🏃 Movement: Walk speed + jump power")
+    InfoSection:NewLabel("🚤 Vehicles: Speed boost for all boats/jetskis")
+    InfoSection:NewLabel("🔧 Performance: Optimizes game for speed")
+    InfoSection:NewLabel("🌐 Fast Travel: Instant teleportation system")
+    InfoSection:NewLabel("⚠️ Based on dump.txt analysis - use carefully!")
+    
+else
+    print("⚠️ Speed Booster module not loaded or SpeedTab not available")
+end
 
 --// Hooks
 if CheckFunc(hookmetamethod) then
