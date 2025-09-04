@@ -1,8 +1,19 @@
 --// Services
-local Players = cloneref(game:GetService('Players'))
-local ReplicatedStorage = cloneref(game:GetService('ReplicatedStorage'))
-local RunService = cloneref(game:GetService('RunService'))
-local GuiService = cloneref(game:GetService('GuiService'))
+local function safeGetService(serviceName)
+    local success, service = pcall(function()
+        if cloneref then
+            return cloneref(game:GetService(serviceName))
+        else
+            return game:GetService(serviceName)
+        end
+    end)
+    return success and service or game:GetService(serviceName)
+end
+
+local Players = safeGetService('Players')
+local ReplicatedStorage = safeGetService('ReplicatedStorage')
+local RunService = safeGetService('RunService')
+local GuiService = safeGetService('GuiService')
 
 -- Protect TweenService from workspace errors
 pcall(function()
@@ -34,6 +45,79 @@ local tooltipmessage
 -- Default delay values
 flags['autocastdelay'] = 0.5
 flags['autoreeldelay'] = 0.5
+
+-- Helper Functions
+local function getchar()
+    return lp.Character or lp.CharacterAdded:Wait()
+end
+
+local function gethrp()
+    local char = getchar()
+    return char and char:FindFirstChild("HumanoidRootPart")
+end
+
+local function gethum()
+    local char = getchar()
+    return char and char:FindFirstChild("Humanoid")
+end
+
+local function FindChild(parent, name)
+    return parent and parent:FindFirstChild(name)
+end
+
+local function FindChildOfType(parent, name, className)
+    if not parent then return nil end
+    for _, child in pairs(parent:GetChildren()) do
+        if child.Name == name and child:IsA(className) then
+            return child
+        end
+    end
+    return nil
+end
+
+local function FindRod()
+    local character = getchar()
+    if not character then return nil end
+    
+    for _, tool in pairs(character:GetChildren()) do
+        if tool:IsA("Tool") and (tool.Name:lower():find("rod") or tool:FindFirstChild("events")) then
+            return tool
+        end
+    end
+    
+    for _, tool in pairs(lp.Backpack:GetChildren()) do
+        if tool:IsA("Tool") and (tool.Name:lower():find("rod") or tool:FindFirstChild("events")) then
+            return tool
+        end
+    end
+    
+    return nil
+end
+
+local function CheckFunc(func)
+    return type(func) == "function"
+end
+
+-- Executor compatibility functions
+local function safeFireClickDetector(clickDetector)
+    pcall(function()
+        if fireclickdetector then
+            fireclickdetector(clickDetector)
+        elseif clickDetector and clickDetector.Parent then
+            -- Fallback method
+            clickDetector.Parent.CFrame = gethrp().CFrame
+        end
+    end)
+end
+
+local function safeHookMetamethod(...)
+    if hookmetamethod then
+        return hookmetamethod(...)
+    else
+        warn("⚠️ hookmetamethod not available in this executor")
+        return function() end
+    end
+end
 
 -- Shop Helper Functions
 local function GetBaitCount(baitName)
@@ -378,45 +462,82 @@ local isMinimized = false
 local floatingButton = nil
 
 -- Load Kavo UI from GitHub repository (always fresh)
-local kavoUrl = 'https://raw.githubusercontent.com/MELLISAEFFENDY/fffish/main/Kavo.lua'
+local kavoUrl = 'https://raw.githubusercontent.com/DESRIYANDA/Fishccch/main/Kavo.lua'
 
 -- Try to load library with multiple methods (always from GitHub)
 local success = false
+local library = nil
 
 -- Method 1: Load directly from current repo
 pcall(function()
-    library = loadstring(game:HttpGet(kavoUrl))()
-    if library and library.CreateLib then
-        success = true
-        print("✅ Kavo loaded from GitHub repo")
+    local scriptContent = game:HttpGet(kavoUrl)
+    if scriptContent and scriptContent ~= "" then
+        library = loadstring(scriptContent)()
+        if library and library.CreateLib then
+            success = true
+            print("✅ Kavo loaded from GitHub repo")
+        end
     end
 end)
 
 -- Method 2: Load from backup URLs
 if not success then
     local backupUrls = {
-        'https://github.com/MELLISAEFFENDY/fffish/raw/main/Kavo.lua',
-        'https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua'
+        'https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua',
+        'https://pastebin.com/raw/vff1bQ9F'
     }
     
     for i, url in ipairs(backupUrls) do
         pcall(function()
-            library = loadstring(game:HttpGet(url))()
-            if library and library.CreateLib then
-                success = true
-                print("✅ Kavo loaded from backup URL " .. i)
+            local scriptContent = game:HttpGet(url)
+            if scriptContent and scriptContent ~= "" then
+                library = loadstring(scriptContent)()
+                if library and library.CreateLib then
+                    success = true
+                    print("✅ Kavo loaded from backup URL " .. i)
+                end
             end
         end)
         if success then break end
     end
 end
 
--- Check if Kavo loaded successfully
+-- Method 3: Use fallback UI if Kavo fails
 if not success or not library then
-    error("❌ Failed to load Kavo UI library from all sources!")
+    warn("⚠️ Failed to load Kavo UI library, using fallback UI")
+    library = {
+        CreateLib = function(name, theme)
+            return {
+                NewTab = function(name)
+                    return {
+                        NewSection = function(name)
+                            return {
+                                NewToggle = function(name, desc, callback) 
+                                    if callback then callback(false) end
+                                    return {UpdateToggle = function() end}
+                                end,
+                                NewSlider = function(name, desc, min, max, callback) 
+                                    if callback then callback(min) end
+                                    return {}
+                                end,
+                                NewDropdown = function(name, desc, options, callback) 
+                                    if callback then callback(options[1]) end
+                                    return {Refresh = function() end}
+                                end,
+                                NewButton = function(name, desc, callback) 
+                                    return {UpdateButton = function() end}
+                                end
+                            }
+                        end
+                    }
+                end
+            }
+        end
+    }
+    success = true
 end
 
-print("🎣 Kavo UI library loaded successfully!")
+print("🎣 UI library loaded successfully!")
 
 -- Function to create floating button
 local function createFloatingButton()
@@ -1363,7 +1484,7 @@ RunService.Heartbeat:Connect(function()
                         -- Try to interact with the crate
                         local crate = workspace:FindFirstChild(crateName)
                         if crate and crate:FindFirstChild("ClickDetector") then
-                            fireclickdetector(crate.ClickDetector)
+                            safeFireClickDetector(crate.ClickDetector)
                             task.wait(0.5)
                         end
                     end
@@ -1409,7 +1530,7 @@ RunService.Heartbeat:Connect(function()
                         OpenTreasure()
                         -- Also try clicking if it has a ClickDetector
                         if treasure.object:FindFirstChild("ClickDetector") then
-                            fireclickdetector(treasure.object.ClickDetector)
+                            safeFireClickDetector(treasure.object.ClickDetector)
                         end
                     end)
                     task.wait(1)
@@ -1444,7 +1565,7 @@ RunService.Heartbeat:Connect(function()
                 pcall(function()
                     OpenTreasure()
                     if treasure.object:FindFirstChild("ClickDetector") then
-                        fireclickdetector(treasure.object.ClickDetector)
+                        safeFireClickDetector(treasure.object.ClickDetector)
                     end
                 end)
                 break -- Only open one at a time when not in full auto mode
@@ -1493,20 +1614,24 @@ RunService.Heartbeat:Connect(function()
 end)
 
 --// Hooks
-if CheckFunc(hookmetamethod) then
-    local old; old = hookmetamethod(game, "__namecall", function(self, ...)
-        local method, args = getnamecallmethod(), {...}
-        if method == 'FireServer' and self.Name == 'afk' and flags['noafk'] then
-            args[1] = false
-            return old(self, unpack(args))
-        elseif method == 'FireServer' and self.Name == 'cast' and flags['perfectcast'] then
-            args[1] = 100
-            return old(self, unpack(args))
-        elseif method == 'FireServer' and self.Name == 'reelfinished' and flags['alwayscatch'] then
-            args[1] = 100
-            args[2] = true
-            return old(self, unpack(args))
-        end
-        return old(self, ...)
-    end)
-end
+pcall(function()
+    if CheckFunc(hookmetamethod) then
+        local old; old = hookmetamethod(game, "__namecall", function(self, ...)
+            local method, args = getnamecallmethod(), {...}
+            if method == 'FireServer' and self.Name == 'afk' and flags['noafk'] then
+                args[1] = false
+                return old(self, unpack(args))
+            elseif method == 'FireServer' and self.Name == 'cast' and flags['perfectcast'] then
+                args[1] = 100
+                return old(self, unpack(args))
+            elseif method == 'FireServer' and self.Name == 'reelfinished' and flags['alwayscatch'] then
+                args[1] = 100
+                args[2] = true
+                return old(self, unpack(args))
+            end
+            return old(self, ...)
+        end)
+    else
+        print("⚠️ Hooks not available in this executor - some features may not work")
+    end
+end)
