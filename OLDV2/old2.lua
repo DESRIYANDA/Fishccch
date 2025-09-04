@@ -32,9 +32,17 @@ local Window = Fluent:CreateWindow({
 	TabWidth = 160,
 	Size = UDim2.fromOffset(550, 350),
 	Acrylic = false, 
-	Theme = "Normal Theme",
+	Theme = "Dark",
 	MinimizeKey = Enum.KeyCode.LeftControl
 })
+
+-- Validate Window creation
+if not Window then
+	error("Failed to create Fluent window")
+end
+
+-- Wait a frame to ensure Window is fully initialized
+task.wait()
 
 do 
 	Config = {
@@ -4294,7 +4302,7 @@ do
 	if SaveManager then
 		SaveManager:LoadAutoloadConfig()
 	end
-	Fluent:SetTheme("Normal Theme")
+	Fluent:SetTheme("Dark")
 	
 	-- Safe FPS optimization with fallback
 	pcall(function()
