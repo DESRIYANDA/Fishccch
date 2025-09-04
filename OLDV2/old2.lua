@@ -1,6 +1,31 @@
-local Fluent = loadstring(game:HttpGet("https://raw.githubusercontent.com/Knuxy92/Ui-linoria/main/Fluent/Fluent.lua"))()
-local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
-local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+-- Fixed error handling for Fluent UI loading
+local Fluent
+local SaveManager  
+local InterfaceManager
+
+-- Safe loading with error handling
+pcall(function()
+    Fluent = loadstring(game:HttpGet("https://raw.githubusercontent.com/DESRIYANDA/Fishccch/main/OLDV2/Fluent.lua"))()
+end)
+
+if not Fluent then
+    pcall(function()
+        Fluent = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/Fluent.lua"))()
+    end)
+end
+
+pcall(function()
+    SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/DESRIYANDA/Fishccch/main/OLDV2/SaveManager.lua"))()
+end)
+
+pcall(function()
+    InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/DESRIYANDA/Fishccch/main/OLDV2/InterfaceManager.lua"))()
+end)
+
+-- Ensure Fluent is loaded before creating window
+if not Fluent then
+    error("Failed to load Fluent UI library")
+end
 
 local Window = Fluent:CreateWindow({
 	Title = "Dash Hub",
@@ -41,14 +66,7 @@ local function RainbowButton(button)
     local tween = tweenService:Create(button, tweenInfo, goal)
     tween:Play()
 end
-	
-local function RainbowButton(button)
-    local tweenService = game:GetService("TweenService")
-    local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, true) -- Repeat forever
-    local goal = {BackgroundColor3 = Color3.fromHSV(tick() % 10 / 10, 1, 1)} -- Use HSV for smooth color transitions
-    local tween = tweenService:Create(button, tweenInfo, goal)
-    tween:Play()
-end
+
 	-- \\ Module GetService // --
 
 	ReplicatedStorage = game:GetService('ReplicatedStorage')
@@ -69,26 +87,37 @@ end
 	Backpack = LocalPlayer.Backpack
 	request = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
 
-	Char = Client.Character
-	Character = Client.Character
+	-- Safe character access
+	Char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+	Character = Char
 	if not Threads then getgenv().Threads = {} end
 
-	repeat 
-		LocalPlayer = Players.LocalPlayer
-		wait()
-	until LocalPlayer
+	-- Ensure LocalPlayer is ready
+	if not LocalPlayer then
+		repeat 
+			LocalPlayer = Players.LocalPlayer
+			task.wait()
+		until LocalPlayer
+	end
 end
 
 function Notify(Des, Time, title)
-	Fluent:Notify({
-		Title= title or "Normal Hub Notify",
-		Content = Des,
-		Duration = Time or 3
-	})
+	if Fluent then
+		Fluent:Notify({
+			Title= title or "Normal Hub Notify",
+			Content = Des,
+			Duration = Time or 3
+		})
+	else
+		print("[Notify] " .. (title or "Normal Hub Notify") .. ": " .. Des)
+	end
 end
 
+-- Fix isWindows variable reference
+local isWindows = UserInputService:GetPlatform() == Enum.Platform.Windows
+
 _G['Normal Hub Table'] = {
-	isWindows = UserInputService:GetPlatform() == Enum.Platform.Windows,
+	isWindows = isWindows,
 	TypeOs = (table.find({Enum.Platform.Windows}, game:GetService('UserInputService'):GetPlatform()) ~= nil and 'Pc') or 'Mb',
 	SizeUi = (not isWindows and UDim2.fromOffset(600,300)) or UDim2.fromOffset(560,600),
 	AutoSize = true,
@@ -98,7 +127,6 @@ _G['Normal Hub Table'] = {
 	Mutiply = 1.80,
 	SizeX = 550,
 	SafePercent = 20,
-
 	AnimationUiToggle = true,
 }
 
@@ -3083,6 +3111,40 @@ local Tap = {
 	Settings = Window:AddTab({Title = "Settings", Icon = "settings"})
 }
 
+-- Add missing save function
+function save()
+	if SaveManager then
+		pcall(function()
+			SaveManager:Save()
+		end)
+	else
+		-- Fallback save method
+		pcall(function()
+			writefile("DashHubConfig.json", game:GetService("HttpService"):JSONEncode(Config))
+		end)
+	end
+end
+
+-- Add missing load function
+function load()
+	if SaveManager then
+		pcall(function()
+			SaveManager:Load()
+		end)
+	else
+		-- Fallback load method
+		pcall(function()
+			if isfile("DashHubConfig.json") then
+				local data = readfile("DashHubConfig.json")
+				local decoded = game:GetService("HttpService"):JSONDecode(data)
+				for k, v in pairs(decoded) do
+					Config[k] = v
+				end
+			end
+		end)
+	end
+end
+
 Toggle = function(Section, NameIndex, Description, ConfigName, Function, ...)
 	local Misc = {...}
 	ConfigName = ConfigName or NameIndex
@@ -3196,7 +3258,14 @@ end
 
 
 AllFuncs['Farm Fish'] = function()
-	local RodName = ReplicatedStorage.playerstats[LocalPlayer.Name].Stats.rod.Value
+	-- Safe access to player stats
+	local playerStats = ReplicatedStorage:FindFirstChild("playerstats")
+	if not playerStats or not playerStats:FindFirstChild(LocalPlayer.Name) then
+		warn("Player stats not found, retrying...")
+		return
+	end
+	
+	local RodName = playerStats[LocalPlayer.Name].Stats.rod.Value
 	while Config['Farm Fish'] and task.wait() do
 		if Backpack:FindFirstChild(RodName) then
 			LocalPlayer.Character.Humanoid:EquipTool(Backpack:FindFirstChild(RodName))
@@ -4216,18 +4285,35 @@ do
 	end)
 
 
-	InterfaceManager:SetLibrary(Fluent)
-	InterfaceManager:SetFolder("Normal Hub")
-	InterfaceManager:BuildInterfaceSection(Tap.Settings)
+	if InterfaceManager then
+		InterfaceManager:SetLibrary(Fluent)
+		InterfaceManager:SetFolder("Normal Hub")
+		InterfaceManager:BuildInterfaceSection(Tap.Settings)
+	end
 	Window:SelectTab(1)
-	SaveManager:LoadAutoloadConfig()
+	if SaveManager then
+		SaveManager:LoadAutoloadConfig()
+	end
 	Fluent:SetTheme("Normal Theme")
-	setfflag("TaskSchedulerTargetFps", "1000")
-setfpscap(120)
-while true do
-    if (game:GetService("Workspace").DistributedGameTime % 1 * 60) > 30 then
-        setfpscap(120)
-    end
-    wait(0)
-end
+	
+	-- Safe FPS optimization with fallback
+	pcall(function()
+		setfflag("TaskSchedulerTargetFps", "1000")
+	end)
+	
+	pcall(function()
+		setfpscap(120)
+	end)
+	
+	-- Safe FPS monitoring loop
+	spawn(function()
+		while true do
+			pcall(function()
+				if (game:GetService("Workspace").DistributedGameTime % 1 * 60) > 30 then
+					setfpscap(120)
+				end
+			end)
+			task.wait(1) -- Changed from wait(0) to prevent excessive CPU usage
+		end
+	end)
 end
