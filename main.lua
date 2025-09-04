@@ -233,6 +233,42 @@ local TeleportLocations = {
         ['Lucas (Fischfest)'] = CFrame.new(946, 132, 9894),
         ['Shell Merchant'] = CFrame.new(972, 132, 9921),
         ['Barnacle Bill'] = CFrame.new(989, 143, 9975)
+    },
+    ['Mariana Veil'] = {
+        -- SUBMARINE DEPOT
+        ['Submarine Depot'] = CFrame.new(1500, 125, 530),
+        ['North-Western Side'] = CFrame.new(-1305, 130, 310),
+        ['Submarine Depot (West)'] = CFrame.new(-1480, 137, 382),
+        
+        -- VOLCANIC VENTS
+        ['Magma Leviathan'] = CFrame.new(-4360, -11175, 3715),
+        ['Challenger\'s Deep Entrance'] = CFrame.new(-2630, -3830, 755),
+        ['Volcanic Vents Entrance'] = CFrame.new(-2745, -2325, 865),
+        ['Volcanic Tunnel End'] = CFrame.new(-3420, -2275, 3765),
+        ['Volcanic Rocks'] = CFrame.new(-3365, -2260, 3850),
+        ['Lava Fishing Cave'] = CFrame.new(-3495, -2255, 3825),
+        ['Lava Fishing Pool'] = CFrame.new(-3175, -2035, 4020),
+        
+        -- CHALLENGER'S DEEP
+        ['Abyssal Zenith Entrance'] = CFrame.new(-5375, -7390, 400),
+        ['Ice Fishing Cave (East)'] = CFrame.new(740, -3355, -1530),
+        ['Ice Cave (Large)'] = CFrame.new(-835, -3295, -625),
+        ['Ice Rocks Cave'] = CFrame.new(-800, -3280, -625),
+        ['Ice Fishing Cave (Central)'] = CFrame.new(-760, -3280, -715),
+        ['Ice Portal Back'] = CFrame.new(-735, -3280, -725),
+        
+        -- ABYSSAL ZENITH
+        ['Hidden River (Calm Zone)'] = CFrame.new(-4305, -11230, 1955),
+        ['Calm Zone'] = CFrame.new(-4145, -11210, 1395),
+        ['Crossbow Arrow (East)'] = CFrame.new(-2300, -11190, 7140),
+        ['Crossbow Bow'] = CFrame.new(-4800, -11185, 6610),
+        ['Crossbow Arrow (West)'] = CFrame.new(-4035, -11185, 6510),
+        ['Hidden River'] = CFrame.new(-4330, -11180, 3120),
+        ['Crossbow Base'] = CFrame.new(-4345, -11155, 6490),
+        ['Crossbow Base (Main)'] = CFrame.new(-4360, -11090, 7140),
+        ['Abyssal Zenith Upgrade'] = CFrame.new(-13515, -11050, 175),
+        ['Zenith Tunnel End'] = CFrame.new(-13420, -11050, 110),
+        ['Rod of the Zenith'] = CFrame.new(-13625, -11035, 355)
     }
 }
 local ZoneNames = {}
@@ -240,6 +276,7 @@ local RodNames = {}
 local ItemNames = {}
 local FishingSpotNames = {}
 local NPCNames = {}
+local MarianaVeilNames = {}
 local RodColors = {}
 local RodMaterials = {}
 for i,v in pairs(TeleportLocations['Zones']) do table.insert(ZoneNames, i) end
@@ -247,6 +284,7 @@ for i,v in pairs(TeleportLocations['Rods']) do table.insert(RodNames, i) end
 for i,v in pairs(TeleportLocations['Items']) do table.insert(ItemNames, i) end
 for i,v in pairs(TeleportLocations['Fishing Spots']) do table.insert(FishingSpotNames, i) end
 for i,v in pairs(TeleportLocations['NPCs']) do table.insert(NPCNames, i) end
+for i,v in pairs(TeleportLocations['Mariana Veil']) do table.insert(MarianaVeilNames, i) end
 
 --// Functions
 FindChildOfClass = function(parent, classname)
@@ -840,6 +878,16 @@ end)
 NPCSection:NewButton("Teleport To NPC", "Teleport to selected NPC", function()
     if flags['npcs'] then
         gethrp().CFrame = TeleportLocations['NPCs'][flags['npcs']]
+    end
+end)
+
+local MarianaSection = TeleTab:NewSection("🌊 Mariana's Veil")
+MarianaSection:NewDropdown("Select Mariana Location", "Choose a Mariana's Veil location", MarianaVeilNames, function(currentOption)
+    flags['marianaveil'] = currentOption
+end)
+MarianaSection:NewButton("Teleport To Mariana Location", "Teleport to selected Mariana's Veil location", function()
+    if flags['marianaveil'] then
+        gethrp().CFrame = TeleportLocations['Mariana Veil'][flags['marianaveil']]
     end
 end)
 
