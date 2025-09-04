@@ -1576,19 +1576,45 @@ RunService.Heartbeat:Connect(function()
         getchar():SetAttribute('Refill', false)
     end
     
-    -- Enhanced Always Catch - Auto complete reel minigame
+    -- Enhanced Always Catch - Multi-method immediate bypass
     if flags['alwayscatch'] then
         local rod = FindRod()
         if rod and rod['values'] and rod['values']['lure'] then
-            -- Check if fish is hooked and minigame should be bypassed
-            if rod['values']['lure'].Value >= 99.9 then
-                -- Try to bypass reel minigame immediately
+            -- More aggressive detection - catch at any high lure value
+            if rod['values']['lure'].Value >= 95 then
+                -- Multiple bypass methods
                 pcall(function()
-                    -- Check for reel GUI
-                    local reelGui = lp.PlayerGui:FindFirstChild('reel')
-                    if reelGui then
-                        -- Immediately complete the reel
-                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                end)
+                
+                -- Force close any active fishing GUIs
+                pcall(function()
+                    for _, gui in pairs(lp.PlayerGui:GetChildren()) do
+                        if gui:IsA("ScreenGui") then
+                            local name = string.lower(gui.Name)
+                            if string.find(name, "reel") or string.find(name, "fish") or string.find(name, "catch") then
+                                if gui.Enabled then
+                                    gui.Enabled = false
+                                end
+                            end
+                        end
+                    end
+                end)
+                
+                -- Additional safety nets
+                pcall(function()
+                    -- Try alternative event names
+                    if ReplicatedStorage:FindFirstChild("events") then
+                        local events = ReplicatedStorage.events
+                        if events:FindFirstChild("reelfinished") then
+                            events.reelfinished:FireServer(100, true)
+                        end
+                        if events:FindFirstChild("catchfish") then
+                            events.catchfish:FireServer(100, true)  
+                        end
+                        if events:FindFirstChild("completecatch") then
+                            events.completecatch:FireServer(100, true)
+                        end
                     end
                 end)
             end
@@ -1606,53 +1632,115 @@ if CheckFunc(hookmetamethod) then
         elseif method == 'FireServer' and self.Name == 'cast' and flags['perfectcast'] then
             args[1] = 100
             return old(self, unpack(args))
-        elseif method == 'FireServer' and self.Name == 'reelfinished' and flags['alwayscatch'] then
-            args[1] = 100
-            args[2] = true
-            return old(self, unpack(args))
+        elseif method == 'FireServer' and flags['alwayscatch'] then
+            -- Comprehensive hook for any fishing-related events
+            if self.Name == 'reelfinished' or self.Name == 'catchfish' or self.Name == 'completecatch' then
+                args[1] = 100
+                args[2] = true
+                return old(self, unpack(args))
+            elseif string.find(string.lower(self.Name), "reel") or string.find(string.lower(self.Name), "catch") or string.find(string.lower(self.Name), "fish") then
+                -- Catch any fishing-related FireServer calls
+                if #args >= 2 then
+                    args[1] = 100
+                    args[2] = true
+                elseif #args >= 1 then
+                    args[1] = 100
+                end
+                return old(self, unpack(args))
+            end
         end
         return old(self, ...)
     end)
 end
 
--- Additional Always Catch implementation
+-- Enhanced Always Catch implementation - Multiple layers of protection
 if flags then
-    -- Enhanced Always Catch using different approach
+    -- Layer 1: Immediate hook interceptor
     task.spawn(function()
         while true do
-            task.wait(0.1)
+            task.wait(0.05) -- Very fast checking
             if flags['alwayscatch'] then
                 local rod = FindRod()
                 if rod and rod['values'] and rod['values']['lure'] then
                     -- When fish bites (lure = 100), immediately catch it
-                    if rod['values']['lure'].Value >= 99.9 then
-                        task.wait(0.1) -- Small delay to ensure minigame starts
-                        
-                        -- Try multiple methods to catch the fish
+                    if rod['values']['lure'].Value >= 99.5 then
+                        -- Immediate bypass without waiting for minigame
                         pcall(function()
-                            -- Method 1: Direct reelfinished call
                             ReplicatedStorage.events.reelfinished:FireServer(100, true)
                         end)
-                        
-                        pcall(function()
-                            -- Method 2: Check for reel GUI and auto-complete
-                            if lp.PlayerGui:FindFirstChild('reel') then
-                                ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                            end
-                        end)
-                        
-                        pcall(function()
-                            -- Method 3: Auto-complete any active minigame
-                            local reelGui = lp.PlayerGui:FindFirstChild('reel')
-                            if reelGui and reelGui.Enabled then
-                                -- Force complete the reel minigame
-                                ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                                reelGui.Enabled = false
-                            end
-                        end)
-                        
-                        task.wait(0.5) -- Wait before next check
+                        task.wait(0.2) -- Prevent spam
                     end
+                end
+            end
+        end
+    end)
+    
+    -- Layer 2: GUI Detection and Bypass
+    task.spawn(function()
+        while true do
+            task.wait(0.05)
+            if flags['alwayscatch'] then
+                -- Check for any fishing minigame GUIs
+                pcall(function()
+                    -- Method 1: Reel GUI
+                    local reelGui = lp.PlayerGui:FindFirstChild('reel')
+                    if reelGui and reelGui.Enabled then
+                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                        reelGui.Enabled = false -- Force close
+                    end
+                    
+                    -- Method 2: Alternative reel names
+                    local reelUI = lp.PlayerGui:FindFirstChild('reelui') 
+                    if reelUI and reelUI.Enabled then
+                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                        reelUI.Enabled = false
+                    end
+                    
+                    -- Method 3: Fishing UI
+                    local fishUI = lp.PlayerGui:FindFirstChild('fishingui')
+                    if fishUI and fishUI.Enabled then
+                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                        fishUI.Enabled = false
+                    end
+                    
+                    -- Method 4: Any UI with 'fish' in name
+                    for _, gui in pairs(lp.PlayerGui:GetChildren()) do
+                        if gui:IsA("ScreenGui") and string.find(string.lower(gui.Name), "fish") then
+                            if gui.Enabled then
+                                ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                                gui.Enabled = false
+                            end
+                        end
+                    end
+                end)
+            end
+        end
+    end)
+    
+    -- Layer 3: Roblox Events Monitoring
+    task.spawn(function()
+        local connections = {}
+        while true do
+            task.wait(0.1)
+            if flags['alwayscatch'] then
+                -- Monitor for new GUI events
+                pcall(function()
+                    for _, gui in pairs(lp.PlayerGui:GetChildren()) do
+                        if gui:IsA("ScreenGui") and not connections[gui] then
+                            connections[gui] = gui.ChildAdded:Connect(function(child)
+                                if flags['alwayscatch'] then
+                                    task.wait(0.05)
+                                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                                end
+                            end)
+                        end
+                    end
+                end)
+            else
+                -- Cleanup connections when disabled
+                for gui, connection in pairs(connections) do
+                    connection:Disconnect()
+                    connections[gui] = nil
                 end
             end
         end
