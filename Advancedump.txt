@@ -1,0 +1,356 @@
+🔎 ADVANCED GAME DATA DUMP
+Generated: Thu Sep  4 03:34:23 2025
+==================================================
+
+📡 REMOTE EVENTS & FUNCTIONS:
+------------------------------
+RemoteEvent: ReplicatedStorage.JWE_Events.LogCustomEvent
+RemoteEvent: ReplicatedStorage.JWE_Events.LogEconomyEvent
+RemoteEvent: ReplicatedStorage.JWE_Events.LogFunnelStepEvent
+RemoteEvent: ReplicatedStorage.JWE_Events.LogOnbiardingFunnelStepEvent
+RemoteEvent: ReplicatedStorage.JWE_Events.LogProgressionStartEvent
+RemoteEvent: ReplicatedStorage.JWE_Events.LogProgressionFailEvent
+RemoteEvent: ReplicatedStorage.JWE_Events.LogProgressionCompleteEvent
+RemoteEvent: ReplicatedStorage.JWE_Events.SurveyRemote
+RemoteEvent: ReplicatedStorage.events.anno_catch
+RemoteEvent: ReplicatedStorage.events.dialogstart
+RemoteEvent: ReplicatedStorage.events.reelfinished
+RemoteEvent: ReplicatedStorage.events.anno_equip
+RemoteEvent: ReplicatedStorage.events.finishedloading
+RemoteEvent: ReplicatedStorage.events.LocalCutscene
+RemoteEvent: ReplicatedStorage.events.anno_unlock
+RemoteEvent: ReplicatedStorage.events.anno_titleunlock
+RemoteEvent: ReplicatedStorage.events.anno_thought
+RemoteEvent: ReplicatedStorage.events.anno_bait
+RemoteEvent: ReplicatedStorage.events.anno_bestiary
+RemoteEvent: ReplicatedStorage.events.claimGroupReward
+RemoteEvent: ReplicatedStorage.events.drown
+RemoteEvent: ReplicatedStorage.events.anno_boat
+RemoteFunction: ReplicatedStorage.events.offeritem
+RemoteEvent: ReplicatedStorage.events.anno_top
+RemoteEvent: ReplicatedStorage.events.anno_quest
+RemoteEvent: ReplicatedStorage.events.anno_serverEvent
+RemoteFunction: ReplicatedStorage.events.enchant
+RemoteEvent: ReplicatedStorage.events.showchangelog
+RemoteEvent: ReplicatedStorage.events.afk
+RemoteFunction: ReplicatedStorage.events.selleverything
+RemoteEvent: ReplicatedStorage.events.selfannounce
+RemoteEvent: ReplicatedStorage.events.bestiarycomplete
+RemoteEvent: ReplicatedStorage.events.discoverlocation
+RemoteEvent: ReplicatedStorage.events.anno_thought_big
+RemoteEvent: ReplicatedStorage.events.fishMutation
+RemoteEvent: ReplicatedStorage.events.runcode
+RemoteEvent: ReplicatedStorage.events.getcurrency
+RemoteEvent: ReplicatedStorage.events.C$
+RemoteEvent: ReplicatedStorage.events.setWaterTransparency
+RemoteFunction: ReplicatedStorage.events.SetGifting
+RemoteEvent: ReplicatedStorage.events.anno_server_chat
+RemoteEvent: ReplicatedStorage.events.rodwave
+RemoteEvent: ReplicatedStorage.events.nuke_spawned
+RemoteEvent: ReplicatedStorage.events.treasure_map_unlock
+RemoteEvent: ReplicatedStorage.events.spawn_treasure
+RemoteEvent: ReplicatedStorage.events.load_treasure
+RemoteEvent: ReplicatedStorage.events.GetTreasureMapCoordinates
+RemoteEvent: ReplicatedStorage.events.open_treasure
+RemoteEvent: ReplicatedStorage.events.notification
+RemoteEvent: ReplicatedStorage.events.debug_hammerhit
+RemoteFunction: ReplicatedStorage.events.CanCraft
+RemoteFunction: ReplicatedStorage.events.AttemptCraft
+RemoteEvent: ReplicatedStorage.events.voyagerlaser
+RemoteEvent: ReplicatedStorage.events.shakehudeffect
+RemoteEvent: ReplicatedStorage.events.bite_event_sound
+RemoteEvent: ReplicatedStorage.events.seraphiclaser
+RemoteFunction: ReplicatedStorage.events.SellAll
+RemoteEvent: ReplicatedStorage.events.vessel_unlock
+RemoteFunction: ReplicatedStorage.events.Sell
+RemoteFunction: ReplicatedStorage.events.CheckHasSkin
+RemoteEvent: ReplicatedStorage.events.ridezipline
+RemoteEvent: ReplicatedStorage.events.debug_swordhit
+RemoteEvent: ReplicatedStorage.events.SetSearchList
+RemoteEvent: ReplicatedStorage.events.setFightState
+RemoteEvent: ReplicatedStorage.events.LoadInventoryPage
+RemoteEvent: ReplicatedStorage.events.debug_daggerhit
+RemoteEvent: ReplicatedStorage.events.RagdollMessage
+RemoteEvent: ReplicatedStorage.events.exalted_rod_animation
+RemoteEvent: ReplicatedStorage.events.debug_guitar
+RemoteEvent: ReplicatedStorage.events.debug_giveprogress
+RemoteEvent: ReplicatedStorage.events.rod_cast
+RemoteEvent: ReplicatedStorage.events.HeartOfZeusBeam
+RemoteEvent: ReplicatedStorage.events.TNTReveal
+RemoteEvent: ReplicatedStorage.events.RemoveMyTeleportScreen
+RemoteEvent: ReplicatedStorage.events.chat
+RemoteEvent: ReplicatedStorage.events.DamageRock
+RemoteEvent: ReplicatedStorage.events.thelimited_salesperson
+RemoteEvent: ReplicatedStorage.events.mikulaser
+RemoteEvent: ReplicatedStorage.events.scyllaAttack
+RemoteEvent: ReplicatedStorage.events.scyllaDamageEvent
+RemoteEvent: ReplicatedStorage.events.scyllaSetTarget
+RemoteEvent: ReplicatedStorage.events.easter_updatequest
+RemoteEvent: ReplicatedStorage.events.Open Egg
+RemoteEvent: ReplicatedStorage.events.UICompatibility
+RemoteEvent: ReplicatedStorage.events.CancelEmote
+RemoteEvent: ReplicatedStorage.events.cursed_nuke_spawned
+RemoteEvent: ReplicatedStorage.events.keepersTorchHit
+RemoteEvent: ReplicatedStorage.events.shootKeepersTorch
+RemoteEvent: ReplicatedStorage.events.clientTakeDamage
+RemoteEvent: ReplicatedStorage.events.ToggleEclipseDomainUI
+RemoteFunction: ReplicatedStorage.events.RequestRedemption
+RemoteFunction: ReplicatedStorage.events.enchantrod
+RemoteFunction: ReplicatedStorage.events.xDBpvLiofHFqn
+RemoteEvent: ReplicatedStorage.PostieSent
+RemoteEvent: ReplicatedStorage.PostieReceived
+RemoteEvent: ReplicatedStorage.GameAnalyticsRemoteConfigs
+RemoteEvent: ReplicatedStorage.GameAnalyticsError
+RemoteFunction: ReplicatedStorage.Remotes.Request
+RemoteEvent: ReplicatedStorage.Remotes.PlayImmersiveVideoEvent
+RemoteEvent: ReplicatedStorage.Remotes.ImmersiveVideoQueuedEvent
+RemoteFunction: ReplicatedStorage.InGameExplorer_Shared.InGameExplorer_RemoteFunction
+RemoteEvent: ReplicatedStorage.InGameExplorer_Shared.InGameExplorer_RemoteEvent
+RemoteEvent: ReplicatedStorage.conch_networking.invoke_server_command
+RemoteEvent: ReplicatedStorage.conch_networking.create_user
+RemoteEvent: ReplicatedStorage.conch_networking.update_user_roles
+RemoteEvent: ReplicatedStorage.conch_networking.update_role_permissions
+RemoteEvent: ReplicatedStorage.conch_networking.register_command
+RemoteEvent: ReplicatedStorage.conch_networking.log
+
+📦 MODULE SCRIPTS WITH EXTRACTED DATA:
+----------------------------------------
+
+Module: GameSettings
+Path: ReplicatedStorage.GameSettings
+No extractable data found
+
+Module: ImmersiveVideo
+Path: ReplicatedStorage.ImmersiveVideo
+No extractable data found
+
+Module: Enclave
+Path: ReplicatedStorage.ImmersiveVideo.Enclave
+No extractable data found
+
+Module: region.story
+Path: ReplicatedStorage.stories.region.story
+No extractable data found
+
+Module: root.storybook
+Path: ReplicatedStorage.stories.root.storybook
+No extractable data found
+
+Module: localCharacter
+Path: ReplicatedStorage.client.localCharacter
+No extractable data found
+
+Module: ui
+Path: ReplicatedStorage.client.ui
+No extractable data found
+
+Module: gamePlayer
+Path: ReplicatedStorage.client.gamePlayer
+No extractable data found
+
+Module: moduleLoader
+Path: ReplicatedStorage.client.moduleLoader
+No extractable data found
+
+Module: RewardInfo
+Path: ReplicatedStorage.shared.RewardInfo
+No extractable data found
+
+Module: AnalyticTrackingTypes
+Path: ReplicatedStorage.shared.AnalyticTrackingTypes
+No extractable data found
+
+Module: spatialHashing
+Path: ReplicatedStorage.shared.spatialHashing
+No extractable data found
+
+Module: collection
+Path: ReplicatedStorage.shared.collection
+No extractable data found
+
+Module: dataTemplate
+Path: ReplicatedStorage.shared.dataTemplate
+No extractable data found
+
+Module: conchTypes
+Path: ReplicatedStorage.shared.conchTypes
+No extractable data found
+
+Module: environment
+Path: ReplicatedStorage.shared.environment
+No extractable data found
+
+Module: playerSettings
+Path: ReplicatedStorage.shared.playerSettings
+No extractable data found
+
+Module: FormatNumber
+Path: ReplicatedStorage.shared.FormatNumber
+No extractable data found
+
+Module: Monetization
+Path: ReplicatedStorage.shared.Monetization
+No extractable data found
+
+Module: Trove
+Path: ReplicatedStorage.packages.Trove
+No extractable data found
+
+Module: Signal
+Path: ReplicatedStorage.packages.Signal
+No extractable data found
+
+Module: Timer
+Path: ReplicatedStorage.packages.Timer
+No extractable data found
+
+Module: Input
+Path: ReplicatedStorage.packages.Input
+No extractable data found
+
+Module: Promise
+Path: ReplicatedStorage.packages.Promise
+No extractable data found
+
+Module: ReplionOld
+Path: ReplicatedStorage.packages.ReplionOld
+No extractable data found
+
+Module: Net
+Path: ReplicatedStorage.packages.Net
+No extractable data found
+
+Module: Component
+Path: ReplicatedStorage.packages.Component
+No extractable data found
+
+Module: Observers
+Path: ReplicatedStorage.packages.Observers
+No extractable data found
+
+Module: ViewportModel
+Path: ReplicatedStorage.packages.ViewportModel
+No extractable data found
+
+Module: Cache
+Path: ReplicatedStorage.packages.Cache
+No extractable data found
+
+Module: jecs
+Path: ReplicatedStorage.packages.jecs
+No extractable data found
+
+Module: Shake
+Path: ReplicatedStorage.packages.Shake
+No extractable data found
+
+Module: SimplePath
+Path: ReplicatedStorage.packages.SimplePath
+No extractable data found
+
+Module: Debounce
+Path: ReplicatedStorage.packages.Debounce
+No extractable data found
+
+Module: Freeze
+Path: ReplicatedStorage.packages.Freeze
+No extractable data found
+
+Module: Hovering
+Path: ReplicatedStorage.packages.Hovering
+No extractable data found
+
+Module: Loader
+Path: ReplicatedStorage.packages.Loader
+No extractable data found
+
+Module: Symbol
+Path: ReplicatedStorage.packages.Symbol
+No extractable data found
+
+Module: conch_standalone
+Path: ReplicatedStorage.packages.conch_standalone
+No extractable data found
+
+Module: luauSignal
+Path: ReplicatedStorage.packages.luauSignal
+No extractable data found
+
+Module: vide
+Path: ReplicatedStorage.packages.vide
+No extractable data found
+
+Module: ui-labs
+Path: ReplicatedStorage.packages.ui-labs
+No extractable data found
+
+Module: rock
+Path: ReplicatedStorage.packages.rock
+No extractable data found
+
+Module: WeightedRandom
+Path: ReplicatedStorage.packages.WeightedRandom
+No extractable data found
+
+Module: PID
+Path: ReplicatedStorage.packages.PID
+No extractable data found
+
+Module: Moonlite
+Path: ReplicatedStorage.packages.Moonlite
+No extractable data found
+
+Module: CameraShaker
+Path: ReplicatedStorage.packages.CameraShaker
+No extractable data found
+
+Module: deltacompress
+Path: ReplicatedStorage.packages.deltacompress
+No extractable data found
+
+Module: patch
+Path: ReplicatedStorage.packages.patch
+No extractable data found
+
+Module: Replion
+Path: ReplicatedStorage.packages.Replion
+No extractable data found
+
+Module: PromiseTypes
+Path: ReplicatedStorage.packages.PromiseTypes
+No extractable data found
+
+Module: TableUtil
+Path: ReplicatedStorage.packages.TableUtil
+No extractable data found
+
+Module: State
+Path: ReplicatedStorage.packages.State
+No extractable data found
+
+Module: WaitFor
+Path: ReplicatedStorage.packages.WaitFor
+No extractable data found
+
+Module: Keybind
+Path: ReplicatedStorage.InGameExplorer_Shared.Keybind
+No extractable data found
+
+Module: LogShared
+Path: ReplicatedStorage.InGameExplorer_Shared.LogShared
+No extractable data found
+
+Module: InGameExplorerShared
+Path: ReplicatedStorage.InGameExplorer_Shared.InGameExplorerShared
+No extractable data found
+
+Module: Replicator
+Path: ReplicatedStorage.InGameExplorer_Shared.Replicator
+No extractable data found
+
+==================================================
+SUMMARY:
+Total Remotes: 108
+Total Modules: 58
+Total Extracted Data Items: 0
+==================================================

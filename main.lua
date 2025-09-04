@@ -724,9 +724,17 @@ CastSection:NewToggle("Auto Cast", "Automatically cast fishing rod", function(st
     flags['autocast'] = state
 end)
 
--- Fix slider issue - properly define default value
+-- Fix slider issue - properly define default value with initial state
 local castSlider = CastSection:NewSlider("Auto Cast Delay", "Delay between auto casts (seconds)", 0.1, 5, function(value)
     flags['autocastdelay'] = value
+    print("[Auto Cast] Delay set to: " .. value .. " seconds")
+end)
+
+-- Set initial slider value to match default
+pcall(function()
+    if castSlider and castSlider.SetValue then
+        castSlider:SetValue(flags['autocastdelay'] or 0.5)
+    end
 end)
 
 local ShakeSection = AutoTab:NewSection("Auto Shake Settings")
@@ -737,11 +745,29 @@ end)
 local ReelSection = AutoTab:NewSection("Auto Reel Settings") 
 ReelSection:NewToggle("Auto Reel", "Automatically reel in fish", function(state)
     flags['autoreel'] = state
+    if state then
+        flags['instantreel'] = false -- Disable instant reel if auto reel enabled
+    end
 end)
 
--- Fix slider issue - properly define default value
+ReelSection:NewToggle("Instant Reel", "Instantly reel fish with no delay (RISKY)", function(state)
+    flags['instantreel'] = state
+    if state then
+        flags['autoreel'] = false -- Disable auto reel if instant reel enabled
+    end
+end)
+
+-- Fix slider issue - properly define default value with initial state
 local reelSlider = ReelSection:NewSlider("Auto Reel Delay", "Delay between auto reels (seconds)", 0.1, 5, function(value)
     flags['autoreeldelay'] = value
+    print("[Auto Reel] Delay set to: " .. value .. " seconds")
+end)
+
+-- Set initial slider value to match default
+pcall(function()
+    if reelSlider and reelSlider.SetValue then
+        reelSlider:SetValue(flags['autoreeldelay'] or 0.5)
+    end
 end)
 
 -- Modifications Section
@@ -868,13 +894,23 @@ RunService.Heartbeat:Connect(function()
     end
     if flags['autocast'] then
         local rod = FindRod()
-        if rod ~= nil and rod['values']['lure'].Value <= .001 and task.wait(flags['autocastdelay'] or 0.5) then
+        local currentDelay = flags['autocastdelay'] or 0.5
+        if rod ~= nil and rod['values']['lure'].Value <= .001 and task.wait(currentDelay) then
             rod.events.cast:FireServer(100, 1)
         end
     end
     if flags['autoreel'] then
         local rod = FindRod()
-        if rod ~= nil and rod['values']['lure'].Value == 100 and task.wait(flags['autoreeldelay'] or 0.5) then
+        local currentDelay = flags['autoreeldelay'] or 0.5
+        if rod ~= nil and rod['values']['lure'].Value == 100 and task.wait(currentDelay) then
+            ReplicatedStorage.events.reelfinished:FireServer(100, true)
+        end
+    end
+    
+    -- Instant Reel (No Delay) - RISKY but very fast
+    if flags['instantreel'] then
+        local rod = FindRod()
+        if rod ~= nil and rod['values']['lure'].Value == 100 then
             ReplicatedStorage.events.reelfinished:FireServer(100, true)
         end
     end
