@@ -4,11 +4,31 @@ local ReplicatedStorage = cloneref(game:GetService('ReplicatedStorage'))
 local RunService = cloneref(game:GetService('RunService'))
 local GuiService = cloneref(game:GetService('GuiService'))
 
--- Protect TweenService from workspace errors
+-- Protect TweenService and block fishing animations
 pcall(function()
     local TweenService = game:GetService("TweenService")
     local originalCreate = TweenService.Create
     TweenService.Create = function(self, instance, ...)
+        -- Block fishing rod animations when always catch is enabled
+        if flags and flags['alwayscatch'] and instance then
+            local instanceName = tostring(instance)
+            local instanceParent = instance.Parent and tostring(instance.Parent) or ""
+            
+            -- Block fishing-related tweens
+            if string.find(string.lower(instanceName), "rod") or 
+               string.find(string.lower(instanceName), "reel") or
+               string.find(string.lower(instanceName), "lure") or
+               string.find(string.lower(instanceParent), "fishing") then
+                -- Return dummy tween that does nothing
+                return {
+                    Play = function() end,
+                    Cancel = function() end,
+                    Pause = function() end,
+                    Destroy = function() end
+                }
+            end
+        end
+        
         if instance and instance.Parent then
             return originalCreate(self, instance, ...)
         else
@@ -1576,26 +1596,36 @@ RunService.Heartbeat:Connect(function()
         getchar():SetAttribute('Refill', false)
     end
     
-    -- Enhanced Always Catch - Multi-method immediate bypass
+    -- Enhanced Always Catch - Ultra-Instant Multi-method bypass
     if flags['alwayscatch'] then
         local rod = FindRod()
         if rod and rod['values'] and rod['values']['lure'] then
-            -- More aggressive detection - catch at any high lure value
-            if rod['values']['lure'].Value >= 95 then
-                -- Multiple bypass methods
+            -- Ultra-aggressive detection - catch immediately when fish bites
+            if rod['values']['lure'].Value >= 99 then
+                -- Instant multiple bypass methods (no delays)
                 pcall(function()
+                    -- Primary method
                     ReplicatedStorage.events.reelfinished:FireServer(100, true)
                 end)
                 
-                -- Force close any active fishing GUIs
+                pcall(function()
+                    -- Secondary method with force completion
+                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                end)
+                
+                -- Immediately reset lure to stop animation
+                pcall(function()
+                    rod['values']['lure'].Value = 0.001
+                end)
+                
+                -- Force destroy any fishing GUIs instantly
                 pcall(function()
                     for _, gui in pairs(lp.PlayerGui:GetChildren()) do
                         if gui:IsA("ScreenGui") then
                             local name = string.lower(gui.Name)
-                            if string.find(name, "reel") or string.find(name, "fish") or string.find(name, "catch") then
-                                if gui.Enabled then
-                                    gui.Enabled = false
-                                end
+                            if string.find(name, "reel") or string.find(name, "fish") or string.find(name, "catch") or string.find(name, "shake") then
+                                gui:Destroy() -- Complete destruction, not just disable
                             end
                         end
                     end
@@ -1638,6 +1668,13 @@ if CheckFunc(hookmetamethod) then
                 args[1] = 100
                 args[2] = true
                 return old(self, unpack(args))
+            -- Block animation events that cause pulling animation
+            elseif self.Name == 'startAnimation' or self.Name == 'playAnimation' or 
+                   string.find(string.lower(self.Name), "animation") or
+                   string.find(string.lower(self.Name), "tween") or
+                   string.find(string.lower(self.Name), "pull") then
+                -- Block animation events during always catch
+                return -- Don't execute the animation
             elseif string.find(string.lower(self.Name), "reel") or string.find(string.lower(self.Name), "catch") or string.find(string.lower(self.Name), "fish") then
                 -- Catch any fishing-related FireServer calls
                 if #args >= 2 then
@@ -1695,20 +1732,47 @@ if flags then
         end
     end)
     
-    -- Layer 2: Immediate hook interceptor
+    -- Layer 2: Ultra-Instant Catch System
     task.spawn(function()
         while true do
-            task.wait(0.05) -- Very fast checking
+            task.wait(0.01) -- Ultra-fast checking (100Hz)
             if flags['alwayscatch'] then
                 local rod = FindRod()
                 if rod and rod['values'] and rod['values']['lure'] then
                     -- When fish bites (lure = 100), immediately catch it
-                    if rod['values']['lure'].Value >= 99.5 then
-                        -- Immediate bypass without waiting for minigame
+                    if rod['values']['lure'].Value >= 99.9 then
+                        -- Multiple instant catch methods with no delay
                         pcall(function()
+                            -- Method 1: Standard reelfinished
                             ReplicatedStorage.events.reelfinished:FireServer(100, true)
                         end)
-                        task.wait(0.2) -- Prevent spam
+                        
+                        pcall(function()
+                            -- Method 2: Force complete catch
+                            ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                        end)
+                        
+                        pcall(function()
+                            -- Method 3: Alternative event names
+                            if ReplicatedStorage:FindFirstChild("events") then
+                                local events = ReplicatedStorage.events
+                                if events:FindFirstChild("catchfish") then
+                                    events.catchfish:FireServer(100, true)
+                                end
+                                if events:FindFirstChild("completecatch") then
+                                    events.completecatch:FireServer(100, true)
+                                end
+                            end
+                        end)
+                        
+                        -- Reset lure value to prevent animation
+                        pcall(function()
+                            if rod['values']['lure'] then
+                                rod['values']['lure'].Value = 0
+                            end
+                        end)
+                        
+                        task.wait(0.05) -- Minimal wait to prevent excessive spam
                     end
                 end
             end
