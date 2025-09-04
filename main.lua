@@ -1655,7 +1655,47 @@ end
 
 -- Enhanced Always Catch implementation - Multiple layers of protection
 if flags then
-    -- Layer 1: Immediate hook interceptor
+    -- Layer 1: Real-time GUI prevention and destruction
+    task.spawn(function()
+        while true do
+            task.wait(0.02) -- Ultra-fast checking (50Hz)
+            if flags['alwayscatch'] then
+                -- Destroy any fishing minigame GUIs immediately
+                pcall(function()
+                    local playerGui = lp.PlayerGui
+                    
+                    -- List of possible minigame GUI names
+                    local minigameGuis = {
+                        'reel', 'reelui', 'fishing', 'fishgame', 'minigame',
+                        'shake', 'shakeui', 'catchfish', 'fishcatch',
+                        'progressbar', 'reelbar', 'fishbar'
+                    }
+                    
+                    for _, guiName in ipairs(minigameGuis) do
+                        local gui = playerGui:FindFirstChild(guiName)
+                        if gui then
+                            gui:Destroy()
+                            -- Immediately complete the catch
+                            ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                        end
+                    end
+                    
+                    -- Also check for any GUI with "reel" or "fish" in the name
+                    for _, gui in ipairs(playerGui:GetChildren()) do
+                        if gui:IsA("ScreenGui") then
+                            local name = string.lower(gui.Name)
+                            if string.find(name, "reel") or string.find(name, "fish") or string.find(name, "catch") then
+                                gui:Destroy()
+                                ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                            end
+                        end
+                    end
+                end)
+            end
+        end
+    end)
+    
+    -- Layer 2: Immediate hook interceptor
     task.spawn(function()
         while true do
             task.wait(0.05) -- Very fast checking
