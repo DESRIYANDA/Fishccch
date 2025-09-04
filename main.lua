@@ -20,6 +20,7 @@ local Players = safeGetService('Players')
 local ReplicatedStorage = safeGetService('ReplicatedStorage')
 local RunService = safeGetService('RunService')
 local GuiService = safeGetService('GuiService')
+local StarterGui = safeGetService('StarterGui')
 
 -- Wait for LocalPlayer to be available
 local lp = Players.LocalPlayer
@@ -166,16 +167,37 @@ local function message(text, time)
     if tooltipmessage then 
         pcall(function() tooltipmessage:Remove() end)
     end
-    pcall(function()
-        tooltipmessage = require(lp.PlayerGui:WaitForChild("GeneralUIModule")):GiveToolTip(lp, text)
-        task.spawn(function()
-            task.wait(time or 3)
-            if tooltipmessage then 
-                pcall(function() tooltipmessage:Remove() end)
-                tooltipmessage = nil 
+    
+    local success = pcall(function()
+        local playerGui = lp:WaitForChild("PlayerGui", 5)
+        if playerGui then
+            local generalUI = playerGui:WaitForChild("GeneralUIModule", 3)
+            if generalUI then
+                local uiModule = require(generalUI)
+                if uiModule and uiModule.GiveToolTip then
+                    tooltipmessage = uiModule:GiveToolTip(lp, text)
+                    task.spawn(function()
+                        task.wait(time or 3)
+                        if tooltipmessage then 
+                            pcall(function() tooltipmessage:Remove() end)
+                            tooltipmessage = nil 
+                        end
+                    end)
+                end
             end
-        end)
+        end
     end)
+    
+    if not success then
+        -- Fallback to StarterGui notification
+        pcall(function()
+            StarterGui:SetCore("SendNotification", {
+                Title = "Fishing Script",
+                Text = text,
+                Duration = time or 3
+            })
+        end)
+    end
 end
 
 -- Executor compatibility functions
@@ -277,6 +299,8 @@ local function FindNearbyTreasures()
     end)
     return treasures
 end
+
+print("✅ Helper functions and teleport locations initialized")
 
 local TeleportLocations = {
     ['Zones'] = {
