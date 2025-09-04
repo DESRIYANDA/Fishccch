@@ -1,0 +1,179 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                      FISCHIPEDIA MARIANA'S VEIL GPS COORDINATES               ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Scraped: 2025-09-03 23:44:36                                               ║
+║ Source: https://fischipedia.org/wiki/Mariana%27s_Veil#Calm_Zone...             ║
+║ Total Coordinates: 27                                                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+==================== SUBMARINE DEPOT ====================
+
+[03] Submarine Depot
+     📍 Coordinates: (1500, 125, 530)
+     🎯 X:  1500 | Y:   125 | Z:   530
+     📝 Context: na's Veil - Official Fisch Wiki AnonymousNot logged inCreate accountLog inDark modeFisch WikiSearch ...
+------------------------------------------------------------
+
+[03] the North-Western side
+     📍 Coordinates: (-1305, 130, 310)
+     🎯 X: -1305 | Y:   130 | Z:   310
+     📝 Context: Full Bestiary 7.1 Volcanic Vents 7.2 Challenger's Deep 7.3 Abyssal Zenith 7.4 Calm Zone 7.5 Veil of ...
+------------------------------------------------------------
+
+[03] The Submarine Depot
+     📍 Coordinates: (-1480, 137, 382)
+     🎯 X: -1480 | Y:   137 | Z:   382
+     📝 Context: he North-Western side of Roslit Bay (-1305, 130, 310) and serves as the location for the player to i...
+------------------------------------------------------------
+
+==================== VOLCANIC VENTS ====================
+
+[10] Magma Leviathan
+     📍 Coordinates: (-4360, -11175, 3715)
+     🎯 X: -4360 | Y:-11175 | Z:  3715
+     📝 Context: anic Vents It should be noted that progress will be saved even if the player leaves the server. Plac...
+------------------------------------------------------------
+
+[10] The Challenger's Deep 
+     📍 Coordinates: (-2630, -3830, 755)
+     🎯 X: -2630 | Y: -3830 | Z:   755
+     📝 Context: ay exit the Volcanic Vents and descend further into the caves. Challenger's Deep The Challenger's De...
+------------------------------------------------------------
+
+[10] The Volcanic Vents 
+     📍 Coordinates: (-2745, -2325, 865)
+     🎯 X: -2745 | Y: -2325 | Z:   865
+     📝 Context: om dying while in the water, as these only protect the player from Temperature. Volcanic Vents The V...
+------------------------------------------------------------
+
+[10] The tunnel ends 
+     📍 Coordinates: (-3420, -2275, 3765)
+     🎯 X: -3420 | Y: -2275 | Z:  3765
+     📝 Context: e entrance located at -2745, -2325, 865; the Submarine Upgrade in the Volcanic Vents must be unlocke...
+------------------------------------------------------------
+
+[10] Rocks
+     📍 Coordinates: (-3365, -2260, 3850)
+     🎯 X: -3365 | Y: -2260 | Z:  3850
+     📝 Context: e Volcanic Vents to obtain the following:Inferno Hide ×1Blisterback Blenny ×1Infernal Iguanafish ×1R...
+------------------------------------------------------------
+
+[10] The Lava Fishing Cave
+     📍 Coordinates: (-3495, -2255, 3825)
+     🎯 X: -3495 | Y: -2255 | Z:  3825
+     📝 Context: here will cause the player to catch regular Ocean fish. Within this cave is a Submariner and an Inn ...
+------------------------------------------------------------
+
+[10] The Lava Fishing 
+     📍 Coordinates: (-3175, -2035, 4020)
+     🎯 X: -3175 | Y: -2035 | Z:  4020
+     📝 Context: ed although not required. At the end of the course is a pool of lava where the Inferno Hide, Blister...
+------------------------------------------------------------
+
+==================== CHALLENGER'S DEEP ====================
+
+[16] The Abyssal Zenith 
+     📍 Coordinates: (-5375, -7390, 400)
+     🎯 X: -5375 | Y: -7390 | Z:   400
+     📝 Context: he player may exit the Challenger's Deep and descend further into the caves. Abyssal Zenith The Larg...
+------------------------------------------------------------
+
+[16] The Ice Fishing Cave
+     📍 Coordinates: (740, -3355, -1530)
+     🎯 X:   740 | Y: -3355 | Z: -1530
+     📝 Context: conds. An Ice Tunnel can be accessed through a cave to the North-West, which leads to a pool where t...
+------------------------------------------------------------
+
+[16] large Ice-themed Cave
+     📍 Coordinates: (-835, -3295, -625)
+     🎯 X:  -835 | Y: -3295 | Z:  -625
+     📝 Context: enger's Deep is located beneath the Volcanic Vents, with the entrance at -2630, -3830, 755; Similarl...
+------------------------------------------------------------
+
+[16] Rocks cave 
+     📍 Coordinates: (-800, -3280, -625)
+     🎯 X:  -800 | Y: -3280 | Z:  -625
+     📝 Context: : Ice Crystal ×1Fish in the Challenger's Deep to obtain the following:Cryoskin ×1Polar Prowler ×1Ret...
+------------------------------------------------------------
+
+[16] The Ice Fishing Cave
+     📍 Coordinates: (-760, -3280, -715)
+     🎯 X:  -760 | Y: -3280 | Z:  -715
+     📝 Context: lly, a portal back to Roslit Bay can be found at -735, -3280, -725, allowing the player to exit the ...
+------------------------------------------------------------
+
+[16] The Ice Fishing Cave
+     📍 Coordinates: (-735, -3280, -725)
+     🎯 X:  -735 | Y: -3280 | Z:  -725
+     📝 Context: e again cause the player to catch regular Ocean fish. Within this cave is a Submariner and an Inn Ke...
+------------------------------------------------------------
+
+==================== ABYSSAL ZENITH ====================
+
+[27] The Hidden River in the Calm Zone
+     📍 Coordinates: (-4305, -11230, 1955)
+     🎯 X: -4305 | Y:-11230 | Z:  1955
+     📝 Context: ght occur. It can be accessed after a series of puzzles, beginning in the Calm Zone. Location The Hi...
+------------------------------------------------------------
+
+[27] The Calm Zone
+     📍 Coordinates: (-4145, -11210, 1395)
+     🎯 X: -4145 | Y:-11210 | Z:  1395
+     📝 Context: Lantern, and completing the Deep Upgrade & Glimmerfin Suit Lvl 3, the player can descend further int...
+------------------------------------------------------------
+
+[27] The Crossbow Arrow
+     📍 Coordinates: (-2300, -11190, 7140)
+     🎯 X: -2300 | Y:-11190 | Z:  7140
+     📝 Context: of the Veil of the Forsaken and will no longer be able to encounter the Scylla boss, similar to the ...
+------------------------------------------------------------
+
+[27] The Crossbow Bow 
+     📍 Coordinates: (-4800, -11185, 6610)
+     🎯 X: -4800 | Y:-11185 | Z:  6610
+     📝 Context: ain. All Crossbow Parts must be returned to the Large Crossbow above the Entrance on the South side ...
+------------------------------------------------------------
+
+[27] The Crossbow Arrow 2
+     📍 Coordinates: (-4035, -11185, 6510)
+     🎯 X: -4035 | Y:-11185 | Z:  6510
+     📝 Context: side of the chamber (-4360, -11090, 7140): The Crossbow Base can be found on the North side of the c...
+------------------------------------------------------------
+
+[27] The Hidden River
+     📍 Coordinates: (-4330, -11180, 3120)
+     🎯 X: -4330 | Y:-11180 | Z:  3120
+     📝 Context: cess the first puzzle, the player must locate the cave opening at the end of the Rainbow River on th...
+------------------------------------------------------------
+
+[27] The Crossbow Base
+     📍 Coordinates: (-4345, -11155, 6490)
+     🎯 X: -4345 | Y:-11155 | Z:  6490
+     📝 Context: ils to complete the puzzle they will be sent back to the Chessboard Puzzle and have to try again. Al...
+------------------------------------------------------------
+
+[27] Crossbow Base
+     📍 Coordinates: (-4360, -11090, 7140)
+     🎯 X: -4360 | Y:-11090 | Z:  7140
+     📝 Context: ventory are lost. Keep in mind that the boss fight has a 10 minute timer, and if the user fails to c...
+------------------------------------------------------------
+
+[27] The Abyssal Zenith Upgrade Station
+     📍 Coordinates: (-13515, -11050, 175)
+     🎯 X:-13515 | Y:-11050 | Z:   175
+     📝 Context: acing away from the Abyssal Zenith. The tunnel ends with an opening to a large cave made of dark roc...
+------------------------------------------------------------
+
+[27] The tunnel ends rocks
+     📍 Coordinates: (-13420, -11050, 110)
+     🎯 X:-13420 | Y:-11050 | Z:   110
+     📝 Context: els with large anglerfish moving in and out of the way. If the player is hit by any part of an angle...
+------------------------------------------------------------
+
+[27] the Rod Of The Zenith
+     📍 Coordinates: (-13625, -11035, 355)
+     🎯 X:-13625 | Y:-11035 | Z:   355
+     📝 Context: leep, and holding the other to avoid the player being eaten while collecting the lantern. The angler...
+------------------------------------------------------------
+

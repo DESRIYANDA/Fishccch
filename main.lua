@@ -269,6 +269,176 @@ local TeleportLocations = {
         ['Abyssal Zenith Upgrade'] = CFrame.new(-13515, -11050, 175),
         ['Zenith Tunnel End'] = CFrame.new(-13420, -11050, 110),
         ['Rod of the Zenith'] = CFrame.new(-13625, -11035, 355)
+    },
+    ['All Locations'] = {
+        -- Sea Traveler
+        ['Sea Traveler #1'] = CFrame.new(140, 150, 2030),
+        ['Sea Traveler #2'] = CFrame.new(690, 170, 345),
+        
+        -- Terrapin Island
+        ['Terrapin Island #1'] = CFrame.new(-200, 130, 1925),
+        ['Terrapin Island #2'] = CFrame.new(10, 155, 2000),
+        ['Terrapin Island #3'] = CFrame.new(160, 125, 1970),
+        ['Terrapin Island #4'] = CFrame.new(25, 140, 1860),
+        ['Terrapin Island #5'] = CFrame.new(140, 150, 2050),
+        ['Terrapin Island #6'] = CFrame.new(-200, 130, 1930),
+        ['Terrapin Island #7'] = CFrame.new(-175, 145, 1935),
+        ['Terrapin Island #8'] = CFrame.new(35, 130, 1945),
+        
+        -- Moosewood Additional Spots
+        ['Moosewood #1'] = CFrame.new(350, 135, 250),
+        ['Moosewood #2'] = CFrame.new(412, 135, 233),
+        ['Moosewood #3'] = CFrame.new(385, 135, 280),
+        ['Moosewood #4'] = CFrame.new(480, 150, 295),
+        ['Moosewood #5'] = CFrame.new(465, 150, 235),
+        ['Moosewood #6'] = CFrame.new(480, 180, 150),
+        ['Moosewood #7'] = CFrame.new(515, 150, 285),
+        ['Moosewood #8'] = CFrame.new(365, 135, 275),
+        ['Moosewood #9'] = CFrame.new(370, 135, 250),
+        ['Moosewood #10'] = CFrame.new(315, 135, 335),
+        ['Moosewood #11'] = CFrame.new(705, 137, 341),
+        ['Moosewood #12'] = CFrame.new(-1878, 167, 548),
+        
+        -- Crystal Cove
+        ['Crystal Cove #1'] = CFrame.new(1364, -612, 2472),
+        ['Crystal Cove #2'] = CFrame.new(1302, -701, 1604),
+        ['Crystal Cove #3'] = CFrame.new(1350, -604, 2329),
+        
+        -- Castaway Cliffs
+        ['Castaway Cliffs #1'] = CFrame.new(690, 135, -1693),
+        ['Castaway Cliffs #2'] = CFrame.new(255, 800, -6865),
+        ['Castaway Cliffs #3'] = CFrame.new(560, 310, -2070),
+        
+        -- Gilded Arch
+        ['Gilded Arch'] = CFrame.new(450, 90, 2850),
+        
+        -- Trade Plaza
+        ['Trade Plaza'] = CFrame.new(535, 82, 775),
+        
+        -- Whale Interior
+        ['Whale Interior #1'] = CFrame.new(-300, 83, -380),
+        ['Whale Interior #2'] = CFrame.new(-30, -1350, -2160),
+        ['Whale Interior #3'] = CFrame.new(-357, 96, -277),
+        ['Whale Interior #4'] = CFrame.new(-387, 80, -387),
+        ['Whale Interior #5'] = CFrame.new(-50, -1350, -2170),
+        ['Whale Interior #6'] = CFrame.new(-317, 85, -420),
+        
+        -- Lobster Shores
+        ['Lobster Shores #1'] = CFrame.new(-550, 150, 2640),
+        ['Lobster Shores #2'] = CFrame.new(-550, 153, 2650),
+        ['Lobster Shores #3'] = CFrame.new(-585, 130, 2950),
+        ['Lobster Shores #4'] = CFrame.new(-575, 153, 2640),
+        ['Lobster Shores #5'] = CFrame.new(-570, 153, 2640),
+        ['Lobster Shores #6'] = CFrame.new(-565, 153, 2640),
+        
+        -- Netter's Haven
+        ['Netters Haven #1'] = CFrame.new(-640, 85, 1030),
+        ['Netters Haven #2'] = CFrame.new(-775, 90, 950),
+        ['Netters Haven #3'] = CFrame.new(-635, 85, 1005),
+        ['Netters Haven #4'] = CFrame.new(-630, 85, 1005),
+        ['Netters Haven #5'] = CFrame.new(-610, 85, 1005),
+        ['Netters Haven #6'] = CFrame.new(-575, 85, 1000),
+        
+        -- Waveborne
+        ['Waveborne #1'] = CFrame.new(360, 90, 780),
+        ['Waveborne #2'] = CFrame.new(400, 85, 737),
+        ['Waveborne #3'] = CFrame.new(55, 160, 833),
+        ['Waveborne #4'] = CFrame.new(165, 115, 730),
+        ['Waveborne #5'] = CFrame.new(165, 115, 720),
+        ['Waveborne #6'] = CFrame.new(223, 120, 815),
+        ['Waveborne #7'] = CFrame.new(405, 85, 862),
+        
+        -- Isle of New Beginnings
+        ['Isle of New Beginnings #1'] = CFrame.new(-300, 83, -380),
+        ['Isle of New Beginnings #2'] = CFrame.new(-30, -1350, -2160),
+        ['Isle of New Beginnings #3'] = CFrame.new(-357, 96, -277),
+        ['Isle of New Beginnings #4'] = CFrame.new(-387, 80, -387),
+        ['Isle of New Beginnings #5'] = CFrame.new(-50, -1350, -2170),
+        ['Isle of New Beginnings #6'] = CFrame.new(-317, 85, -420),
+        
+        -- Lushgrove
+        ['Lushgrove #1'] = CFrame.new(1133, 105, -560),
+        ['Lushgrove #2'] = CFrame.new(1260, -625, -1070),
+        ['Lushgrove #3'] = CFrame.new(1310, 130, -945),
+        ['Lushgrove #4'] = CFrame.new(1505, 165, -665),
+        ['Lushgrove #5'] = CFrame.new(1410, 155, -580),
+        ['Lushgrove #6'] = CFrame.new(1355, 110, -615),
+        ['Lushgrove #7'] = CFrame.new(1170, 115, -750),
+        ['Lushgrove #8'] = CFrame.new(1020, 130, -705),
+        ['Lushgrove #9'] = CFrame.new(1275, -625, -1060),
+        ['Lushgrove #10'] = CFrame.new(1300, 155, -550),
+        
+        -- Emberreach
+        ['Emberreach #1'] = CFrame.new(2390, 83, -490),
+        ['Emberreach #2'] = CFrame.new(2870, 165, 520),
+        
+        -- Azure Lagoon
+        ['Azure Lagoon #1'] = CFrame.new(1310, 80, 2113),
+        ['Azure Lagoon #2'] = CFrame.new(1287, 90, 2285),
+        
+        -- The Cursed Shores
+        ['Cursed Shores #1'] = CFrame.new(-235, 85, 1930),
+        ['Cursed Shores #2'] = CFrame.new(-185, -370, 2280),
+        ['Cursed Shores #3'] = CFrame.new(-435, -40, 1665),
+        ['Cursed Shores #4'] = CFrame.new(-493, 137, 2240),
+        ['Cursed Shores #5'] = CFrame.new(-210, -360, 2383),
+        
+        -- Pine Shoals
+        ['Pine Shoals'] = CFrame.new(1165, 80, 480),
+        
+        -- The Laboratory
+        ['The Laboratory'] = CFrame.new(-1785, 130, -485),
+        
+        -- Grand Reef
+        ['Grand Reef #1'] = CFrame.new(-3530, 130, 550),
+        ['Grand Reef #2'] = CFrame.new(-3820, 135, 575),
+        
+        -- Archaeological Site
+        ['Archaeological Site'] = CFrame.new(4160, 125, 210),
+        
+        -- Ocean Spots
+        ['Ocean Spot #1'] = CFrame.new(-1270, 125, 1580),
+        ['Ocean Spot #2'] = CFrame.new(1000, 125, -1250),
+        ['Ocean Spot #3'] = CFrame.new(-530, 125, -425),
+        ['Ocean Spot #4'] = CFrame.new(1230, 125, 575),
+        ['Ocean Spot #5'] = CFrame.new(1700, 125, -2500),
+        
+        -- Sunken Chest Locations
+        ['Sunken Chest #1'] = CFrame.new(936, 130, -159),
+        ['Sunken Chest #2'] = CFrame.new(-1179, 130, 565),
+        ['Sunken Chest #3'] = CFrame.new(-852, 130, -1560),
+        ['Sunken Chest #4'] = CFrame.new(798, 130, 1667),
+        ['Sunken Chest #5'] = CFrame.new(2890, 130, -997),
+        ['Sunken Chest #6'] = CFrame.new(-2460, 130, 2047),
+        ['Sunken Chest #7'] = CFrame.new(693, 130, -362),
+        ['Sunken Chest #8'] = CFrame.new(-1217, 130, 201),
+        ['Sunken Chest #9'] = CFrame.new(-1000, 130, -751),
+        ['Sunken Chest #10'] = CFrame.new(562, 130, 2455),
+        ['Sunken Chest #11'] = CFrame.new(2729, 130, -1098),
+        ['Sunken Chest #12'] = CFrame.new(613, 130, 498),
+        ['Sunken Chest #13'] = CFrame.new(-1967, 130, 980),
+        ['Sunken Chest #14'] = CFrame.new(-1500, 130, -750),
+        ['Sunken Chest #15'] = CFrame.new(393, 130, 2435),
+        ['Sunken Chest #16'] = CFrame.new(2410, 130, -1110),
+        ['Sunken Chest #17'] = CFrame.new(285, 130, 564),
+        ['Sunken Chest #18'] = CFrame.new(-2444, 130, 266),
+        ['Sunken Chest #19'] = CFrame.new(-1547, 130, -1080),
+        ['Sunken Chest #20'] = CFrame.new(-1, 130, 1632),
+        ['Sunken Chest #21'] = CFrame.new(2266, 130, -721),
+        ['Sunken Chest #22'] = CFrame.new(283, 130, -159),
+        ['Sunken Chest #23'] = CFrame.new(-2444, 130, -37),
+        ['Sunken Chest #24'] = CFrame.new(-1618, 130, -1560),
+        ['Sunken Chest #25'] = CFrame.new(-190, 130, 2450),
+        
+        -- Special NPCs Location
+        ['NPCs Area #1'] = CFrame.new(415, 135, 200),
+        ['NPCs Area #2'] = CFrame.new(420, 145, 260),
+        
+        -- AFK Rewards Location
+        ['AFK Rewards'] = CFrame.new(232, 139, 38),
+        
+        -- Treasure Hunting
+        ['Treasure Hunting'] = CFrame.new(-2825, 215, 1515)
     }
 }
 local ZoneNames = {}
@@ -277,6 +447,7 @@ local ItemNames = {}
 local FishingSpotNames = {}
 local NPCNames = {}
 local MarianaVeilNames = {}
+local AllLocationNames = {}
 local RodColors = {}
 local RodMaterials = {}
 for i,v in pairs(TeleportLocations['Zones']) do table.insert(ZoneNames, i) end
@@ -285,6 +456,7 @@ for i,v in pairs(TeleportLocations['Items']) do table.insert(ItemNames, i) end
 for i,v in pairs(TeleportLocations['Fishing Spots']) do table.insert(FishingSpotNames, i) end
 for i,v in pairs(TeleportLocations['NPCs']) do table.insert(NPCNames, i) end
 for i,v in pairs(TeleportLocations['Mariana Veil']) do table.insert(MarianaVeilNames, i) end
+for i,v in pairs(TeleportLocations['All Locations']) do table.insert(AllLocationNames, i) end
 
 --// Functions
 FindChildOfClass = function(parent, classname)
@@ -888,6 +1060,16 @@ end)
 MarianaSection:NewButton("Teleport To Mariana Location", "Teleport to selected Mariana's Veil location", function()
     if flags['marianaveil'] then
         gethrp().CFrame = TeleportLocations['Mariana Veil'][flags['marianaveil']]
+    end
+end)
+
+local AllLocSection = TeleTab:NewSection("🗺️ All Locations")
+AllLocSection:NewDropdown("Select All Location", "Choose from all available locations", AllLocationNames, function(currentOption)
+    flags['alllocations'] = currentOption
+end)
+AllLocSection:NewButton("Teleport To All Location", "Teleport to selected location", function()
+    if flags['alllocations'] then
+        gethrp().CFrame = TeleportLocations['All Locations'][flags['alllocations']]
     end
 end)
 

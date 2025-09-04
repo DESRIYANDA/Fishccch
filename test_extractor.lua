@@ -1,71 +1,190 @@
---// Test script untuk Data Extractor
---// Jalankan ini di Roblox untuk extract semua data game
+-- Test Extractor for Specific Experiments
+-- Script untuk mengecek eksperimen tertentu termasuk CaughtLegendaryExperiment
 
--- Load the data extractor
-local DataExtractor = loadstring(readfile("data_extractor.lua"))()
+print("🔬 Test Extractor - Analyzing Specific Experiments")
 
--- Extract all data
-print("🔍 Starting data extraction process...")
-local extractedData = DataExtractor:extractAllData()
+-- List eksperimen yang menarik untuk dianalisis
+local targetExperiments = {
+    "AutoFishingExperiment",
+    "CaughtLegendaryExperiment", 
+    "FishingAidMobileExperiment",
+    "FishingConfettiExperiment",
+    "FishingPolesExperiment",
+    "EasyMinigameExperiment",
+    "GamepadEasyShakeExperiment",
+    "OneLessShakeExperiment",
+    "OneMoreShakeExperiment"
+}
 
--- Print specific data types
-print("\n" .. "="*50)
-print("EXTRACTED DATA PREVIEW:")
-print("="*50)
+-- Base path untuk eksperimen
+local basePath = "ReplicatedStorage.shared.modules.ABTestExperiments.Experiments."
 
--- Print first 10 locations
-print("\n📍 SAMPLE LOCATIONS:")
-local count = 0
-for name, data in pairs(extractedData.locations) do
-    if count >= 10 then break end
-    print("  ", name, ":", tostring(data))
-    count = count + 1
+-- Function untuk navigate ke path
+local function getExperiment(experimentName)
+    local fullPath = basePath .. experimentName
+    local success, module = pcall(function()
+        local parts = string.split(fullPath, ".")
+        local current = game
+        for _, part in ipairs(parts) do
+            current = current[part]
+        end
+        return current
+    end)
+    return success and module or nil, fullPath
 end
 
--- Print first 10 fish
-print("\n🐟 SAMPLE FISH:")
-count = 0
-for name, data in pairs(extractedData.fish) do
-    if count >= 10 then break end
-    print("  ", name, ":", type(data) == "table" and "Table Data" or tostring(data))
-    count = count + 1
-end
-
--- Print NPCs
-print("\n🤖 NPCS:")
-for name, data in pairs(extractedData.npcs) do
-    print("  ", name, "at position:", data.position)
-end
-
--- Print some remotes
-print("\n📡 SAMPLE REMOTES:")
-count = 0
-for _, remote in pairs(extractedData.remotes) do
-    if count >= 20 then break end
-    if remote.path:find("Bait") or remote.path:find("Shop") or remote.path:find("Purchase") then
-        print("  ", remote.type, ":", remote.path)
-        count = count + 1
+-- Function untuk deep analysis
+local function deepAnalyze(experimentName)
+    print("\n" .. string.rep("=", 50))
+    print("🎯 DEEP ANALYSIS: " .. experimentName)
+    print(string.rep("=", 50))
+    
+    local module, fullPath = getExperiment(experimentName)
+    
+    if not module then
+        print("❌ Not found: " .. experimentName)
+        return
     end
-end
-
--- Save to string format
-print("\n💾 Generating data file...")
-local dataString = DataExtractor:saveDataToString()
-
--- Try to save to file (if writefile is available)
-pcall(function()
-    if writefile then
-        writefile("extracted_game_data.lua", dataString)
-        print("✅ Data saved to extracted_game_data.lua")
+    
+    print("✅ Found: " .. fullPath)
+    print("Type: " .. module.ClassName)
+    
+    if module:IsA("ModuleScript") then
+        local success, content = pcall(require, module)
+        if success then
+            print("📋 Content Analysis:")
+            print("Content Type: " .. type(content))
+            
+            if type(content) == "table" then
+                print("\n� DETAILED TABLE CONTENTS:")
+                local count = 0
+                for key, value in pairs(content) do
+                    count = count + 1
+                    local valueType = type(value)
+                    local valueStr = tostring(value)
+                    
+                    -- Handle different value types
+                    if valueType == "function" then
+                        valueStr = "function()"
+                    elseif valueType == "table" then
+                        -- Try to show table contents
+                        local tableStr = "{"
+                        local tableCount = 0
+                        for k, v in pairs(value) do
+                            tableCount = tableCount + 1
+                            if tableCount <= 3 then
+                                tableStr = tableStr .. tostring(k) .. "=" .. tostring(v) .. ", "
+                            end
+                        end
+                        if tableCount > 3 then
+                            tableStr = tableStr .. "... +" .. (tableCount-3) .. " more"
+                        end
+                        tableStr = tableStr .. "}"
+                        valueStr = tableStr
+                    elseif valueType == "boolean" then
+                        valueStr = value and "true" or "false"
+                    elseif string.len(valueStr) > 80 then
+                        valueStr = string.sub(valueStr, 1, 80) .. "..."
+                    end
+                    
+                    print(string.format("  [%d] %s: %s (%s)", 
+                        count, tostring(key), valueStr, valueType))
+                end
+                
+                print(string.format("\n📈 Total Properties: %d", count))
+                
+                -- Look for specific patterns
+                local patterns = {
+                    fishing = {"fish", "reel", "cast", "catch", "bobber"},
+                    rewards = {"reward", "prize", "bonus", "multiplier"},
+                    config = {"config", "setting", "param", "option"},
+                    state = {"state", "enable", "active", "disabled"},
+                    legendary = {"legendary", "mythic", "rare", "epic"}
+                }
+                
+                print("\n� PATTERN ANALYSIS:")
+                for patternName, keywords in pairs(patterns) do
+                    local found = {}
+                    for key, _ in pairs(content) do
+                        local keyLower = string.lower(tostring(key))
+                        for _, keyword in ipairs(keywords) do
+                            if string.find(keyLower, keyword) then
+                                table.insert(found, key)
+                                break
+                            end
+                        end
+                    end
+                    if #found > 0 then
+                        print(string.format("  %s: %s", patternName, table.concat(found, ", ")))
+                    end
+                end
+                
+            else
+                print("Content Value: " .. tostring(content))
+            end
+        else
+            print("❌ Failed to require: " .. tostring(content))
+        end
     else
-        print("⚠️ writefile not available, data string generated in memory")
+        print("❌ Not a ModuleScript")
     end
-end)
+    
+    print(string.rep("-", 50))
+end
 
-print("\n🎉 Data extraction completed!")
-print("Total data points extracted:", 
-    #extractedData.locations + #extractedData.fish + #extractedData.rods + 
-    #extractedData.bait + #extractedData.npcs + #extractedData.remotes)
+-- Analyze all target experiments
+print("� Starting deep analysis of " .. #targetExperiments .. " experiments...")
 
--- Return data for further use
-return extractedData
+for i, experimentName in ipairs(targetExperiments) do
+    deepAnalyze(experimentName)
+    
+    -- Add small delay to prevent overwhelming output
+    if i < #targetExperiments then
+        wait(0.1)
+    end
+end
+
+-- Function untuk quick check semua eksperimen
+local function quickCheckAll()
+    print("\n🔍 QUICK CHECK - All Available Experiments:")
+    print(string.rep("=", 60))
+    
+    local baseModule = game:GetService("ReplicatedStorage").shared.modules.ABTestExperiments.Experiments
+    local found = 0
+    local working = 0
+    
+    for _, child in ipairs(baseModule:GetChildren()) do
+        if child:IsA("ModuleScript") then
+            found = found + 1
+            local success, content = pcall(require, child)
+            if success then
+                working = working + 1
+                print(string.format("✅ %s (Type: %s)", child.Name, type(content)))
+            else
+                print(string.format("❌ %s (Failed to require)", child.Name))
+            end
+        end
+    end
+    
+    print(string.rep("=", 60))
+    print(string.format("📊 Summary: %d found, %d working", found, working))
+end
+
+-- Global functions
+_G.deepAnalyze = deepAnalyze
+_G.quickCheckAll = quickCheckAll
+_G.analyzeExperiment = function(name)
+    deepAnalyze(name)
+end
+
+-- Run quick check
+quickCheckAll()
+
+print("\n💡 Available Commands:")
+print("_G.deepAnalyze('ExperimentName') - Deep analysis of specific experiment")
+print("_G.quickCheckAll() - Quick check of all experiments")
+print("_G.analyzeExperiment('CaughtLegendaryExperiment') - Analyze specific experiment")
+
+-- Auto-analyze CaughtLegendaryExperiment
+print("\n🎯 Auto-analyzing CaughtLegendaryExperiment...")
+deepAnalyze("CaughtLegendaryExperiment")

@@ -1,0 +1,118 @@
+=== AUTOFISHING MODULE ANALYSIS REPORT ===
+Generated on: 2025-09-04 05:37:28
+
+
+CHECKING PATH: ReplicatedStorage.shared.modules.ABTestExperiments.Experiments.AutoFishingExperiment
+RESULT: Found - AutoFishingExperiment
+
+ANALYZING: ReplicatedStorage.shared.modules.ABTestExperiments.Experiments.AutoFishingExperiment
+Object Type: ModuleScript
+Status: Is ModuleScript
+Require Status: Successfully required
+Content Type: table
+
+TABLE CONTENTS:
+  DefaultState: false (boolean)
+  States: table{...} (table)
+  Disabled: false (boolean)
+  RemoteConfig: ABAutoFishing (string)
+--------------------------------------------------
+
+CHECKING PATH: ReplicatedStorage.client.legacyControllers.AutoFishingController
+RESULT: Found - AutoFishingController
+
+ANALYZING: ReplicatedStorage.client.legacyControllers.AutoFishingController
+Object Type: ModuleScript
+Status: Is ModuleScript
+Require Status: Successfully required
+Content Type: table
+
+TABLE CONTENTS:
+  Start: function() (function)
+  enableTrove: table{...} (table)
+
+AUTOFISHING-RELATED KEYS FOUND:
+  - Start
+  - enableTrove
+--------------------------------------------------
+
+CHECKING PATH: ReplicatedStorage.client.legacyControllers.AFKFishingController
+RESULT: Found - AFKFishingController
+
+ANALYZING: ReplicatedStorage.client.legacyControllers.AFKFishingController
+Object Type: ModuleScript
+Status: Is ModuleScript
+Require Status: Successfully required
+Content Type: table
+
+TABLE CONTENTS:
+  Start: function() (function)
+
+AUTOFISHING-RELATED KEYS FOUND:
+  - Start
+--------------------------------------------------
+
+CHECKING PATH: ReplicatedStorage.client.legacyControllers.ABTestController
+RESULT: Found - ABTestController
+
+ANALYZING: ReplicatedStorage.client.legacyControllers.ABTestController
+Object Type: ModuleScript
+Status: Is ModuleScript
+Require Status: Successfully required
+Content Type: table
+
+TABLE CONTENTS:
+  Start: function() (function)
+  GetRemoteConfig: function() (function)
+  IsLoaded: function() (function)
+  OnLoad: function() (function)
+  _loadedSignal: table{...} (table)
+  _loaded: true (boolean)
+  _runExperiments: function() (function)
+  _remoteConfigs: table{...} (table)
+
+AUTOFISHING-RELATED KEYS FOUND:
+  - Start
+--------------------------------------------------
+
+ADDITIONAL SEARCH IN KEY LOCATIONS:
+
+Searching in: ReplicatedStorage.shared.modules
+
+Searching in: ReplicatedStorage.client.legacyControllers
+Additional find: ReplicatedStorage.client.legacyControllers.AutoFishingController
+
+ANALYZING: ReplicatedStorage.client.legacyControllers.AutoFishingController
+Object Type: ModuleScript
+Status: Is ModuleScript
+Require Status: Successfully required
+Content Type: table
+
+TABLE CONTENTS:
+  Start: function() (function)
+  enableTrove: table{...} (table)
+
+AUTOFISHING-RELATED KEYS FOUND:
+  - Start
+  - enableTrove
+--------------------------------------------------
+Additional find: ReplicatedStorage.client.legacyControllers.AFKFishingController
+
+ANALYZING: ReplicatedStorage.client.legacyControllers.AFKFishingController
+Object Type: ModuleScript
+Status: Is ModuleScript
+Require Status: Successfully required
+Content Type: table
+
+TABLE CONTENTS:
+  Start: function() (function)
+
+AUTOFISHING-RELATED KEYS FOUND:
+  - Start
+--------------------------------------------------
+
+=== ANALYSIS SUMMARY ===
+Total AutoFishing modules found: 6
+Analysis completed on: 2025-09-04 05:37:28
+
+=== END OF REPORT ===

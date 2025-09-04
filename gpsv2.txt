@@ -1,0 +1,355 @@
+category,location_name,coordinate_id,x,y,z,coordinates,source_url
+All Other Locations,Sea Traveler,1,140.0,150.0,2030.0,"140.0, 150.0, 2030.0",https://fischipedia.org/wiki/Sea_Traveler
+All Other Locations,Sea Traveler,2,690.0,170.0,345.0,"690.0, 170.0, 345.0",https://fischipedia.org/wiki/Sea_Traveler
+All Other Locations,Terrapin Island,1,-200.0,130.0,1925.0,"-200.0, 130.0, 1925.0",https://fischipedia.org/wiki/Terrapin_Island
+All Other Locations,Terrapin Island,2,10.0,155.0,2000.0,"10.0, 155.0, 2000.0",https://fischipedia.org/wiki/Terrapin_Island
+All Other Locations,Terrapin Island,3,160.0,125.0,1970.0,"160.0, 125.0, 1970.0",https://fischipedia.org/wiki/Terrapin_Island
+All Other Locations,Terrapin Island,4,25.0,140.0,1860.0,"25.0, 140.0, 1860.0",https://fischipedia.org/wiki/Terrapin_Island
+All Other Locations,Terrapin Island,5,140.0,150.0,2050.0,"140.0, 150.0, 2050.0",https://fischipedia.org/wiki/Terrapin_Island
+All Other Locations,Terrapin Island,6,-200.0,130.0,1930.0,"-200.0, 130.0, 1930.0",https://fischipedia.org/wiki/Terrapin_Island
+All Other Locations,Terrapin Island,7,-175.0,145.0,1935.0,"-175.0, 145.0, 1935.0",https://fischipedia.org/wiki/Terrapin_Island
+All Other Locations,Terrapin Island,8,35.0,130.0,1945.0,"35.0, 130.0, 1945.0",https://fischipedia.org/wiki/Terrapin_Island
+All Other Locations,Moosewood,1,350.0,135.0,250.0,"350.0, 135.0, 250.0",https://fischipedia.org/wiki/Moosewood
+All Other Locations,Moosewood,2,412.0,135.0,233.0,"412.0, 135.0, 233.0",https://fischipedia.org/wiki/Moosewood
+All Other Locations,Moosewood,3,385.0,135.0,280.0,"385.0, 135.0, 280.0",https://fischipedia.org/wiki/Moosewood
+All Other Locations,Moosewood,4,480.0,150.0,295.0,"480.0, 150.0, 295.0",https://fischipedia.org/wiki/Moosewood
+All Other Locations,Moosewood,5,465.0,150.0,235.0,"465.0, 150.0, 235.0",https://fischipedia.org/wiki/Moosewood
+All Other Locations,Moosewood,6,480.0,180.0,150.0,"480.0, 180.0, 150.0",https://fischipedia.org/wiki/Moosewood
+All Other Locations,Moosewood,7,515.0,150.0,285.0,"515.0, 150.0, 285.0",https://fischipedia.org/wiki/Moosewood
+All Other Locations,Moosewood,8,365.0,135.0,275.0,"365.0, 135.0, 275.0",https://fischipedia.org/wiki/Moosewood
+All Other Locations,Moosewood,9,370.0,135.0,250.0,"370.0, 135.0, 250.0",https://fischipedia.org/wiki/Moosewood
+All Other Locations,Moosewood,10,315.0,135.0,335.0,"315.0, 135.0, 335.0",https://fischipedia.org/wiki/Moosewood
+All Other Locations,Moosewood,11,705.0,137.0,341.0,"705.0, 137.0, 341.0",https://fischipedia.org/wiki/Moosewood
+All Other Locations,Moosewood,12,-1878.0,167.0,548.0,"-1878.0, 167.0, 548.0",https://fischipedia.org/wiki/Moosewood
+All Other Locations,Cthulhu Boss,1,-200.0,130.0,1925.0,"-200.0, 130.0, 1925.0",https://fischipedia.org/wiki/Cthulhu_Boss
+All Other Locations,Cthulhu Boss,2,10.0,155.0,2000.0,"10.0, 155.0, 2000.0",https://fischipedia.org/wiki/Cthulhu_Boss
+All Other Locations,Cthulhu Boss,3,160.0,125.0,1970.0,"160.0, 125.0, 1970.0",https://fischipedia.org/wiki/Cthulhu_Boss
+All Other Locations,Cthulhu Boss,4,25.0,140.0,1860.0,"25.0, 140.0, 1860.0",https://fischipedia.org/wiki/Cthulhu_Boss
+All Other Locations,Cthulhu Boss,5,140.0,150.0,2050.0,"140.0, 150.0, 2050.0",https://fischipedia.org/wiki/Cthulhu_Boss
+All Other Locations,Cthulhu Boss,6,-200.0,130.0,1930.0,"-200.0, 130.0, 1930.0",https://fischipedia.org/wiki/Cthulhu_Boss
+All Other Locations,Cthulhu Boss,7,-175.0,145.0,1935.0,"-175.0, 145.0, 1935.0",https://fischipedia.org/wiki/Cthulhu_Boss
+All Other Locations,Cthulhu Boss,8,35.0,130.0,1945.0,"35.0, 130.0, 1945.0",https://fischipedia.org/wiki/Cthulhu_Boss
+All Other Locations,Crystal Cove,1,1364.0,-612.0,2472.0,"1364.0, -612.0, 2472.0",https://fischipedia.org/wiki/Crystal_Cove
+All Other Locations,Crystal Cove,2,1302.0,-701.0,1604.0,"1302.0, -701.0, 1604.0",https://fischipedia.org/wiki/Crystal_Cove
+All Other Locations,Crystal Cove,3,1350.0,-604.0,2329.0,"1350.0, -604.0, 2329.0",https://fischipedia.org/wiki/Crystal_Cove
+All Other Locations,Castaway Cliffs,1,690.0,135.0,-1693.0,"690.0, 135.0, -1693.0",https://fischipedia.org/wiki/Castaway_Cliffs
+All Other Locations,Castaway Cliffs,2,255.0,800.0,-6865.0,"255.0, 800.0, -6865.0",https://fischipedia.org/wiki/Castaway_Cliffs
+All Other Locations,Castaway Cliffs,3,560.0,310.0,-2070.0,"560.0, 310.0, -2070.0",https://fischipedia.org/wiki/Castaway_Cliffs
+All Other Locations,Gilded Arch,1,450.0,90.0,2850.0,"450.0, 90.0, 2850.0",https://fischipedia.org/wiki/Gilded_Arch
+All Other Locations,Trade Plaza,1,535.0,82.0,775.0,"535.0, 82.0, 775.0",https://fischipedia.org/wiki/Trade_Plaza
+All Other Locations,Whale Interior,1,-300.0,83.0,-380.0,"-300.0, 83.0, -380.0",https://fischipedia.org/wiki/Whale_Interior
+All Other Locations,Whale Interior,2,-30.0,-1350.0,-2160.0,"-30.0, -1350.0, -2160.0",https://fischipedia.org/wiki/Whale_Interior
+All Other Locations,Whale Interior,3,-357.0,96.0,-277.0,"-357.0, 96.0, -277.0",https://fischipedia.org/wiki/Whale_Interior
+All Other Locations,Whale Interior,4,-387.0,80.0,-387.0,"-387.0, 80.0, -387.0",https://fischipedia.org/wiki/Whale_Interior
+All Other Locations,Whale Interior,5,-50.0,-1350.0,-2170.0,"-50.0, -1350.0, -2170.0",https://fischipedia.org/wiki/Whale_Interior
+All Other Locations,Whale Interior,6,-317.0,85.0,-420.0,"-317.0, 85.0, -420.0",https://fischipedia.org/wiki/Whale_Interior
+All Other Locations,Lobster Shores,1,-550.0,150.0,2640.0,"-550.0, 150.0, 2640.0",https://fischipedia.org/wiki/Lobster_Shores
+All Other Locations,Lobster Shores,2,-550.0,153.0,2650.0,"-550.0, 153.0, 2650.0",https://fischipedia.org/wiki/Lobster_Shores
+All Other Locations,Lobster Shores,3,-585.0,130.0,2950.0,"-585.0, 130.0, 2950.0",https://fischipedia.org/wiki/Lobster_Shores
+All Other Locations,Lobster Shores,4,-575.0,153.0,2640.0,"-575.0, 153.0, 2640.0",https://fischipedia.org/wiki/Lobster_Shores
+All Other Locations,Lobster Shores,5,-570.0,153.0,2640.0,"-570.0, 153.0, 2640.0",https://fischipedia.org/wiki/Lobster_Shores
+All Other Locations,Lobster Shores,6,-565.0,153.0,2640.0,"-565.0, 153.0, 2640.0",https://fischipedia.org/wiki/Lobster_Shores
+All Other Locations,Netter's Haven,1,-640.0,85.0,1030.0,"-640.0, 85.0, 1030.0",https://fischipedia.org/wiki/Netter%27s_Haven
+All Other Locations,Netter's Haven,2,-775.0,90.0,950.0,"-775.0, 90.0, 950.0",https://fischipedia.org/wiki/Netter%27s_Haven
+All Other Locations,Netter's Haven,3,-635.0,85.0,1005.0,"-635.0, 85.0, 1005.0",https://fischipedia.org/wiki/Netter%27s_Haven
+All Other Locations,Netter's Haven,4,-630.0,85.0,1005.0,"-630.0, 85.0, 1005.0",https://fischipedia.org/wiki/Netter%27s_Haven
+All Other Locations,Netter's Haven,5,-610.0,85.0,1005.0,"-610.0, 85.0, 1005.0",https://fischipedia.org/wiki/Netter%27s_Haven
+All Other Locations,Netter's Haven,6,-575.0,85.0,1000.0,"-575.0, 85.0, 1000.0",https://fischipedia.org/wiki/Netter%27s_Haven
+All Other Locations,Waveborne,1,360.0,90.0,780.0,"360.0, 90.0, 780.0",https://fischipedia.org/wiki/Waveborne
+All Other Locations,Waveborne,2,400.0,85.0,737.0,"400.0, 85.0, 737.0",https://fischipedia.org/wiki/Waveborne
+All Other Locations,Waveborne,3,55.0,160.0,833.0,"55.0, 160.0, 833.0",https://fischipedia.org/wiki/Waveborne
+All Other Locations,Waveborne,4,165.0,115.0,730.0,"165.0, 115.0, 730.0",https://fischipedia.org/wiki/Waveborne
+All Other Locations,Waveborne,5,165.0,115.0,720.0,"165.0, 115.0, 720.0",https://fischipedia.org/wiki/Waveborne
+All Other Locations,Waveborne,6,223.0,120.0,815.0,"223.0, 120.0, 815.0",https://fischipedia.org/wiki/Waveborne
+All Other Locations,Waveborne,7,405.0,85.0,862.0,"405.0, 85.0, 862.0",https://fischipedia.org/wiki/Waveborne
+All Other Locations,Isle of New Beginnings,1,-300.0,83.0,-380.0,"-300.0, 83.0, -380.0",https://fischipedia.org/wiki/Isle_of_New_Beginnings
+All Other Locations,Isle of New Beginnings,2,-30.0,-1350.0,-2160.0,"-30.0, -1350.0, -2160.0",https://fischipedia.org/wiki/Isle_of_New_Beginnings
+All Other Locations,Isle of New Beginnings,3,-357.0,96.0,-277.0,"-357.0, 96.0, -277.0",https://fischipedia.org/wiki/Isle_of_New_Beginnings
+All Other Locations,Isle of New Beginnings,4,-387.0,80.0,-387.0,"-387.0, 80.0, -387.0",https://fischipedia.org/wiki/Isle_of_New_Beginnings
+All Other Locations,Isle of New Beginnings,5,-50.0,-1350.0,-2170.0,"-50.0, -1350.0, -2170.0",https://fischipedia.org/wiki/Isle_of_New_Beginnings
+All Other Locations,Isle of New Beginnings,6,-317.0,85.0,-420.0,"-317.0, 85.0, -420.0",https://fischipedia.org/wiki/Isle_of_New_Beginnings
+All Other Locations,Lushgrove,1,1133.0,105.0,-560.0,"1133.0, 105.0, -560.0",https://fischipedia.org/wiki/Lushgrove
+All Other Locations,Lushgrove,2,1260.0,-625.0,-1070.0,"1260.0, -625.0, -1070.0",https://fischipedia.org/wiki/Lushgrove
+All Other Locations,Lushgrove,3,1310.0,130.0,-945.0,"1310.0, 130.0, -945.0",https://fischipedia.org/wiki/Lushgrove
+All Other Locations,Lushgrove,4,1505.0,165.0,-665.0,"1505.0, 165.0, -665.0",https://fischipedia.org/wiki/Lushgrove
+All Other Locations,Lushgrove,5,1410.0,155.0,-580.0,"1410.0, 155.0, -580.0",https://fischipedia.org/wiki/Lushgrove
+All Other Locations,Lushgrove,6,1355.0,110.0,-615.0,"1355.0, 110.0, -615.0",https://fischipedia.org/wiki/Lushgrove
+All Other Locations,Lushgrove,7,1170.0,115.0,-750.0,"1170.0, 115.0, -750.0",https://fischipedia.org/wiki/Lushgrove
+All Other Locations,Lushgrove,8,1020.0,130.0,-705.0,"1020.0, 130.0, -705.0",https://fischipedia.org/wiki/Lushgrove
+All Other Locations,Lushgrove,9,1275.0,-625.0,-1060.0,"1275.0, -625.0, -1060.0",https://fischipedia.org/wiki/Lushgrove
+All Other Locations,Lushgrove,10,1300.0,155.0,-550.0,"1300.0, 155.0, -550.0",https://fischipedia.org/wiki/Lushgrove
+All Other Locations,Emberreach,1,2390.0,83.0,-490.0,"2390.0, 83.0, -490.0",https://fischipedia.org/wiki/Emberreach
+All Other Locations,Emberreach,2,2870.0,165.0,520.0,"2870.0, 165.0, 520.0",https://fischipedia.org/wiki/Emberreach
+All Other Locations,Azure Lagoon,1,1310.0,80.0,2113.0,"1310.0, 80.0, 2113.0",https://fischipedia.org/wiki/Azure_Lagoon
+All Other Locations,Azure Lagoon,2,1287.0,90.0,2285.0,"1287.0, 90.0, 2285.0",https://fischipedia.org/wiki/Azure_Lagoon
+All Other Locations,The Cursed Shores,1,-235.0,85.0,1930.0,"-235.0, 85.0, 1930.0",https://fischipedia.org/wiki/The_Cursed_Shores
+All Other Locations,The Cursed Shores,2,-185.0,-370.0,2280.0,"-185.0, -370.0, 2280.0",https://fischipedia.org/wiki/The_Cursed_Shores
+All Other Locations,The Cursed Shores,3,-435.0,-40.0,1665.0,"-435.0, -40.0, 1665.0",https://fischipedia.org/wiki/The_Cursed_Shores
+All Other Locations,The Cursed Shores,4,-493.0,137.0,2240.0,"-493.0, 137.0, 2240.0",https://fischipedia.org/wiki/The_Cursed_Shores
+All Other Locations,The Cursed Shores,5,-210.0,-360.0,2383.0,"-210.0, -360.0, 2383.0",https://fischipedia.org/wiki/The_Cursed_Shores
+All Other Locations,Pine Shoals,1,1165.0,80.0,480.0,"1165.0, 80.0, 480.0",https://fischipedia.org/wiki/Pine_Shoals
+All Other Locations,Cults Curse,1,7.0,100.0,0.0,"7.0, 100.0, 0.0",https://fischipedia.org/wiki/Cults_Curse
+All Other Locations,Cults Curse,2,35.0,700.0,0.0,"35.0, 700.0, 0.0",https://fischipedia.org/wiki/Cults_Curse
+All Other Locations,Cults Curse,3,142.0,800.0,0.0,"142.0, 800.0, 0.0",https://fischipedia.org/wiki/Cults_Curse
+All Other Locations,Cults Curse,4,285.0,700.0,0.0,"285.0, 700.0, 0.0",https://fischipedia.org/wiki/Cults_Curse
+All Other Locations,Cults Curse,5,500.0,0.0,0.0,"500.0, 0.0, 0.0",https://fischipedia.org/wiki/Cults_Curse
+All Other Locations,Version 1.23.0.1,1,7.0,100.0,0.0,"7.0, 100.0, 0.0",https://fischipedia.org/wiki/Version_1.23.0.1
+All Other Locations,Version 1.23.0.1,2,35.0,700.0,0.0,"35.0, 700.0, 0.0",https://fischipedia.org/wiki/Version_1.23.0.1
+All Other Locations,Version 1.23.0.1,3,142.0,800.0,0.0,"142.0, 800.0, 0.0",https://fischipedia.org/wiki/Version_1.23.0.1
+All Other Locations,Version 1.23.0.1,4,285.0,700.0,0.0,"285.0, 700.0, 0.0",https://fischipedia.org/wiki/Version_1.23.0.1
+All Other Locations,Version 1.23.0.1,5,500.0,0.0,0.0,"500.0, 0.0, 0.0",https://fischipedia.org/wiki/Version_1.23.0.1
+All Other Locations,Version 1.23.0,1,7.0,100.0,0.0,"7.0, 100.0, 0.0",https://fischipedia.org/wiki/Version_1.23.0
+All Other Locations,Version 1.23.0,2,35.0,700.0,0.0,"35.0, 700.0, 0.0",https://fischipedia.org/wiki/Version_1.23.0
+All Other Locations,Version 1.23.0,3,142.0,800.0,0.0,"142.0, 800.0, 0.0",https://fischipedia.org/wiki/Version_1.23.0
+All Other Locations,Version 1.23.0,4,285.0,700.0,0.0,"285.0, 700.0, 0.0",https://fischipedia.org/wiki/Version_1.23.0
+All Other Locations,Version 1.23.0,5,500.0,0.0,0.0,"500.0, 0.0, 0.0",https://fischipedia.org/wiki/Version_1.23.0
+All Other Locations,Mariana's Veil,1,1500.0,125.0,530.0,"1500.0, 125.0, 530.0",https://fischipedia.org/wiki/Mariana%27s_Veil
+All Other Locations,Mariana's Veil,2,-1305.0,130.0,310.0,"-1305.0, 130.0, 310.0",https://fischipedia.org/wiki/Mariana%27s_Veil
+All Other Locations,Mariana's Veil,3,-3175.0,-2035.0,4020.0,"-3175.0, -2035.0, 4020.0",https://fischipedia.org/wiki/Mariana%27s_Veil
+All Other Locations,Mariana's Veil,4,740.0,-3355.0,-1530.0,"740.0, -3355.0, -1530.0",https://fischipedia.org/wiki/Mariana%27s_Veil
+All Other Locations,Mariana's Veil,5,-1480.0,137.0,382.0,"-1480.0, 137.0, 382.0",https://fischipedia.org/wiki/Mariana%27s_Veil
+All Other Locations,Mariana's Veil,6,-3365.0,-2260.0,3850.0,"-3365.0, -2260.0, 3850.0",https://fischipedia.org/wiki/Mariana%27s_Veil
+All Other Locations,Mariana's Veil,7,-760.0,-3280.0,-715.0,"-760.0, -3280.0, -715.0",https://fischipedia.org/wiki/Mariana%27s_Veil
+All Other Locations,Mariana's Veil,8,-800.0,-3280.0,-625.0,"-800.0, -3280.0, -625.0",https://fischipedia.org/wiki/Mariana%27s_Veil
+All Other Locations,Mariana's Veil,9,-3180.0,-2035.0,4020.0,"-3180.0, -2035.0, 4020.0",https://fischipedia.org/wiki/Mariana%27s_Veil
+All Other Locations,Mariana's Veil,10,2.0,500.0,0.0,"2.0, 500.0, 0.0",https://fischipedia.org/wiki/Mariana%27s_Veil
+All Other Locations,Mariana's Veil,11,10.0,0.0,0.0,"10.0, 0.0, 0.0",https://fischipedia.org/wiki/Mariana%27s_Veil
+All Other Locations,Mariana's Veil,12,15.0,0.0,0.0,"15.0, 0.0, 0.0",https://fischipedia.org/wiki/Mariana%27s_Veil
+All Other Locations,Mariana's Veil,13,1.0,0.0,0.0,"1.0, 0.0, 0.0",https://fischipedia.org/wiki/Mariana%27s_Veil
+All Other Locations,The Laboratory,1,-1785.0,130.0,-485.0,"-1785.0, 130.0, -485.0",https://fischipedia.org/wiki/The_Laboratory
+All Other Locations,Atlantis,1,-4300.0,-580.0,1800.0,"-4300.0, -580.0, 1800.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,2,-2522.0,138.0,1593.0,"-2522.0, 138.0, 1593.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,3,-2551.0,150.0,1667.0,"-2551.0, 150.0, 1667.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,4,-2729.0,168.0,1730.0,"-2729.0, 168.0, 1730.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,5,-2881.0,317.0,1607.0,"-2881.0, 317.0, 1607.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,6,-2835.0,131.0,1510.0,"-2835.0, 131.0, 1510.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,7,-3576.0,148.0,524.0,"-3576.0, 148.0, 524.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,8,-4606.0,-594.0,1843.0,"-4606.0, -594.0, 1843.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,9,-5167.0,-680.0,1710.0,"-5167.0, -680.0, 1710.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,10,-4107.0,-603.0,1823.0,"-4107.0, -603.0, 1823.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,11,-4299.0,-604.0,1587.0,"-4299.0, -604.0, 1587.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,12,-4295.0,-583.0,2021.0,"-4295.0, -583.0, 2021.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,13,-4295.0,-991.0,1792.0,"-4295.0, -991.0, 1792.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,14,-4465.0,-604.0,1874.0,"-4465.0, -604.0, 1874.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,15,-4277.0,-606.0,1838.0,"-4277.0, -606.0, 1838.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,16,1.0,850.0,0.0,"1.0, 850.0, 0.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,17,-4928.0,-595.0,1857.0,"-4928.0, -595.0, 1857.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,18,1.0,0.0,0.0,"1.0, 0.0, 0.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,19,-3804.0,-567.0,1870.0,"-3804.0, -567.0, 1870.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,20,1.0,555.0,555.0,"1.0, 555.0, 555.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,21,-4086.0,-559.0,895.0,"-4086.0, -559.0, 895.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,22,2.0,700.0,0.0,"2.0, 700.0, 0.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,23,-4272.0,-629.0,2665.0,"-4272.0, -629.0, 2665.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,24,1.0,333.0,333.0,"1.0, 333.0, 333.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,25,-4415.0,-997.0,2055.0,"-4415.0, -997.0, 2055.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,26,1.0,500.0,0.0,"1.0, 500.0, 0.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,27,-3953.0,-556.0,853.0,"-3953.0, -556.0, 853.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,28,-4325.0,-630.0,2687.0,"-4325.0, -630.0, 2687.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,29,-177.0,144.0,1933.0,"-177.0, 144.0, 1933.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,30,-4462.0,-605.0,1875.0,"-4462.0, -605.0, 1875.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,31,-4463.0,-603.0,1876.0,"-4463.0, -603.0, 1876.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,32,-4452.0,-603.0,1877.0,"-4452.0, -603.0, 1877.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,33,-4450.0,-605.0,1874.0,"-4450.0, -605.0, 1874.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantis,34,-4446.0,-605.0,1866.0,"-4446.0, -605.0, 1866.0",https://fischipedia.org/wiki/Atlantis
+All Other Locations,Atlantean Storm,1,-3530.0,130.0,550.0,"-3530.0, 130.0, 550.0",https://fischipedia.org/wiki/Atlantean_Storm
+All Other Locations,Atlantean Storm,2,-3820.0,135.0,575.0,"-3820.0, 135.0, 575.0",https://fischipedia.org/wiki/Atlantean_Storm
+All Other Locations,Grand Reef,1,-3530.0,130.0,550.0,"-3530.0, 130.0, 550.0",https://fischipedia.org/wiki/Grand_Reef
+All Other Locations,Grand Reef,2,-3820.0,135.0,575.0,"-3820.0, 135.0, 575.0",https://fischipedia.org/wiki/Grand_Reef
+All Other Locations,Winter Village,1,5815.0,145.0,270.0,"5815.0, 145.0, 270.0",https://fischipedia.org/wiki/Winter_Village
+All Other Locations,Winter Village,2,-2490.0,135.0,1470.0,"-2490.0, 135.0, 1470.0",https://fischipedia.org/wiki/Winter_Village
+All Other Locations,Winter Village,3,400.0,135.0,305.0,"400.0, 135.0, 305.0",https://fischipedia.org/wiki/Winter_Village
+All Other Locations,Winter Village,4,2410.0,135.0,-730.0,"2410.0, 135.0, -730.0",https://fischipedia.org/wiki/Winter_Village
+All Other Locations,Winter Village,5,-1920.0,500.0,160.0,"-1920.0, 500.0, 160.0",https://fischipedia.org/wiki/Winter_Village
+All Other Locations,Winter Village,6,2640.0,140.0,2425.0,"2640.0, 140.0, 2425.0",https://fischipedia.org/wiki/Winter_Village
+All Other Locations,Winter Village,7,45.0,140.0,-1030.0,"45.0, 140.0, -1030.0",https://fischipedia.org/wiki/Winter_Village
+All Other Locations,Winter Village,8,-890.0,135.0,-1110.0,"-890.0, 135.0, -1110.0",https://fischipedia.org/wiki/Winter_Village
+All Other Locations,Winter Village,9,-160.0,140.0,1895.0,"-160.0, 140.0, 1895.0",https://fischipedia.org/wiki/Winter_Village
+All Other Locations,Winter Village,10,-190.0,370.0,-9445.0,"-190.0, 370.0, -9445.0",https://fischipedia.org/wiki/Winter_Village
+All Other Locations,Winter Village,11,-15.0,365.0,-9590.0,"-15.0, 365.0, -9590.0",https://fischipedia.org/wiki/Winter_Village
+All Other Locations,Northern Expedition,1,400.0,135.0,265.0,"400.0, 135.0, 265.0",https://fischipedia.org/wiki/Northern_Expedition
+All Other Locations,Northern Expedition,2,5506.0,147.0,-315.0,"5506.0, 147.0, -315.0",https://fischipedia.org/wiki/Northern_Expedition
+All Other Locations,Northern Expedition,3,2930.0,281.0,2594.0,"2930.0, 281.0, 2594.0",https://fischipedia.org/wiki/Northern_Expedition
+All Other Locations,Northern Expedition,4,-1715.0,149.0,737.0,"-1715.0, 149.0, 737.0",https://fischipedia.org/wiki/Northern_Expedition
+All Other Locations,Northern Expedition,5,-2566.0,181.0,1353.0,"-2566.0, 181.0, 1353.0",https://fischipedia.org/wiki/Northern_Expedition
+All Other Locations,Northern Expedition,6,-1750.0,130.0,3750.0,"-1750.0, 130.0, 3750.0",https://fischipedia.org/wiki/Northern_Expedition
+All Other Locations,Northern Expedition,7,2.0,750.0,0.0,"2.0, 750.0, 0.0",https://fischipedia.org/wiki/Northern_Expedition
+All Other Locations,Northern Expedition,8,1.0,500.0,0.0,"1.0, 500.0, 0.0",https://fischipedia.org/wiki/Northern_Expedition
+All Other Locations,Ancient Isle,1,5833.0,125.0,401.0,"5833.0, 125.0, 401.0",https://fischipedia.org/wiki/Ancient_Isle
+All Other Locations,Ancient Isle,2,5870.0,160.0,415.0,"5870.0, 160.0, 415.0",https://fischipedia.org/wiki/Ancient_Isle
+All Other Locations,Ancient Isle,3,5487.0,143.0,-316.0,"5487.0, 143.0, -316.0",https://fischipedia.org/wiki/Ancient_Isle
+All Other Locations,Ancient Isle,4,5966.0,274.0,846.0,"5966.0, 274.0, 846.0",https://fischipedia.org/wiki/Ancient_Isle
+All Other Locations,Ancient Isle,5,6075.0,195.0,260.0,"6075.0, 195.0, 260.0",https://fischipedia.org/wiki/Ancient_Isle
+All Other Locations,Ancient Isle,6,6000.0,230.0,591.0,"6000.0, 230.0, 591.0",https://fischipedia.org/wiki/Ancient_Isle
+All Other Locations,Ancient Archives,1,5833.0,125.0,401.0,"5833.0, 125.0, 401.0",https://fischipedia.org/wiki/Ancient_Archives
+All Other Locations,Ancient Archives,2,5870.0,160.0,415.0,"5870.0, 160.0, 415.0",https://fischipedia.org/wiki/Ancient_Archives
+All Other Locations,Ancient Archives,3,5487.0,143.0,-316.0,"5487.0, 143.0, -316.0",https://fischipedia.org/wiki/Ancient_Archives
+All Other Locations,Ancient Archives,4,5966.0,274.0,846.0,"5966.0, 274.0, 846.0",https://fischipedia.org/wiki/Ancient_Archives
+All Other Locations,Ancient Archives,5,6075.0,195.0,260.0,"6075.0, 195.0, 260.0",https://fischipedia.org/wiki/Ancient_Archives
+All Other Locations,Ancient Archives,6,6000.0,230.0,591.0,"6000.0, 230.0, 591.0",https://fischipedia.org/wiki/Ancient_Archives
+All Other Locations,Archaeological Site,1,4160.0,125.0,210.0,"4160.0, 125.0, 210.0",https://fischipedia.org/wiki/Archaeological_Site
+All Other Locations,The Depths,1,472.0,-706.0,1231.0,"472.0, -706.0, 1231.0",https://fischipedia.org/wiki/The_Depths
+All Other Locations,The Depths,2,1210.0,-715.0,1315.0,"1210.0, -715.0, 1315.0",https://fischipedia.org/wiki/The_Depths
+All Other Locations,The Depths,3,1705.0,-900.0,1445.0,"1705.0, -900.0, 1445.0",https://fischipedia.org/wiki/The_Depths
+All Other Locations,The Depths,4,-970.0,-710.0,1300.0,"-970.0, -710.0, 1300.0",https://fischipedia.org/wiki/The_Depths
+All Other Locations,Forsaken Shores,1,-2425.0,135.0,1555.0,"-2425.0, 135.0, 1555.0",https://fischipedia.org/wiki/Forsaken_Shores
+All Other Locations,Forsaken Shores,2,-3600.0,125.0,1605.0,"-3600.0, 125.0, 1605.0",https://fischipedia.org/wiki/Forsaken_Shores
+All Other Locations,Forsaken Shores,3,-2830.0,215.0,1510.0,"-2830.0, 215.0, 1510.0",https://fischipedia.org/wiki/Forsaken_Shores
+All Other Locations,Forsaken Shores,4,-2490.0,130.0,1535.0,"-2490.0, 130.0, 1535.0",https://fischipedia.org/wiki/Forsaken_Shores
+All Other Locations,Forsaken Shores,5,-2525.0,135.0,-1575.0,"-2525.0, 135.0, -1575.0",https://fischipedia.org/wiki/Forsaken_Shores
+All Other Locations,Desolate Deep,1,-790.0,125.0,-3100.0,"-790.0, 125.0, -3100.0",https://fischipedia.org/wiki/Desolate_Deep
+All Other Locations,Desolate Deep,2,-1710.0,-235.0,-3075.0,"-1710.0, -235.0, -3075.0",https://fischipedia.org/wiki/Desolate_Deep
+All Other Locations,Desolate Deep,3,-1725.0,-175.0,-3125.0,"-1725.0, -175.0, -3125.0",https://fischipedia.org/wiki/Desolate_Deep
+All Other Locations,Desolate Deep,4,-1600.0,-110.0,-2845.0,"-1600.0, -110.0, -2845.0",https://fischipedia.org/wiki/Desolate_Deep
+All Other Locations,Desolate Deep,5,-1795.0,-140.0,-3310.0,"-1795.0, -140.0, -3310.0",https://fischipedia.org/wiki/Desolate_Deep
+All Other Locations,Desolate Deep,6,-1810.0,-140.0,-3300.0,"-1810.0, -140.0, -3300.0",https://fischipedia.org/wiki/Desolate_Deep
+All Other Locations,Desolate Deep,7,-1625.0,-205.0,-2785.0,"-1625.0, -205.0, -2785.0",https://fischipedia.org/wiki/Desolate_Deep
+All Other Locations,Desolate Deep,8,-1470.0,-240.0,-2550.0,"-1470.0, -240.0, -2550.0",https://fischipedia.org/wiki/Desolate_Deep
+All Other Locations,Desolate Deep,9,-975.0,-245.0,-2700.0,"-975.0, -245.0, -2700.0",https://fischipedia.org/wiki/Desolate_Deep
+All Other Locations,Desolate Deep,10,-1485.0,-225.0,-2195.0,"-1485.0, -225.0, -2195.0",https://fischipedia.org/wiki/Desolate_Deep
+All Other Locations,Desolate Deep,11,-1655.0,-210.0,-2825.0,"-1655.0, -210.0, -2825.0",https://fischipedia.org/wiki/Desolate_Deep
+All Other Locations,Desolate Deep,12,-980.0,-240.0,-2690.0,"-980.0, -240.0, -2690.0",https://fischipedia.org/wiki/Desolate_Deep
+All Other Locations,Desolate Deep,13,-1645.0,-210.0,-2855.0,"-1645.0, -210.0, -2855.0",https://fischipedia.org/wiki/Desolate_Deep
+All Other Locations,Desolate Deep,14,-1650.0,-210.0,-2840.0,"-1650.0, -210.0, -2840.0",https://fischipedia.org/wiki/Desolate_Deep
+All Other Locations,Desolate Deep,15,-1630.0,-210.0,-2860.0,"-1630.0, -210.0, -2860.0",https://fischipedia.org/wiki/Desolate_Deep
+All Other Locations,Desolate Deep,16,-1470.0,-225.0,-2225.0,"-1470.0, -225.0, -2225.0",https://fischipedia.org/wiki/Desolate_Deep
+All Other Locations,Desolate Deep,17,-1800.0,-135.0,-3280.0,"-1800.0, -135.0, -3280.0",https://fischipedia.org/wiki/Desolate_Deep
+All Other Locations,Brine Pool,1,-790.0,125.0,-3100.0,"-790.0, 125.0, -3100.0",https://fischipedia.org/wiki/Brine_Pool
+All Other Locations,Brine Pool,2,-1710.0,-235.0,-3075.0,"-1710.0, -235.0, -3075.0",https://fischipedia.org/wiki/Brine_Pool
+All Other Locations,Brine Pool,3,-1725.0,-175.0,-3125.0,"-1725.0, -175.0, -3125.0",https://fischipedia.org/wiki/Brine_Pool
+All Other Locations,Brine Pool,4,-1600.0,-110.0,-2845.0,"-1600.0, -110.0, -2845.0",https://fischipedia.org/wiki/Brine_Pool
+All Other Locations,Brine Pool,5,-1795.0,-140.0,-3310.0,"-1795.0, -140.0, -3310.0",https://fischipedia.org/wiki/Brine_Pool
+All Other Locations,Brine Pool,6,-1810.0,-140.0,-3300.0,"-1810.0, -140.0, -3300.0",https://fischipedia.org/wiki/Brine_Pool
+All Other Locations,Brine Pool,7,-1625.0,-205.0,-2785.0,"-1625.0, -205.0, -2785.0",https://fischipedia.org/wiki/Brine_Pool
+All Other Locations,Brine Pool,8,-1470.0,-240.0,-2550.0,"-1470.0, -240.0, -2550.0",https://fischipedia.org/wiki/Brine_Pool
+All Other Locations,Brine Pool,9,-975.0,-245.0,-2700.0,"-975.0, -245.0, -2700.0",https://fischipedia.org/wiki/Brine_Pool
+All Other Locations,Brine Pool,10,-1485.0,-225.0,-2195.0,"-1485.0, -225.0, -2195.0",https://fischipedia.org/wiki/Brine_Pool
+All Other Locations,Brine Pool,11,-1655.0,-210.0,-2825.0,"-1655.0, -210.0, -2825.0",https://fischipedia.org/wiki/Brine_Pool
+All Other Locations,Brine Pool,12,-980.0,-240.0,-2690.0,"-980.0, -240.0, -2690.0",https://fischipedia.org/wiki/Brine_Pool
+All Other Locations,Brine Pool,13,-1645.0,-210.0,-2855.0,"-1645.0, -210.0, -2855.0",https://fischipedia.org/wiki/Brine_Pool
+All Other Locations,Brine Pool,14,-1650.0,-210.0,-2840.0,"-1650.0, -210.0, -2840.0",https://fischipedia.org/wiki/Brine_Pool
+All Other Locations,Brine Pool,15,-1630.0,-210.0,-2860.0,"-1630.0, -210.0, -2860.0",https://fischipedia.org/wiki/Brine_Pool
+All Other Locations,Brine Pool,16,-1470.0,-225.0,-2225.0,"-1470.0, -225.0, -2225.0",https://fischipedia.org/wiki/Brine_Pool
+All Other Locations,Brine Pool,17,-1800.0,-135.0,-3280.0,"-1800.0, -135.0, -3280.0",https://fischipedia.org/wiki/Brine_Pool
+All Other Locations,Roslit Bay,1,-1450.0,135.0,750.0,"-1450.0, 135.0, 750.0",https://fischipedia.org/wiki/Roslit_Bay
+All Other Locations,Roslit Bay,2,-1775.0,150.0,680.0,"-1775.0, 150.0, 680.0",https://fischipedia.org/wiki/Roslit_Bay
+All Other Locations,Roslit Bay,3,-1875.0,165.0,380.0,"-1875.0, 165.0, 380.0",https://fischipedia.org/wiki/Roslit_Bay
+All Other Locations,Roslit Bay,4,-1515.0,141.0,765.0,"-1515.0, 141.0, 765.0",https://fischipedia.org/wiki/Roslit_Bay
+All Other Locations,Roslit Bay,5,-1945.0,275.0,230.0,"-1945.0, 275.0, 230.0",https://fischipedia.org/wiki/Roslit_Bay
+All Other Locations,Roslit Bay,6,-1710.0,150.0,740.0,"-1710.0, 150.0, 740.0",https://fischipedia.org/wiki/Roslit_Bay
+All Other Locations,Roslit Bay,7,-1465.0,130.0,680.0,"-1465.0, 130.0, 680.0",https://fischipedia.org/wiki/Roslit_Bay
+All Other Locations,Roslit Bay,8,-1485.0,130.0,640.0,"-1485.0, 130.0, 640.0",https://fischipedia.org/wiki/Roslit_Bay
+All Other Locations,Roslit Bay,9,-1785.0,165.0,400.0,"-1785.0, 165.0, 400.0",https://fischipedia.org/wiki/Roslit_Bay
+All Other Locations,Roslit Volcano,1,-1450.0,135.0,750.0,"-1450.0, 135.0, 750.0",https://fischipedia.org/wiki/Roslit_Volcano
+All Other Locations,Roslit Volcano,2,-1775.0,150.0,680.0,"-1775.0, 150.0, 680.0",https://fischipedia.org/wiki/Roslit_Volcano
+All Other Locations,Roslit Volcano,3,-1875.0,165.0,380.0,"-1875.0, 165.0, 380.0",https://fischipedia.org/wiki/Roslit_Volcano
+All Other Locations,Roslit Volcano,4,-1515.0,141.0,765.0,"-1515.0, 141.0, 765.0",https://fischipedia.org/wiki/Roslit_Volcano
+All Other Locations,Roslit Volcano,5,-1945.0,275.0,230.0,"-1945.0, 275.0, 230.0",https://fischipedia.org/wiki/Roslit_Volcano
+All Other Locations,Roslit Volcano,6,-1710.0,150.0,740.0,"-1710.0, 150.0, 740.0",https://fischipedia.org/wiki/Roslit_Volcano
+All Other Locations,Roslit Volcano,7,-1465.0,130.0,680.0,"-1465.0, 130.0, 680.0",https://fischipedia.org/wiki/Roslit_Volcano
+All Other Locations,Roslit Volcano,8,-1485.0,130.0,640.0,"-1485.0, 130.0, 640.0",https://fischipedia.org/wiki/Roslit_Volcano
+All Other Locations,Roslit Volcano,9,-1785.0,165.0,400.0,"-1785.0, 165.0, 400.0",https://fischipedia.org/wiki/Roslit_Volcano
+All Other Locations,Mushgrove Swamp,1,2425.0,130.0,-670.0,"2425.0, 130.0, -670.0",https://fischipedia.org/wiki/Mushgrove_Swamp
+All Other Locations,Mushgrove Swamp,2,2730.0,130.0,-825.0,"2730.0, 130.0, -825.0",https://fischipedia.org/wiki/Mushgrove_Swamp
+All Other Locations,Mushgrove Swamp,3,2520.0,160.0,-895.0,"2520.0, 160.0, -895.0",https://fischipedia.org/wiki/Mushgrove_Swamp
+All Other Locations,Mushgrove Swamp,4,2790.0,140.0,-625.0,"2790.0, 140.0, -625.0",https://fischipedia.org/wiki/Mushgrove_Swamp
+All Other Locations,Mushgrove Swamp,5,2520.0,135.0,-895.0,"2520.0, 135.0, -895.0",https://fischipedia.org/wiki/Mushgrove_Swamp
+All Other Locations,Snowcap Island,1,2600.0,150.0,2400.0,"2600.0, 150.0, 2400.0",https://fischipedia.org/wiki/Snowcap_Island
+All Other Locations,Snowcap Island,2,2900.0,150.0,2500.0,"2900.0, 150.0, 2500.0",https://fischipedia.org/wiki/Snowcap_Island
+All Other Locations,Snowcap Island,3,2710.0,190.0,2560.0,"2710.0, 190.0, 2560.0",https://fischipedia.org/wiki/Snowcap_Island
+All Other Locations,Snowcap Island,4,2750.0,135.0,2505.0,"2750.0, 135.0, 2505.0",https://fischipedia.org/wiki/Snowcap_Island
+All Other Locations,Snowcap Island,5,2800.0,280.0,2565.0,"2800.0, 280.0, 2565.0",https://fischipedia.org/wiki/Snowcap_Island
+All Other Locations,Snowcap Island,6,2845.0,180.0,2700.0,"2845.0, 180.0, 2700.0",https://fischipedia.org/wiki/Snowcap_Island
+All Other Locations,Sunstone Island,1,-935.0,130.0,-1105.0,"-935.0, 130.0, -1105.0",https://fischipedia.org/wiki/Sunstone_Island
+All Other Locations,Sunstone Island,2,-1045.0,135.0,-1140.0,"-1045.0, 135.0, -1140.0",https://fischipedia.org/wiki/Sunstone_Island
+All Other Locations,Sunstone Island,3,-1215.0,190.0,-1040.0,"-1215.0, 190.0, -1040.0",https://fischipedia.org/wiki/Sunstone_Island
+All Other Locations,Sunstone Island,4,-1145.0,135.0,-1075.0,"-1145.0, 135.0, -1075.0",https://fischipedia.org/wiki/Sunstone_Island
+All Other Locations,Sunstone Island,5,-1045.0,200.0,-1100.0,"-1045.0, 200.0, -1100.0",https://fischipedia.org/wiki/Sunstone_Island
+All Other Locations,Sunstone Island,6,-920.0,130.0,-1105.0,"-920.0, 130.0, -1105.0",https://fischipedia.org/wiki/Sunstone_Island
+All Other Locations,Statue of Sovereignty,1,20.0,160.0,-1040.0,"20.0, 160.0, -1040.0",https://fischipedia.org/wiki/Statue_of_Sovereignty
+All Other Locations,Statue of Sovereignty,2,1380.0,-805.0,-300.0,"1380.0, -805.0, -300.0",https://fischipedia.org/wiki/Statue_of_Sovereignty
+All Other Locations,Keepers Altar,1,20.0,160.0,-1040.0,"20.0, 160.0, -1040.0",https://fischipedia.org/wiki/Keepers_Altar
+All Other Locations,Keepers Altar,2,1380.0,-805.0,-300.0,"1380.0, -805.0, -300.0",https://fischipedia.org/wiki/Keepers_Altar
+All Other Locations,Vertigo,1,-110.0,-515.0,1040.0,"-110.0, -515.0, 1040.0",https://fischipedia.org/wiki/Vertigo
+All Other Locations,Vertigo,2,-75.0,-530.0,1285.0,"-75.0, -530.0, 1285.0",https://fischipedia.org/wiki/Vertigo
+All Other Locations,Vertigo,3,1210.0,-715.0,1315.0,"1210.0, -715.0, 1315.0",https://fischipedia.org/wiki/Vertigo
+All Other Locations,Vertigo,4,-145.0,-515.0,1140.0,"-145.0, -515.0, 1140.0",https://fischipedia.org/wiki/Vertigo
+All Other Locations,Vertigo,5,1705.0,-900.0,1445.0,"1705.0, -900.0, 1445.0",https://fischipedia.org/wiki/Vertigo
+All Other Locations,Vertigo,6,-100.0,-730.0,1210.0,"-100.0, -730.0, 1210.0",https://fischipedia.org/wiki/Vertigo
+All Other Locations,Vertigo,7,-970.0,-710.0,1300.0,"-970.0, -710.0, 1300.0",https://fischipedia.org/wiki/Vertigo
+All Other Locations,Ocean,1,-1270.0,125.0,1580.0,"-1270.0, 125.0, 1580.0",https://fischipedia.org/wiki/Ocean
+All Other Locations,Ocean,2,1000.0,125.0,-1250.0,"1000.0, 125.0, -1250.0",https://fischipedia.org/wiki/Ocean
+All Other Locations,Ocean,3,-530.0,125.0,-425.0,"-530.0, 125.0, -425.0",https://fischipedia.org/wiki/Ocean
+All Other Locations,Ocean,4,1230.0,125.0,575.0,"1230.0, 125.0, 575.0",https://fischipedia.org/wiki/Ocean
+All Other Locations,Ocean,5,1700.0,125.0,-2500.0,"1700.0, 125.0, -2500.0",https://fischipedia.org/wiki/Ocean
+All Other Locations,Deep Ocean,1,-1270.0,125.0,1580.0,"-1270.0, 125.0, 1580.0",https://fischipedia.org/wiki/Deep_Ocean
+All Other Locations,Deep Ocean,2,1000.0,125.0,-1250.0,"1000.0, 125.0, -1250.0",https://fischipedia.org/wiki/Deep_Ocean
+All Other Locations,Deep Ocean,3,-530.0,125.0,-425.0,"-530.0, 125.0, -425.0",https://fischipedia.org/wiki/Deep_Ocean
+All Other Locations,Deep Ocean,4,1230.0,125.0,575.0,"1230.0, 125.0, 575.0",https://fischipedia.org/wiki/Deep_Ocean
+All Other Locations,Deep Ocean,5,1700.0,125.0,-2500.0,"1700.0, 125.0, -2500.0",https://fischipedia.org/wiki/Deep_Ocean
+All Other Locations,Earmark Island,1,-1270.0,125.0,1580.0,"-1270.0, 125.0, 1580.0",https://fischipedia.org/wiki/Earmark_Island
+All Other Locations,Earmark Island,2,1000.0,125.0,-1250.0,"1000.0, 125.0, -1250.0",https://fischipedia.org/wiki/Earmark_Island
+All Other Locations,Earmark Island,3,-530.0,125.0,-425.0,"-530.0, 125.0, -425.0",https://fischipedia.org/wiki/Earmark_Island
+All Other Locations,Earmark Island,4,1230.0,125.0,575.0,"1230.0, 125.0, 575.0",https://fischipedia.org/wiki/Earmark_Island
+All Other Locations,Earmark Island,5,1700.0,125.0,-2500.0,"1700.0, 125.0, -2500.0",https://fischipedia.org/wiki/Earmark_Island
+All Other Locations,Haddock Rock,1,-1270.0,125.0,1580.0,"-1270.0, 125.0, 1580.0",https://fischipedia.org/wiki/Haddock_Rock
+All Other Locations,Haddock Rock,2,1000.0,125.0,-1250.0,"1000.0, 125.0, -1250.0",https://fischipedia.org/wiki/Haddock_Rock
+All Other Locations,Haddock Rock,3,-530.0,125.0,-425.0,"-530.0, 125.0, -425.0",https://fischipedia.org/wiki/Haddock_Rock
+All Other Locations,Haddock Rock,4,1230.0,125.0,575.0,"1230.0, 125.0, 575.0",https://fischipedia.org/wiki/Haddock_Rock
+All Other Locations,Haddock Rock,5,1700.0,125.0,-2500.0,"1700.0, 125.0, -2500.0",https://fischipedia.org/wiki/Haddock_Rock
+All Other Locations,The Arch,1,-1270.0,125.0,1580.0,"-1270.0, 125.0, 1580.0",https://fischipedia.org/wiki/The_Arch
+All Other Locations,The Arch,2,1000.0,125.0,-1250.0,"1000.0, 125.0, -1250.0",https://fischipedia.org/wiki/The_Arch
+All Other Locations,The Arch,3,-530.0,125.0,-425.0,"-530.0, 125.0, -425.0",https://fischipedia.org/wiki/The_Arch
+All Other Locations,The Arch,4,1230.0,125.0,575.0,"1230.0, 125.0, 575.0",https://fischipedia.org/wiki/The_Arch
+All Other Locations,The Arch,5,1700.0,125.0,-2500.0,"1700.0, 125.0, -2500.0",https://fischipedia.org/wiki/The_Arch
+All Other Locations,Birch Cay,1,-1270.0,125.0,1580.0,"-1270.0, 125.0, 1580.0",https://fischipedia.org/wiki/Birch_Cay
+All Other Locations,Birch Cay,2,1000.0,125.0,-1250.0,"1000.0, 125.0, -1250.0",https://fischipedia.org/wiki/Birch_Cay
+All Other Locations,Birch Cay,3,-530.0,125.0,-425.0,"-530.0, 125.0, -425.0",https://fischipedia.org/wiki/Birch_Cay
+All Other Locations,Birch Cay,4,1230.0,125.0,575.0,"1230.0, 125.0, 575.0",https://fischipedia.org/wiki/Birch_Cay
+All Other Locations,Birch Cay,5,1700.0,125.0,-2500.0,"1700.0, 125.0, -2500.0",https://fischipedia.org/wiki/Birch_Cay
+All Other Locations,Harvesters Spike,1,-1270.0,125.0,1580.0,"-1270.0, 125.0, 1580.0",https://fischipedia.org/wiki/Harvesters_Spike
+All Other Locations,Harvesters Spike,2,1000.0,125.0,-1250.0,"1000.0, 125.0, -1250.0",https://fischipedia.org/wiki/Harvesters_Spike
+All Other Locations,Harvesters Spike,3,-530.0,125.0,-425.0,"-530.0, 125.0, -425.0",https://fischipedia.org/wiki/Harvesters_Spike
+All Other Locations,Harvesters Spike,4,1230.0,125.0,575.0,"1230.0, 125.0, 575.0",https://fischipedia.org/wiki/Harvesters_Spike
+All Other Locations,Harvesters Spike,5,1700.0,125.0,-2500.0,"1700.0, 125.0, -2500.0",https://fischipedia.org/wiki/Harvesters_Spike
+All Other Locations,Lobster Fishing,1,-552.0,153.0,2651.0,"-552.0, 153.0, 2651.0",https://fischipedia.org/wiki/Lobster_Fishing
+All Other Locations,Lobster Fishing,2,-571.0,153.0,2638.0,"-571.0, 153.0, 2638.0",https://fischipedia.org/wiki/Lobster_Fishing
+All Other Locations,Lobster Fishing,3,-575.0,85.0,1000.0,"-575.0, 85.0, 1000.0",https://fischipedia.org/wiki/Lobster_Fishing
+All Other Locations,Net Fishing,1,-635.0,85.0,1005.0,"-635.0, 85.0, 1005.0",https://fischipedia.org/wiki/Net_Fishing
+All Other Locations,Net Fishing,2,-630.0,85.0,1005.0,"-630.0, 85.0, 1005.0",https://fischipedia.org/wiki/Net_Fishing
+All Other Locations,Net Fishing,3,-610.0,85.0,1005.0,"-610.0, 85.0, 1005.0",https://fischipedia.org/wiki/Net_Fishing
+All Other Locations,Net Fishing,4,-820.0,90.0,995.0,"-820.0, 90.0, 995.0",https://fischipedia.org/wiki/Net_Fishing
+All Other Locations,Oxygen,1,-1655.0,-210.0,-2825.0,"-1655.0, -210.0, -2825.0",https://fischipedia.org/wiki/Oxygen
+All Other Locations,Oxygen,2,370.0,135.0,250.0,"370.0, 135.0, 250.0",https://fischipedia.org/wiki/Oxygen
+All Other Locations,Oxygen,3,-790.0,125.0,-3100.0,"-790.0, 125.0, -3100.0",https://fischipedia.org/wiki/Oxygen
+All Other Locations,Oxygen,4,-980.0,-240.0,-2690.0,"-980.0, -240.0, -2690.0",https://fischipedia.org/wiki/Oxygen
+All Other Locations,Oxygen,5,-4452.0,-603.0,1877.0,"-4452.0, -603.0, 1877.0",https://fischipedia.org/wiki/Oxygen
+All Other Locations,Oxygen,6,-3550.0,130.0,568.0,"-3550.0, 130.0, 568.0",https://fischipedia.org/wiki/Oxygen
+All Other Locations,NPCs,1,415.0,135.0,200.0,"415.0, 135.0, 200.0",https://fischipedia.org/wiki/NPCs
+All Other Locations,NPCs,2,420.0,145.0,260.0,"420.0, 145.0, 260.0",https://fischipedia.org/wiki/NPCs
+All Other Locations,Sunken Chest,1,936.0,130.0,-159.0,"936.0, 130.0, -159.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,2,-1179.0,130.0,565.0,"-1179.0, 130.0, 565.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,3,-852.0,130.0,-1560.0,"-852.0, 130.0, -1560.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,4,798.0,130.0,1667.0,"798.0, 130.0, 1667.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,5,2890.0,130.0,-997.0,"2890.0, 130.0, -997.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,6,-2460.0,130.0,2047.0,"-2460.0, 130.0, 2047.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,7,693.0,130.0,-362.0,"693.0, 130.0, -362.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,8,-1217.0,130.0,201.0,"-1217.0, 130.0, 201.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,9,-1000.0,130.0,-751.0,"-1000.0, 130.0, -751.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,10,562.0,130.0,2455.0,"562.0, 130.0, 2455.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,11,2729.0,130.0,-1098.0,"2729.0, 130.0, -1098.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,12,613.0,130.0,498.0,"613.0, 130.0, 498.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,13,-1967.0,130.0,980.0,"-1967.0, 130.0, 980.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,14,-1500.0,130.0,-750.0,"-1500.0, 130.0, -750.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,15,393.0,130.0,2435.0,"393.0, 130.0, 2435.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,16,2410.0,130.0,-1110.0,"2410.0, 130.0, -1110.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,17,285.0,130.0,564.0,"285.0, 130.0, 564.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,18,-2444.0,130.0,266.0,"-2444.0, 130.0, 266.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,19,-1547.0,130.0,-1080.0,"-1547.0, 130.0, -1080.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,20,-1.0,130.0,1632.0,"-1.0, 130.0, 1632.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,21,2266.0,130.0,-721.0,"2266.0, 130.0, -721.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,22,283.0,130.0,-159.0,"283.0, 130.0, -159.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,23,-2444.0,130.0,-37.0,"-2444.0, 130.0, -37.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,24,-1618.0,130.0,-1560.0,"-1618.0, 130.0, -1560.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Sunken Chest,25,-190.0,130.0,2450.0,"-190.0, 130.0, 2450.0",https://fischipedia.org/wiki/Sunken_Chest
+All Other Locations,Treasure Hunting,1,-2825.0,215.0,1515.0,"-2825.0, 215.0, 1515.0",https://fischipedia.org/wiki/Treasure_Hunting
+All Other Locations,AFK Rewards,1,232.0,139.0,38.0,"232.0, 139.0, 38.0",https://fischipedia.org/wiki/AFK_Rewards
