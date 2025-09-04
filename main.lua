@@ -31,9 +31,9 @@ local fishabundancevisible = false
 local deathcon
 local tooltipmessage
 
--- Default delay values
-flags['autocastdelay'] = 0.5
-flags['autoreeldelay'] = 0.5
+-- Default delay values (optimized for speed)
+flags['autocastdelay'] = 0.1
+flags['autoreeldelay'] = 0.1
 local TeleportLocations = {
     ['Zones'] = {
         ['Moosewood'] = CFrame.new(379.875458, 134.500519, 233.5495, -0.033920113, 8.13274355e-08, 0.999424577, 8.98441925e-08, 1, -7.83249803e-08, -0.999424577, 8.7135696e-08, -0.033920113),
@@ -1212,7 +1212,7 @@ CastSection:NewToggle("Auto Cast", "Automatically cast fishing rod", function(st
 end)
 
 -- Fix slider issue - properly define default value with initial state
-local castSlider = CastSection:NewSlider("Auto Cast Delay", "Delay between auto casts (seconds)", 0.1, 5, function(value)
+local castSlider = CastSection:NewSlider("Auto Cast Delay", "Delay between auto casts (seconds)", 0.01, 5, function(value)
     flags['autocastdelay'] = value
     print("[Auto Cast] Delay set to: " .. value .. " seconds")
 end)
@@ -1220,7 +1220,7 @@ end)
 -- Set initial slider value to match default
 pcall(function()
     if castSlider and castSlider.SetValue then
-        castSlider:SetValue(flags['autocastdelay'] or 0.5)
+        castSlider:SetValue(flags['autocastdelay'] or 0.1)
     end
 end)
 
@@ -1235,7 +1235,7 @@ ReelSection:NewToggle("Auto Reel", "Automatically reel in fish", function(state)
 end)
 
 -- Fix slider issue - properly define default value with initial state
-local reelSlider = ReelSection:NewSlider("Auto Reel Delay", "Delay between auto reels (seconds)", 0.1, 5, function(value)
+local reelSlider = ReelSection:NewSlider("Auto Reel Delay", "Delay between auto reels (seconds)", 0.01, 5, function(value)
     flags['autoreeldelay'] = value
     print("[Auto Reel] Delay set to: " .. value .. " seconds")
 end)
@@ -1243,7 +1243,7 @@ end)
 -- Set initial slider value to match default
 pcall(function()
     if reelSlider and reelSlider.SetValue then
-        reelSlider:SetValue(flags['autoreeldelay'] or 0.5)
+        reelSlider:SetValue(flags['autoreeldelay'] or 0.1)
     end
 end)
 
@@ -1391,7 +1391,7 @@ RunService.Heartbeat:Connect(function()
     end
     if flags['autocast'] then
         local rod = FindRod()
-        local currentDelay = flags['autocastdelay'] or 0.5
+        local currentDelay = flags['autocastdelay'] or 0.1
         if rod ~= nil and rod['values']['lure'].Value <= .001 then
             task.wait(currentDelay)
             rod.events.cast:FireServer(100, 1) -- Normal distance cast
@@ -1399,7 +1399,7 @@ RunService.Heartbeat:Connect(function()
     end
     if flags['autoreel'] then
         local rod = FindRod()
-        local currentDelay = flags['autoreeldelay'] or 0.5
+        local currentDelay = flags['autoreeldelay'] or 0.1
         if rod ~= nil and rod['values']['lure'].Value == 100 then
             task.wait(currentDelay)
             ReplicatedStorage.events.reelfinished:FireServer(100, true)
