@@ -726,6 +726,15 @@ for i,v in pairs(TeleportLocations['NPCs']) do table.insert(NPCNames, i) end
 for i,v in pairs(TeleportLocations['Mariana Veil']) do table.insert(MarianaVeilNames, i) end
 for i,v in pairs(TeleportLocations['All Locations']) do table.insert(AllLocationNames, i) end
 
+-- Sort all location arrays alphabetically
+table.sort(ZoneNames)
+table.sort(RodNames)
+table.sort(ItemNames)
+table.sort(FishingSpotNames)
+table.sort(NPCNames)
+table.sort(MarianaVeilNames)
+table.sort(AllLocationNames)
+
 --// Functions
 FindChildOfClass = function(parent, classname)
     return parent:FindFirstChildOfClass(classname)
