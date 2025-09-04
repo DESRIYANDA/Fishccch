@@ -4,6 +4,25 @@ local ReplicatedStorage = cloneref(game:GetService('ReplicatedStorage'))
 local RunService = cloneref(game:GetService('RunService'))
 local GuiService = cloneref(game:GetService('GuiService'))
 
+--// Variables
+local lp = Players.LocalPlayer
+local flags = {}
+local characterposition
+local deathcon
+local fishabundancevisible = false
+local tooltipmessage
+
+-- Ensure LocalPlayer is loaded
+if not lp then
+    repeat
+        lp = Players.LocalPlayer
+        task.wait()
+    until lp
+end
+
+print("🔄 Initializing Fisch Script...")
+print("👤 Player: " .. lp.Name)
+
 -- Load Speed Booster Module
 local SpeedBooster
 pcall(function()
@@ -54,10 +73,8 @@ pcall(function()
     end
 end)
 
---// Variables
-local flags = {}
+--// Variables (removed duplicates - lp already defined above)
 local characterposition
-local lp = Players.LocalPlayer
 local fishabundancevisible = false
 local deathcon
 local tooltipmessage
@@ -816,28 +833,32 @@ local isMinimized = false
 local floatingButton = nil
 
 -- Load Kavo UI from GitHub repository (always fresh)
+print("📡 Loading Kavo UI library...")
 local kavoUrl = 'https://raw.githubusercontent.com/MELLISAEFFENDY/fffish/main/Kavo.lua'
 
 -- Try to load library with multiple methods (always from GitHub)
 local success = false
 
 -- Method 1: Load directly from current repo
+print("🔄 Trying primary Kavo URL...")
 pcall(function()
     library = loadstring(game:HttpGet(kavoUrl))()
     if library and library.CreateLib then
         success = true
-        print("✅ Kavo loaded from GitHub repo")
+        print("✅ Kavo loaded from primary GitHub repo")
     end
 end)
 
 -- Method 2: Load from backup URLs
 if not success then
+    print("⚠️ Primary URL failed, trying backup URLs...")
     local backupUrls = {
         'https://github.com/MELLISAEFFENDY/fffish/raw/main/Kavo.lua',
         'https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua'
     }
     
     for i, url in ipairs(backupUrls) do
+        print("🔄 Trying backup URL " .. i .. "...")
         pcall(function()
             library = loadstring(game:HttpGet(url))()
             if library and library.CreateLib then
@@ -849,12 +870,58 @@ if not success then
     end
 end
 
--- Check if Kavo loaded successfully
+-- Final check with detailed error info
 if not success or not library then
-    error("❌ Failed to load Kavo UI library from all sources!")
+    warn("❌ Failed to load Kavo UI library from all sources!")
+    warn("🔧 Creating emergency fallback UI...")
+    
+    -- Emergency fallback - create minimal UI structure
+    library = {
+        CreateLib = function(title, theme)
+            print("⚠️ Using fallback UI: " .. title)
+            return {
+                NewTab = function(name)
+                    print("📝 Created fallback tab: " .. name)
+                    return {
+                        NewSection = function(sectionName)
+                            print("📋 Created fallback section: " .. sectionName)
+                            return {
+                                NewToggle = function(name, desc, callback) 
+                                    print("🔘 Fallback toggle: " .. name)
+                                    return {}
+                                end,
+                                NewButton = function(name, desc, callback)
+                                    print("🔲 Fallback button: " .. name) 
+                                    return {}
+                                end,
+                                NewSlider = function(name, desc, min, max, callback)
+                                    print("🎚️ Fallback slider: " .. name)
+                                    return {}
+                                end,
+                                NewDropdown = function(name, desc, options, callback)
+                                    print("📋 Fallback dropdown: " .. name)
+                                    return {}
+                                end,
+                                NewTextBox = function(name, desc, callback)
+                                    print("📝 Fallback textbox: " .. name)
+                                    return {}
+                                end,
+                                NewLabel = function(text)
+                                    print("�️ Fallback label: " .. text)
+                                    return {}
+                                end
+                            }
+                        end
+                    }
+                end
+            }
+        end
+    }
+    success = true
+    print("✅ Emergency fallback UI created!")
+else
+    print("�🎣 Kavo UI library loaded successfully!")
 end
-
-print("🎣 Kavo UI library loaded successfully!")
 
 -- Load Shop Module
 local Shop
@@ -1043,6 +1110,8 @@ local function createFloatingButton()
     
     -- Click event
     button.MouseButton1Click:Connect(function()
+        print("🎣 Floating button clicked!")
+        
         if isMinimized then
             -- Show main UI
             pcall(function()
@@ -1054,7 +1123,40 @@ local function createFloatingButton()
                         isMinimized = false
                         screenGui:Destroy()
                         floatingButton = nil
+                        print("✅ UI restored from minimized state")
                     end
+                else
+                    print("⚠️ Kavo UI not found, recreating...")
+                    -- Recreate UI if not found
+                    task.spawn(function()
+                        if library and library.CreateLib then
+                            Window = library.CreateLib("🎣 Fisch Script", "Ocean")
+                            if Window then
+                                print("✅ UI recreated successfully!")
+                                screenGui:Destroy()
+                                floatingButton = nil
+                                isMinimized = false
+                            end
+                        end
+                    end)
+                end
+            end)
+        else
+            -- Create new UI if none exists
+            print("🔄 Attempting to create new UI...")
+            task.spawn(function()
+                if library and library.CreateLib then
+                    local newWindow = library.CreateLib("🎣 Fisch Script", "Ocean")
+                    if newWindow then
+                        Window = newWindow
+                        print("✅ New UI created successfully!")
+                        screenGui:Destroy()
+                        floatingButton = nil
+                    else
+                        print("❌ Failed to create new UI")
+                    end
+                else
+                    print("❌ Library not available for UI creation")
                 end
             end)
         end
@@ -1077,11 +1179,16 @@ local function createFloatingButton()
     floatingButton = screenGui
 end
 
--- Create UI Window with better error handling
+-- Create UI Window with enhanced error handling
+print("🎨 Creating main UI window...")
 local Window
-local success = pcall(function()
+local windowSuccess = false
+
+-- Attempt 1: Normal creation
+pcall(function()
     if library and library.CreateLib then
         -- Hook TweenService to prevent workspace errors
+        print("🔧 Setting up TweenService protection...")
         if game:GetService("TweenService") then
             local TweenService = game:GetService("TweenService")
             local originalCreate = TweenService.Create
@@ -1089,30 +1196,104 @@ local success = pcall(function()
                 if instance and instance.Parent then
                     return originalCreate(self, instance, ...)
                 else
-                    return {Play = function() end, Cancel = function() end}
+                    return {Play = function() end, Cancel = function() end, Pause = function() end}
                 end
             end
         end
         
+        print("🎨 Creating Kavo window...")
         Window = library.CreateLib("🎣 Fisch Script", "Ocean")
-        print("✅ Main UI window created successfully")
+        
+        if Window and Window.NewTab then
+            windowSuccess = true
+            print("✅ Main UI window created successfully!")
+        else
+            error("Window object is invalid")
+        end
     else
         error("❌ Library not available")
     end
 end)
 
-if not success or not Window then
-    warn("⚠️ Failed to create UI window, retrying with alternative method...")
+-- Attempt 2: Delayed retry
+if not windowSuccess then
+    warn("⚠️ First attempt failed, retrying with delay...")
+    task.wait(2)
     
-    -- Try alternative creation
     pcall(function()
-        task.wait(1)
-        Window = library.CreateLib("🎣 Fisch Script", "Ocean")
+        if library and library.CreateLib then
+            Window = library.CreateLib("🎣 Fisch Script", "Ocean")
+            if Window and Window.NewTab then
+                windowSuccess = true
+                print("✅ UI window created on retry!")
+            end
+        end
     end)
+end
+
+-- Attempt 3: Alternative theme
+if not windowSuccess then
+    warn("⚠️ Trying alternative theme...")
+    pcall(function()
+        if library and library.CreateLib then
+            Window = library.CreateLib("🎣 Fisch Script", "DarkTheme")
+            if Window and Window.NewTab then
+                windowSuccess = true
+                print("✅ UI window created with alternative theme!")
+            end
+        end
+    end)
+end
+
+-- Final validation
+if not windowSuccess or not Window then
+    warn("❌ All UI creation attempts failed!")
+    warn("🔧 Script will continue with console-only mode")
+    warn("🎣 Creating floating button for manual UI access...")
     
-    if not Window then
-        warn("⚠️ UI window creation failed, script will continue without GUI")
-    end
+    -- Create floating button for manual access
+    createFloatingButton()
+    
+    -- Create dummy window for script continuation
+    Window = {
+        NewTab = function(name)
+            print("📝 Console Tab: " .. name)
+            return {
+                NewSection = function(sectionName)
+                    print("📋 Console Section: " .. sectionName)
+                    return {
+                        NewToggle = function(name, desc, callback) 
+                            print("🔘 Console Toggle: " .. name)
+                            return {}
+                        end,
+                        NewButton = function(name, desc, callback)
+                            print("🔲 Console Button: " .. name) 
+                            return {}
+                        end,
+                        NewSlider = function(name, desc, min, max, callback)
+                            print("🎚️ Console Slider: " .. name)
+                            return {}
+                        end,
+                        NewDropdown = function(name, desc, options, callback)
+                            print("📋 Console Dropdown: " .. name)
+                            return {}
+                        end,
+                        NewTextBox = function(name, desc, callback)
+                            print("📝 Console TextBox: " .. name)
+                            return {}
+                        end,
+                        NewLabel = function(text)
+                            print("🏷️ Console Label: " .. text)
+                            return {}
+                        end
+                    }
+                end
+            }
+        end
+    }
+else
+    print("🎉 UI successfully initialized!")
+    print("💡 If UI doesn't appear, look for the floating 🎣 button to manually open it")
 end
 
 -- Create Tabs
