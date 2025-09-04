@@ -1,44 +1,8 @@
--- Enhanced Fishing Script v2.1 with improved error handling
-print("Starting Enhanced Fishing Script v2.1")
-print("=" .. string.rep("=", 60))
-
--- Safe game service access with multiple fallback methods
-local function safeGetService(serviceName)
-    local success, service = pcall(function()
-        if cloneref then
-            return cloneref(game:GetService(serviceName))
-        else
-            return game:GetService(serviceName)
-        end
-    end)
-    return success and service or game:GetService(serviceName)
-end
-
-print("[OK] Service access function initialized")
-
-local Players = safeGetService('Players')
-local ReplicatedStorage = safeGetService('ReplicatedStorage')
-local RunService = safeGetService('RunService')
-local GuiService = safeGetService('GuiService')
-local StarterGui = safeGetService('StarterGui')
-
--- Wait for LocalPlayer to be available
-local lp = Players.LocalPlayer
-if not lp then
-    local timeout = 0
-    repeat 
-        wait(0.1) 
-        timeout = timeout + 0.1
-        lp = Players.LocalPlayer
-    until lp or timeout > 10
-    
-    if not lp then
-        error("[ERROR] Failed to get LocalPlayer after 10 seconds")
-        return
-    end
-end
-
-print("[OK] LocalPlayer found:", lp.Name)
+--// Services
+local Players = cloneref(game:GetService('Players'))
+local ReplicatedStorage = cloneref(game:GetService('ReplicatedStorage'))
+local RunService = cloneref(game:GetService('RunService'))
+local GuiService = cloneref(game:GetService('GuiService'))
 
 -- Protect TweenService from workspace errors
 pcall(function()
@@ -59,249 +23,17 @@ pcall(function()
     end
 end)
 
-print("[OK] TweenService protection enabled")
-
---// Variables initialization
+--// Variables
 local flags = {}
 local characterposition
-local autoEquip = false
-local autoFish = false
-local autoTreasure = false
-
--- Initialize executor specific features with error handling
-local clickDetectorAvailable = true
-local hookMetamethodAvailable = true
-
-pcall(function()
-    if not fireclickdetector then
-        clickDetectorAvailable = false
-        warn("[WARN] fireclickdetector not available - some features may be limited")
-    end
-end)
-
-pcall(function()
-    if not hookmetamethod then
-        hookMetamethodAvailable = false 
-        warn("[WARN] hookmetamethod not available - visual mods may be limited")
-    end
-end)
-
-print("[OK] Variables and executor features initialized")
+local lp = Players.LocalPlayer
 local fishabundancevisible = false
 local deathcon
 local tooltipmessage
 
--- Wait for LocalPlayer to be available
-if not lp then
-    lp = Players:WaitForChild("LocalPlayer", 10)
-end
-
-if not lp then
-    error("[ERROR] LocalPlayer not found!")
-end
-
 -- Default delay values
 flags['autocastdelay'] = 0.5
 flags['autoreeldelay'] = 0.5
-
--- Helper Functions
-local function getchar()
-    return lp.Character or lp.CharacterAdded:Wait()
-end
-
-local function gethrp()
-    local char = getchar()
-    return char and char:FindFirstChild("HumanoidRootPart")
-end
-
-local function gethum()
-    local char = getchar()
-    return char and char:FindFirstChild("Humanoid")
-end
-
-local function FindChild(parent, name)
-    return parent and parent:FindFirstChild(name)
-end
-
-local function FindChildOfClass(parent, classname)
-    return parent and parent:FindFirstChildOfClass(classname)
-end
-
-local function FindChildOfType(parent, name, className)
-    if not parent then return nil end
-    for _, child in pairs(parent:GetChildren()) do
-        if child.Name == name and child:IsA(className) then
-            return child
-        end
-    end
-    return nil
-end
-
-local function FindRod()
-    local character = getchar()
-    if not character then return nil end
-    
-    -- Check character first
-    for _, tool in pairs(character:GetChildren()) do
-        if tool:IsA("Tool") and (tool.Name:lower():find("rod") or tool:FindFirstChild("events") or tool:FindFirstChild("values")) then
-            return tool
-        end
-    end
-    
-    -- Then check backpack
-    for _, tool in pairs(lp.Backpack:GetChildren()) do
-        if tool:IsA("Tool") and (tool.Name:lower():find("rod") or tool:FindFirstChild("events") or tool:FindFirstChild("values")) then
-            return tool
-        end
-    end
-    
-    return nil
-end
-
-local function CheckFunc(func)
-    return type(func) == "function"
-end
-
--- Message function
-local function message(text, time)
-    if tooltipmessage then 
-        pcall(function() tooltipmessage:Remove() end)
-    end
-    
-    local success = pcall(function()
-        local playerGui = lp:WaitForChild("PlayerGui", 5)
-        if playerGui then
-            local generalUI = playerGui:WaitForChild("GeneralUIModule", 3)
-            if generalUI then
-                local uiModule = require(generalUI)
-                if uiModule and uiModule.GiveToolTip then
-                    tooltipmessage = uiModule:GiveToolTip(lp, text)
-                    task.spawn(function()
-                        task.wait(time or 3)
-                        if tooltipmessage then 
-                            pcall(function() tooltipmessage:Remove() end)
-                            tooltipmessage = nil 
-                        end
-                    end)
-                end
-            end
-        end
-    end)
-    
-    if not success then
-        -- Fallback to StarterGui notification
-        pcall(function()
-            StarterGui:SetCore("SendNotification", {
-                Title = "Fishing Script",
-                Text = text,
-                Duration = time or 3
-            })
-        end)
-    end
-end
-
--- Executor compatibility functions
-local function safeFireClickDetector(clickDetector)
-    pcall(function()
-        if fireclickdetector then
-            fireclickdetector(clickDetector)
-        elseif clickDetector and clickDetector.Parent then
-            -- Fallback method
-            clickDetector.Parent.CFrame = gethrp().CFrame
-        end
-    end)
-end
-
-local function safeHookMetamethod(...)
-    if hookmetamethod then
-        return hookmetamethod(...)
-    else
-        warn("[WARN] hookmetamethod not available in this executor")
-        return function() end
-    end
-end
-
--- Shop Helper Functions
-local function GetBaitCount(baitName)
-    local count = 0
-    pcall(function()
-        if lp.Backpack:FindFirstChild(baitName) then
-            count = count + (lp.Backpack[baitName]:GetAttribute("Amount") or 1)
-        end
-        if getchar():FindFirstChild(baitName) then
-            count = count + (getchar()[baitName]:GetAttribute("Amount") or 1)
-        end
-    end)
-    return count
-end
-
-local function EquipBait(baitName)
-    pcall(function()
-        if lp.Backpack:FindFirstChild(baitName) then
-            ReplicatedStorage.packages.Net.RE.Bait.Equip:FireServer(baitName)
-            print("[FISHING] Equipped", baitName)
-        end
-    end)
-end
-
-local function GetCurrentMoney()
-    local money = 0
-    pcall(function()
-        money = lp.leaderstats.C$.Value or 0
-    end)
-    return money
-end
-
--- Treasure Helper Functions
-local function GetTreasureMapCoordinates()
-    pcall(function()
-        ReplicatedStorage.events.GetTreasureMapCoordinates:FireServer()
-    end)
-end
-
-local function UnlockTreasureMap()
-    pcall(function()
-        ReplicatedStorage.events.treasure_map_unlock:FireServer()
-    end)
-end
-
-local function SpawnTreasure()
-    pcall(function()
-        ReplicatedStorage.events.spawn_treasure:FireServer()
-    end)
-end
-
-local function LoadTreasure()
-    pcall(function()
-        ReplicatedStorage.events.load_treasure:FireServer()
-    end)
-end
-
-local function OpenTreasure()
-    pcall(function()
-        ReplicatedStorage.events.open_treasure:FireServer()
-    end)
-end
-
-local function FindNearbyTreasures()
-    local treasures = {}
-    pcall(function()
-        for _, obj in pairs(workspace:GetDescendants()) do
-            if obj.Name:lower():find("treasure") or obj.Name:lower():find("chest") then
-                if obj:IsA("Part") or obj:IsA("Model") then
-                    local distance = (gethrp().Position - obj.Position).Magnitude
-                    if distance < 200 then -- Within 200 studs
-                        table.insert(treasures, {object = obj, distance = distance})
-                    end
-                end
-            end
-        end
-    end)
-    return treasures
-end
-
-print("[OK] Helper functions and teleport locations initialized")
-
 local TeleportLocations = {
     ['Zones'] = {
         ['Moosewood'] = CFrame.new(379.875458, 134.500519, 233.5495, -0.033920113, 8.13274355e-08, 0.999424577, 8.98441925e-08, 1, -7.83249803e-08, -0.999424577, 8.7135696e-08, -0.033920113),
@@ -516,6 +248,49 @@ for i,v in pairs(TeleportLocations['Items']) do table.insert(ItemNames, i) end
 for i,v in pairs(TeleportLocations['Fishing Spots']) do table.insert(FishingSpotNames, i) end
 for i,v in pairs(TeleportLocations['NPCs']) do table.insert(NPCNames, i) end
 
+--// Functions
+FindChildOfClass = function(parent, classname)
+    return parent:FindFirstChildOfClass(classname)
+end
+FindChild = function(parent, child)
+    return parent:FindFirstChild(child)
+end
+FindChildOfType = function(parent, childname, classname)
+    child = parent:FindFirstChild(childname)
+    if child and child.ClassName == classname then
+        return child
+    end
+end
+CheckFunc = function(func)
+    return typeof(func) == 'function'
+end
+
+--// Custom Functions
+getchar = function()
+    return lp.Character or lp.CharacterAdded:Wait()
+end
+gethrp = function()
+    return getchar():WaitForChild('HumanoidRootPart')
+end
+gethum = function()
+    return getchar():WaitForChild('Humanoid')
+end
+FindRod = function()
+    if FindChildOfClass(getchar(), 'Tool') and FindChild(FindChildOfClass(getchar(), 'Tool'), 'values') then
+        return FindChildOfClass(getchar(), 'Tool')
+    else
+        return nil
+    end
+end
+message = function(text, time)
+    if tooltipmessage then tooltipmessage:Remove() end
+    tooltipmessage = require(lp.PlayerGui:WaitForChild("GeneralUIModule")):GiveToolTip(lp, text)
+    task.spawn(function()
+        task.wait(time)
+        if tooltipmessage then tooltipmessage:Remove(); tooltipmessage = nil end
+    end)
+end
+
 --// UI
 local library
 local Window
@@ -523,99 +298,45 @@ local isMinimized = false
 local floatingButton = nil
 
 -- Load Kavo UI from GitHub repository (always fresh)
-local kavoUrl = 'https://raw.githubusercontent.com/DESRIYANDA/Fishccch/main/Kavo.lua'
+local kavoUrl = 'https://raw.githubusercontent.com/MELLISAEFFENDY/fffish/main/Kavo.lua'
 
 -- Try to load library with multiple methods (always from GitHub)
 local success = false
-local library = nil
-
-print("[LOADING] Loading UI library...")
 
 -- Method 1: Load directly from current repo
 pcall(function()
-    local scriptContent = game:HttpGet(kavoUrl)
-    if scriptContent and scriptContent ~= "" and not scriptContent:find("404") then
-        library = loadstring(scriptContent)()
-        if library and library.CreateLib then
-            success = true
-            print("[OK] Kavo loaded from GitHub repo")
-        end
+    library = loadstring(game:HttpGet(kavoUrl))()
+    if library and library.CreateLib then
+        success = true
+        print("✅ Kavo loaded from GitHub repo")
     end
 end)
 
 -- Method 2: Load from backup URLs
 if not success then
     local backupUrls = {
-        'https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua',
-        'https://pastebin.com/raw/vff1bQ9F'
+        'https://github.com/MELLISAEFFENDY/fffish/raw/main/Kavo.lua',
+        'https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua'
     }
     
     for i, url in ipairs(backupUrls) do
         pcall(function()
-            local scriptContent = game:HttpGet(url)
-            if scriptContent and scriptContent ~= "" and not scriptContent:find("404") then
-                library = loadstring(scriptContent)()
-                if library and library.CreateLib then
-                    success = true
-                    print("[OK] Kavo loaded from backup URL " .. i)
-                end
+            library = loadstring(game:HttpGet(url))()
+            if library and library.CreateLib then
+                success = true
+                print("✅ Kavo loaded from backup URL " .. i)
             end
         end)
         if success then break end
     end
 end
 
--- Method 3: Use fallback UI if Kavo fails
+-- Check if Kavo loaded successfully
 if not success or not library then
-    warn("[WARN] Failed to load Kavo UI library, using fallback UI")
-    library = {
-        CreateLib = function(name, theme)
-            print("[UI] Creating fallback UI window:", name)
-            return {
-                NewTab = function(tabName)
-                    print("[TAB] Creating fallback tab:", tabName)
-                    return {
-                        NewSection = function(sectionName)
-                            print("[SECTION] Creating fallback section:", sectionName)
-                            return {
-                                NewToggle = function(name, desc, callback) 
-                                    print("[TOGGLE] Toggle:", name)
-                                    if callback then callback(false) end
-                                    return {UpdateToggle = function(state) if callback then callback(state) end end}
-                                end,
-                                NewSlider = function(name, desc, min, max, callback) 
-                                    print("[SLIDER] Slider:", name, "Range:", min, "-", max)
-                                    if callback then callback(min) end
-                                    return {UpdateSlider = function(value) if callback then callback(value) end end}
-                                end,
-                                NewDropdown = function(name, desc, options, callback) 
-                                    print("[DROPDOWN] Dropdown:", name, "Options:", #options)
-                                    if callback and options[1] then callback(options[1]) end
-                                    return {
-                                        Refresh = function(newOptions) 
-                                            print("[REFRESH] Dropdown refreshed:", name)
-                                        end
-                                    }
-                                end,
-                                NewButton = function(name, desc, callback) 
-                                    print("[BUTTON] Button:", name)
-                                    return {
-                                        UpdateButton = function() 
-                                            print("[UPDATE] Button updated:", name)
-                                        end
-                                    }
-                                end
-                            }
-                        end
-                    }
-                end
-            }
-        end
-    }
-    success = true
+    error("❌ Failed to load Kavo UI library from all sources!")
 end
 
-print("[OK] UI library loaded successfully!")
+print("🎣 Kavo UI library loaded successfully!")
 
 -- Function to create floating button
 local function createFloatingButton()
@@ -646,7 +367,7 @@ local function createFloatingButton()
     button.Size = UDim2.new(1, 0, 1, 0)
     button.Position = UDim2.new(0, 0, 0, 0)
     button.BackgroundTransparency = 1
-    button.Text = "[FISH]"
+    button.Text = "🎣"
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
     button.TextSize = 24
     button.Font = Enum.Font.SourceSansBold
@@ -728,24 +449,24 @@ local success = pcall(function()
             end
         end
         
-        Window = library.CreateLib("Fisch Script", "Ocean")
-        print("[OK] Main UI window created successfully")
+        Window = library.CreateLib("🎣 Fisch Script", "Ocean")
+        print("✅ Main UI window created successfully")
     else
-        error("[ERROR] Library not available")
+        error("❌ Library not available")
     end
 end)
 
 if not success or not Window then
-    warn("[WARN] Failed to create UI window, retrying with alternative method...")
+    warn("⚠️ Failed to create UI window, retrying with alternative method...")
     
     -- Try alternative creation
     pcall(function()
         task.wait(1)
-        Window = library.CreateLib("Fisch Script", "Ocean")
+        Window = library.CreateLib("🎣 Fisch Script", "Ocean")
     end)
     
     if not Window then
-        warn("[WARN] UI window creation failed, script will continue without GUI")
+        warn("⚠️ UI window creation failed, script will continue without GUI")
     end
 end
 
@@ -754,16 +475,14 @@ local AutoTab, ModTab, TeleTab, VisualTab
 
 if Window and Window.NewTab then
     pcall(function()
-        AutoTab = Window:NewTab("Automation")
-        ModTab = Window:NewTab("Modifications") 
-        TeleTab = Window:NewTab("Teleports")
-        VisualTab = Window:NewTab("Visuals")
-        ShopTab = Window:NewTab("Shop")
-        TreasureTab = Window:NewTab("Auto Treasure")
-        print("[OK] All tabs created successfully")
+        AutoTab = Window:NewTab("🎣 Automation")
+        ModTab = Window:NewTab("⚙️ Modifications") 
+        TeleTab = Window:NewTab("🌍 Teleports")
+        VisualTab = Window:NewTab("👁️ Visuals")
+        print("✅ All tabs created successfully")
     end)
 else
-    warn("[WARN] Window not available, creating fallback functionality")
+    warn("⚠️ Window not available, creating fallback functionality")
     -- Create dummy tabs that won't break the script
     local dummyTab = {
         NewSection = function(name)
@@ -790,9 +509,7 @@ else
     ModTab = dummyTab
     TeleTab = dummyTab
     VisualTab = dummyTab
-    ShopTab = dummyTab
-    TreasureTab = dummyTab
-    print("[INFO] Using fallback tabs - script functionality preserved")
+    print("⚠️ Using fallback tabs - script functionality preserved")
 end
 
 -- Automation Section
@@ -917,421 +634,6 @@ end)
 local FishSection = VisualTab:NewSection("Fish Abundance")
 FishSection:NewToggle("Free Fish Radar", "Show fish abundance zones", function(state)
     flags['fishabundance'] = state
-end)
-
--- Shop Tab
-local BaitShopSection = ShopTab:NewSection("Auto Buy Bait")
-
--- Bait types dengan harga dan lokasi
-local BaitTypes = {
-    ["Flakes"] = {price = 5, location = "Daily Shopkeeper"},
-    ["Minnow"] = {price = 15, location = "Daily Shopkeeper"},
-    ["Shrimp"] = {price = 25, location = "Daily Shopkeeper"},
-    ["Squid"] = {price = 50, location = "Daily Shopkeeper"},
-    ["Fish Head"] = {price = 100, location = "Daily Shopkeeper"},
-    ["Bagel"] = {price = 150, location = "Daily Shopkeeper"},
-    ["Deep Coral"] = {price = 200, location = "Daily Shopkeeper"},
-    ["Worm"] = {price = 25, location = "Angus McBait"},
-    ["Cricket"] = {price = 50, location = "Angus McBait"},
-    ["Leech"] = {price = 75, location = "Angus McBait"},
-    ["Maggot"] = {price = 100, location = "Angus McBait"},
-    ["Red Worm"] = {price = 150, location = "Angus McBait"},
-    ["Night Crawler"] = {price = 300, location = "Angus McBait"}
-}
-
-local BaitNames = {}
-for baitName, _ in pairs(BaitTypes) do
-    table.insert(BaitNames, baitName)
-end
-
--- Variables untuk shop
-flags['selectedbait'] = BaitNames[1]
-flags['baitquantity'] = 1
-flags['autobuy'] = false
-
-BaitShopSection:NewDropdown("Select Bait Type", "Choose which bait to buy", BaitNames, function(currentOption)
-    flags['selectedbait'] = currentOption
-    print("[BAIT] Selected bait:", currentOption, "| Price:", BaitTypes[currentOption].price, "| Location:", BaitTypes[currentOption].location)
-end)
-
-BaitShopSection:NewSlider("Quantity", "Amount of bait to buy", 1, 100, function(value)
-    flags['baitquantity'] = value
-    if flags['selectedbait'] then
-        local totalPrice = BaitTypes[flags['selectedbait']].price * value
-        print("[SHOP] Quantity:", value, "| Total cost:", totalPrice, "coins")
-    end
-end)
-
-BaitShopSection:NewButton("Buy Bait Now", "Purchase selected bait immediately", function()
-    if flags['selectedbait'] then
-        local baitInfo = BaitTypes[flags['selectedbait']]
-        local totalPrice = baitInfo.price * flags['baitquantity']
-        
-        print("[SHOP] Buying", flags['baitquantity'], "x", flags['selectedbait'], "for", totalPrice, "coins")
-        print("[TP] Teleporting to", baitInfo.location)
-        
-        -- Teleport ke merchant yang tepat
-        if baitInfo.location == "Daily Shopkeeper" then
-            gethrp().CFrame = TeleportLocations['NPCs']['Daily Shopkeeper']
-        elseif baitInfo.location == "Angus McBait" then
-            gethrp().CFrame = TeleportLocations['NPCs']['Angus McBait']
-        end
-        
-        -- Tunggu sebentar setelah teleport
-        task.wait(1)
-        
-        -- Coba buka shop interface
-        pcall(function()
-            ReplicatedStorage.packages.Net.RE.BuyBait.Show:FireServer()
-        end)
-        
-        task.wait(0.5)
-        
-        -- Coba purchase bait
-        pcall(function()
-            -- Untuk Daily Shop
-            if baitInfo.location == "Daily Shopkeeper" then
-                for i = 1, flags['baitquantity'] do
-                    ReplicatedStorage.packages.Net.RE.DailyShop.Purchase:FireServer(flags['selectedbait'])
-                    task.wait(0.1)
-                end
-            -- Untuk Shell Merchant (jika diperlukan)
-            elseif baitInfo.location == "Shell Merchant" then
-                for i = 1, flags['baitquantity'] do
-                    ReplicatedStorage.packages.Net.RE.ShellMerchant.Purchase:FireServer(flags['selectedbait'])
-                    task.wait(0.1)
-                end
-            -- Untuk merchants lainnya
-            else
-                for i = 1, flags['baitquantity'] do
-                    -- Generic purchase attempt
-                    ReplicatedStorage.packages.Net.RE.BuyBait.Show:FireServer()
-                    task.wait(0.1)
-                end
-            end
-        end)
-        
-        print("[OK] Purchase attempt completed!")
-    else
-        print("[ERROR] Please select a bait type first!")
-    end
-end)
-
-BaitShopSection:NewToggle("Auto Buy Mode", "Automatically buy bait when running low", function(state)
-    flags['autobuy'] = state
-    if state then
-        print("[AUTO] Auto buy mode enabled - will buy", flags['selectedbait'], "when needed")
-    else
-        print("[STOP] Auto buy mode disabled")
-    end
-end)
-
--- Inventory & Money Section
-local InventorySection = ShopTab:NewSection("Inventory & Money")
-
-InventorySection:NewButton("Check Money", "Display current money amount", function()
-    local money = GetCurrentMoney()
-    print("💰 Current Money:", money, "coins")
-end)
-
-InventorySection:NewButton("Check Bait Inventory", "Display all bait in inventory", function()
-    print("🎒 Bait Inventory:")
-    for baitName, _ in pairs(BaitTypes) do
-        local count = GetBaitCount(baitName)
-        if count > 0 then
-            print("  •", baitName, ":", count)
-        end
-    end
-end)
-
-InventorySection:NewButton("Auto Equip Best Bait", "Automatically equip the best available bait", function()
-    local bestBait = nil
-    local highestPrice = 0
-    
-    for baitName, baitInfo in pairs(BaitTypes) do
-        local count = GetBaitCount(baitName)
-        if count > 0 and baitInfo.price > highestPrice then
-            bestBait = baitName
-            highestPrice = baitInfo.price
-        end
-    end
-    
-    if bestBait then
-        EquipBait(bestBait)
-        print("✅ Auto-equipped best bait:", bestBait)
-    else
-        print("❌ No bait found in inventory!")
-    end
-end)
-
--- Quick Buy Section
-local QuickBuySection = ShopTab:NewSection("Quick Buy")
-
-QuickBuySection:NewButton("Buy 10 Flakes", "Quick buy 10 Flakes (basic bait)", function()
-    print("🛒 Quick buying 10 Flakes")
-    gethrp().CFrame = TeleportLocations['NPCs']['Daily Shopkeeper']
-    task.wait(1)
-    pcall(function()
-        ReplicatedStorage.packages.Net.RE.BuyBait.Show:FireServer()
-        task.wait(0.5)
-        for i = 1, 10 do
-            ReplicatedStorage.packages.Net.RE.DailyShop.Purchase:FireServer("Flakes")
-            task.wait(0.1)
-        end
-    end)
-    print("✅ Quick buy completed!")
-end)
-
-QuickBuySection:NewButton("Buy 5 Shrimp", "Quick buy 5 Shrimp (good bait)", function()
-    print("🛒 Quick buying 5 Shrimp")
-    gethrp().CFrame = TeleportLocations['NPCs']['Daily Shopkeeper']
-    task.wait(1)
-    pcall(function()
-        ReplicatedStorage.packages.Net.RE.BuyBait.Show:FireServer()
-        task.wait(0.5)
-        for i = 1, 5 do
-            ReplicatedStorage.packages.Net.RE.DailyShop.Purchase:FireServer("Shrimp")
-            task.wait(0.1)
-        end
-    end)
-    print("✅ Quick buy completed!")
-end)
-
-QuickBuySection:NewButton("Buy 3 Squid", "Quick buy 3 Squid (premium bait)", function()
-    print("🛒 Quick buying 3 Squid")
-    gethrp().CFrame = TeleportLocations['NPCs']['Daily Shopkeeper']
-    task.wait(1)
-    pcall(function()
-        ReplicatedStorage.packages.Net.RE.BuyBait.Show:FireServer()
-        task.wait(0.5)
-        for i = 1, 3 do
-            ReplicatedStorage.packages.Net.RE.DailyShop.Purchase:FireServer("Squid")
-            task.wait(0.1)
-        end
-    end)
-    print("✅ Quick buy completed!")
-end)
-
--- Bait Crates Section
-local BaitCrateSection = ShopTab:NewSection("Bait Crates")
-
-local BaitCrateLocations = {
-    "Bait Crate (Moosewood)",
-    "Bait Crate (Roslit)", 
-    "Quality Bait Crate (Atlantis)",
-    "Bait Crate (Forsaken)",
-    "Bait Crate (Ancient)",
-    "Bait Crate (Sunstone)",
-    "Quality Bait Crate (Terrapin)"
-}
-
-flags['selectedcrate'] = BaitCrateLocations[1]
-
-BaitCrateSection:NewDropdown("Select Bait Crate", "Choose bait crate location", BaitCrateLocations, function(currentOption)
-    flags['selectedcrate'] = currentOption
-end)
-
-BaitCrateSection:NewButton("Teleport to Crate", "Teleport to selected bait crate", function()
-    if flags['selectedcrate'] then
-        gethrp().CFrame = TeleportLocations['Items'][flags['selectedcrate']]
-        print("📍 Teleported to", flags['selectedcrate'])
-    end
-end)
-
-BaitCrateSection:NewToggle("Auto Collect Crates", "Automatically collect from nearby bait crates", function(state)
-    flags['autocollectcrates'] = state
-    if state then
-        print("[AUTO] Auto collect crates enabled")
-    else
-        print("⏹️ Auto collect crates disabled")
-    end
-end)
-
--- Auto Treasure Tab
-local TreasureMapSection = TreasureTab:NewSection("Treasure Map Control")
-
--- Variables untuk treasure system
-flags['autotreasure'] = false
-flags['treasurescanrange'] = 50
-flags['autounlockmap'] = false
-flags['autospawntreasure'] = false
-flags['autoloadtreasure'] = false
-flags['autoopentreasure'] = false
-
-TreasureMapSection:NewButton("Get Treasure Coordinates", "Get coordinates of available treasures", function()
-    GetTreasureMapCoordinates()
-    print("🗺️ Requesting treasure map coordinates...")
-end)
-
-TreasureMapSection:NewButton("Unlock Treasure Map", "Unlock your treasure map", function()
-    UnlockTreasureMap()
-    print("🔓 Unlocking treasure map...")
-end)
-
-TreasureMapSection:NewToggle("Auto Unlock Maps", "Automatically unlock treasure maps", function(state)
-    flags['autounlockmap'] = state
-    if state then
-        print("[AUTO] Auto unlock treasure maps enabled")
-    else
-        print("⏹️ Auto unlock treasure maps disabled")
-    end
-end)
-
--- Treasure Hunting Section
-local TreasureHuntSection = TreasureTab:NewSection("Treasure Hunting")
-
-TreasureHuntSection:NewButton("Spawn Treasure", "Spawn treasure at map location", function()
-    SpawnTreasure()
-    print("💎 Spawning treasure...")
-end)
-
-TreasureHuntSection:NewButton("Load Treasure", "Load existing treasures", function()
-    LoadTreasure()
-    print("📦 Loading treasures...")
-end)
-
-TreasureHuntSection:NewButton("Open Nearby Treasure", "Open treasure chest near you", function()
-    OpenTreasure()
-    print("🎁 Opening treasure chest...")
-end)
-
-TreasureHuntSection:NewSlider("Scan Range", "Range to scan for treasures (studs)", 10, 200, function(value)
-    flags['treasurescanrange'] = value
-    print("🔍 Treasure scan range set to:", value, "studs")
-end)
-
-TreasureHuntSection:NewButton("Scan For Treasures", "Scan for treasures in range", function()
-    local treasures = FindNearbyTreasures()
-    print("🔍 Found", #treasures, "treasures nearby:")
-    for i, treasure in pairs(treasures) do
-        print("  •", treasure.object.Name, "- Distance:", math.floor(treasure.distance), "studs")
-    end
-end)
-
--- Auto Functions Section
-local AutoTreasureSection = TreasureTab:NewSection("Auto Functions")
-
-AutoTreasureSection:NewToggle("Auto Treasure Hunter", "Automatically hunt for treasures", function(state)
-    flags['autotreasure'] = state
-    if state then
-        print("🏴‍☠️ Auto treasure hunter enabled!")
-        print("🔄 Will automatically:")
-        print("  • Unlock treasure maps")
-        print("  • Spawn treasures")
-        print("  • Navigate to treasures")
-        print("  • Open treasure chests")
-    else
-        print("⏹️ Auto treasure hunter disabled")
-    end
-end)
-
-AutoTreasureSection:NewToggle("Auto Spawn Treasure", "Automatically spawn treasures", function(state)
-    flags['autospawntreasure'] = state
-    if state then
-        print("🔄 Auto spawn treasure enabled")
-    else
-        print("⏹️ Auto spawn treasure disabled")
-    end
-end)
-
-AutoTreasureSection:NewToggle("Auto Load Treasure", "Automatically load treasures", function(state)
-    flags['autoloadtreasure'] = state
-    if state then
-        print("🔄 Auto load treasure enabled")
-    else
-        print("⏹️ Auto load treasure disabled")
-    end
-end)
-
-AutoTreasureSection:NewToggle("Auto Open Treasure", "Automatically open nearby treasure chests", function(state)
-    flags['autoopentreasure'] = state
-    if state then
-        print("🔄 Auto open treasure enabled")
-    else
-        print("⏹️ Auto open treasure disabled")
-    end
-end)
-
--- Quick Actions Section
-local QuickTreasureSection = TreasureTab:NewSection("Quick Actions")
-
-QuickTreasureSection:NewButton("Full Treasure Sequence", "Execute complete treasure hunting sequence", function()
-    print("🏴‍☠️ Starting full treasure sequence...")
-    
-    -- Step 1: Unlock map
-    print("Step 1: Unlocking treasure map...")
-    UnlockTreasureMap()
-    task.wait(1)
-    
-    -- Step 2: Get coordinates
-    print("Step 2: Getting coordinates...")
-    GetTreasureMapCoordinates()
-    task.wait(1)
-    
-    -- Step 3: Load treasures
-    print("Step 3: Loading treasures...")
-    LoadTreasure()
-    task.wait(1)
-    
-    -- Step 4: Spawn treasure
-    print("Step 4: Spawning treasure...")
-    SpawnTreasure()
-    task.wait(2)
-    
-    -- Step 5: Open treasure
-    print("Step 5: Opening treasure...")
-    OpenTreasure()
-    
-    print("✅ Full treasure sequence completed!")
-end)
-
-QuickTreasureSection:NewButton("Teleport to Nearest Treasure", "Teleport to closest treasure", function()
-    local treasures = FindNearbyTreasures()
-    if #treasures > 0 then
-        -- Sort by distance
-        table.sort(treasures, function(a, b) return a.distance < b.distance end)
-        local nearest = treasures[1]
-        
-        print("📍 Teleporting to nearest treasure:", nearest.object.Name)
-        gethrp().CFrame = CFrame.new(nearest.object.Position + Vector3.new(0, 5, 0))
-    else
-        print("❌ No treasures found in range!")
-    end
-end)
-
-QuickTreasureSection:NewButton("Collect All Nearby", "Collect all treasures in range", function()
-    local treasures = FindNearbyTreasures()
-    if #treasures > 0 then
-        print("💰 Collecting", #treasures, "nearby treasures...")
-        for i, treasure in pairs(treasures) do
-            print("Collecting treasure", i, ":", treasure.object.Name)
-            gethrp().CFrame = CFrame.new(treasure.object.Position + Vector3.new(0, 5, 0))
-            task.wait(0.5)
-            OpenTreasure()
-            task.wait(1)
-        end
-        print("✅ All treasures collected!")
-    else
-        print("❌ No treasures found in range!")
-    end
-end)
-
--- Statistics Section
-local TreasureStatsSection = TreasureTab:NewSection("Statistics")
-
-TreasureStatsSection:NewButton("Treasure Status", "Show current treasure hunting status", function()
-    print("🏴‍☠️ === TREASURE STATUS ===")
-    print("💰 Current Money:", GetCurrentMoney())
-    print("🔄 Auto Treasure Hunter:", flags['autotreasure'] and "ON" or "OFF")
-    print("🗺️ Auto Unlock Maps:", flags['autounlockmap'] and "ON" or "OFF")
-    print("💎 Auto Spawn Treasure:", flags['autospawntreasure'] and "ON" or "OFF")
-    print("📦 Auto Load Treasure:", flags['autoloadtreasure'] and "ON" or "OFF")
-    print("🎁 Auto Open Treasure:", flags['autoopentreasure'] and "ON" or "OFF")
-    print("🔍 Scan Range:", flags['treasurescanrange'], "studs")
-    
-    local treasures = FindNearbyTreasures()
-    print("🏆 Nearby Treasures:", #treasures)
-    print("========================")
 end)
 
 --// Loops
@@ -1510,147 +812,6 @@ RunService.Heartbeat:Connect(function()
         fishabundancevisible = flags['fishabundance']
     end
 
-    -- Shop Auto Functions
-    if flags['autobuy'] then
-        -- Check if we have bait equipped
-        local currentBait = nil
-        pcall(function()
-            -- Try to get current bait from player inventory
-            if lp.Backpack:FindFirstChild(flags['selectedbait']) or getchar():FindFirstChild(flags['selectedbait']) then
-                currentBait = flags['selectedbait']
-            end
-        end)
-        
-        -- If we don't have the selected bait, buy some
-        if not currentBait then
-            local baitInfo = BaitTypes[flags['selectedbait']]
-            if baitInfo then
-                print("🔄 Auto-buying", flags['selectedbait'], "- running low!")
-                
-                -- Teleport to appropriate merchant
-                if baitInfo.location == "Daily Shopkeeper" then
-                    gethrp().CFrame = TeleportLocations['NPCs']['Daily Shopkeeper']
-                elseif baitInfo.location == "Angus McBait" then
-                    gethrp().CFrame = TeleportLocations['NPCs']['Angus McBait']
-                end
-                
-                task.wait(1)
-                
-                -- Attempt to buy bait
-                pcall(function()
-                    ReplicatedStorage.packages.Net.RE.BuyBait.Show:FireServer()
-                    task.wait(0.5)
-                    
-                    if baitInfo.location == "Daily Shopkeeper" then
-                        for i = 1, math.min(flags['baitquantity'], 5) do -- Limit auto-buy to 5 at a time
-                            ReplicatedStorage.packages.Net.RE.DailyShop.Purchase:FireServer(flags['selectedbait'])
-                            task.wait(0.2)
-                        end
-                    end
-                end)
-            end
-        end
-    end
-    
-    if flags['autocollectcrates'] then
-        -- Check for nearby bait crates and collect them
-        pcall(function()
-            for crateName, cratePos in pairs(TeleportLocations['Items']) do
-                if string.find(crateName, "Bait Crate") or string.find(crateName, "Quality Bait") then
-                    local distance = (gethrp().Position - cratePos.Position).Magnitude
-                    if distance < 20 then -- If within 20 studs of a bait crate
-                        -- Try to interact with the crate
-                        local crate = workspace:FindFirstChild(crateName)
-                        if crate and crate:FindFirstChild("ClickDetector") then
-                            safeFireClickDetector(crate.ClickDetector)
-                            task.wait(0.5)
-                        end
-                    end
-                end
-            end
-        end)
-    end
-    
-    -- Auto Treasure System
-    if flags['autotreasure'] then
-        -- Auto unlock treasure maps
-        if flags['autounlockmap'] then
-            pcall(function()
-                UnlockTreasureMap()
-            end)
-        end
-        
-        -- Auto spawn treasures
-        if flags['autospawntreasure'] then
-            pcall(function()
-                SpawnTreasure()
-            end)
-        end
-        
-        -- Auto load treasures
-        if flags['autoloadtreasure'] then
-            pcall(function()
-                LoadTreasure()
-            end)
-        end
-        
-        -- Auto open nearby treasures
-        if flags['autoopentreasure'] then
-            local treasures = FindNearbyTreasures()
-            for _, treasure in pairs(treasures) do
-                if treasure.distance < flags['treasurescanrange'] then
-                    -- Teleport to treasure
-                    gethrp().CFrame = CFrame.new(treasure.object.Position + Vector3.new(0, 5, 0))
-                    task.wait(0.5)
-                    
-                    -- Try to open it
-                    pcall(function()
-                        OpenTreasure()
-                        -- Also try clicking if it has a ClickDetector
-                        if treasure.object:FindFirstChild("ClickDetector") then
-                            safeFireClickDetector(treasure.object.ClickDetector)
-                        end
-                    end)
-                    task.wait(1)
-                end
-            end
-        end
-    end
-
-    -- Individual auto functions (work independently)
-    if flags['autounlockmap'] and not flags['autotreasure'] then
-        pcall(function()
-            UnlockTreasureMap()
-        end)
-    end
-    
-    if flags['autospawntreasure'] and not flags['autotreasure'] then
-        pcall(function()
-            SpawnTreasure()
-        end)
-    end
-    
-    if flags['autoloadtreasure'] and not flags['autotreasure'] then
-        pcall(function()
-            LoadTreasure()
-        end)
-    end
-    
-    if flags['autoopentreasure'] and not flags['autotreasure'] then
-        local treasures = FindNearbyTreasures()
-        for _, treasure in pairs(treasures) do
-            if treasure.distance < flags['treasurescanrange'] then
-                pcall(function()
-                    OpenTreasure()
-                    if treasure.object:FindFirstChild("ClickDetector") then
-                        safeFireClickDetector(treasure.object.ClickDetector)
-                    end
-                end)
-                break -- Only open one at a time when not in full auto mode
-            end
-        end
-    end
-
     -- Modifications
     if flags['infoxygen'] then
         if not deathcon then
@@ -1692,24 +853,20 @@ RunService.Heartbeat:Connect(function()
 end)
 
 --// Hooks
-pcall(function()
-    if CheckFunc(hookmetamethod) then
-        local old; old = hookmetamethod(game, "__namecall", function(self, ...)
-            local method, args = getnamecallmethod(), {...}
-            if method == 'FireServer' and self.Name == 'afk' and flags['noafk'] then
-                args[1] = false
-                return old(self, unpack(args))
-            elseif method == 'FireServer' and self.Name == 'cast' and flags['perfectcast'] then
-                args[1] = 100
-                return old(self, unpack(args))
-            elseif method == 'FireServer' and self.Name == 'reelfinished' and flags['alwayscatch'] then
-                args[1] = 100
-                args[2] = true
-                return old(self, unpack(args))
-            end
-            return old(self, ...)
-        end)
-    else
-        print("⚠️ Hooks not available in this executor - some features may not work")
-    end
-end)
+if CheckFunc(hookmetamethod) then
+    local old; old = hookmetamethod(game, "__namecall", function(self, ...)
+        local method, args = getnamecallmethod(), {...}
+        if method == 'FireServer' and self.Name == 'afk' and flags['noafk'] then
+            args[1] = false
+            return old(self, unpack(args))
+        elseif method == 'FireServer' and self.Name == 'cast' and flags['perfectcast'] then
+            args[1] = 100
+            return old(self, unpack(args))
+        elseif method == 'FireServer' and self.Name == 'reelfinished' and flags['alwayscatch'] then
+            args[1] = 100
+            args[2] = true
+            return old(self, unpack(args))
+        end
+        return old(self, ...)
+    end)
+end
