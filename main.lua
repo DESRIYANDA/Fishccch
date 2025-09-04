@@ -35,24 +35,101 @@ local tooltipmessage
 flags['autocastdelay'] = 0.5
 flags['autoreeldelay'] = 0.5
 
--- Load Instant Reel Module
+-- Load Instant Reel Module (Safe Loading)
 local InstantReel
-pcall(function()
-    InstantReel = loadfile("/workspaces/Fishccch/instant_reel.lua")()
-    if InstantReel then
-        print("✅ Instant Reel module loaded successfully!")
+local success, errorMsg = pcall(function()
+    -- Try to load from URL first
+    local HttpService = game:GetService("HttpService")
+    
+    -- Try GitHub raw URL
+    local url = "https://raw.githubusercontent.com/DESRIYANDA/Fishccch/main/instant_reel.lua"
+    local moduleCode = HttpService:GetAsync(url)
+    
+    if moduleCode then
+        local func = loadstring(moduleCode)
+        if func then
+            InstantReel = func()
+            print("✅ Instant Reel module loaded from GitHub!")
+            return true
+        end
     end
+    return false
 end)
 
-if not InstantReel then
-    print("⚠️ Failed to load Instant Reel module - creating fallback")
-    InstantReel = {
-        toggle = function() print("❌ Instant Reel not available") end,
-        getStatus = function() return {enabled = false} end,
-        setBypassMode = function() end,
-        setPerfectCatch = function() end,
-        manualInstantCatch = function() print("❌ Manual catch not available") end
+-- Embedded Instant Reel (Fallback)
+if not success or not InstantReel then
+    print("⚠️ GitHub loading failed, using embedded instant reel")
+    
+    InstantReel = {}
+    
+    -- Basic config
+    InstantReel.config = {
+        enabled = false,
+        perfectCatch = true,
+        bypassReelGame = false,
+        instantCatch = true,
+        debugMode = false
     }
+    
+    -- Basic functions
+    function InstantReel.toggle(enabled)
+        InstantReel.config.enabled = enabled
+        if enabled then
+            print("⚡ Embedded Instant Reel enabled!")
+        else
+            print("🛑 Embedded Instant Reel disabled!")
+        end
+    end
+    
+    function InstantReel.setBypassMode(bypass)
+        InstantReel.config.bypassReelGame = bypass
+        print("� Bypass mode: " .. tostring(bypass))
+    end
+    
+    function InstantReel.setPerfectCatch(perfect)
+        InstantReel.config.perfectCatch = perfect
+        print("🎯 Perfect catch: " .. tostring(perfect))
+    end
+    
+    function InstantReel.setInstantCatch(instant)
+        InstantReel.config.instantCatch = instant
+        print("⚡ Instant catch: " .. tostring(instant))
+    end
+    
+    function InstantReel.getStatus()
+        return {
+            enabled = InstantReel.config.enabled,
+            bypassReelGame = InstantReel.config.bypassReelGame,
+            perfectCatch = InstantReel.config.perfectCatch,
+            instantCatch = InstantReel.config.instantCatch,
+            activeReels = 0,
+            monitoring = InstantReel.config.enabled
+        }
+    end
+    
+    function InstantReel.manualInstantCatch()
+        local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+        local reelGui = playerGui:FindFirstChild("reel")
+        
+        if reelGui and reelGui.Enabled then
+            local reelFinish = game.ReplicatedStorage:FindFirstChild("events") and 
+                              game.ReplicatedStorage.events:FindFirstChild("reelfinished")
+            
+            if reelFinish then
+                reelFinish:FireServer(100, true)
+                if reelGui then
+                    reelGui.Enabled = false
+                end
+                print("✅ Embedded instant catch executed!")
+                return true
+            end
+        end
+        
+        print("❌ No active reel found!")
+        return false
+    end
+    
+    print("🔧 Embedded Instant Reel initialized!")
 end
 local TeleportLocations = {
     ['Zones'] = {
@@ -1332,58 +1409,92 @@ flags['instantcatchmode'] = false
 
 InstantReelSection:NewToggle("Instant Reel Mode", "Skip reel mini-game completely (Very Fast)", function(state)
     flags['instantreelmode'] = state
-    if InstantReel then
-        InstantReel.toggle(state)
+    if InstantReel and InstantReel.toggle then
+        local success, error = pcall(function()
+            InstantReel.toggle(state)
+        end)
+        if not success then
+            print("⚠️ Error toggling instant reel: " .. tostring(error))
+        end
         if state then
             flags['autoreel'] = false -- Disable regular auto reel
             flags['instantreel'] = false
         end
+    else
+        print("❌ InstantReel module not properly loaded")
     end
     print(state and "⚡ Instant Reel enabled!" or "🛑 Instant Reel disabled!")
 end)
 
 InstantReelSection:NewToggle("Bypass Reel Game", "Completely skip reel interface", function(state)
     flags['bypassreelgame'] = state
-    if InstantReel then
-        InstantReel.setBypassMode(state)
+    if InstantReel and InstantReel.setBypassMode then
+        local success, error = pcall(function()
+            InstantReel.setBypassMode(state)
+        end)
+        if not success then
+            print("⚠️ Error setting bypass mode: " .. tostring(error))
+        end
     end
     print(state and "🚀 Bypassing reel game!" or "🎮 Normal reel game!")
 end)
 
 InstantReelSection:NewToggle("Perfect Catch Mode", "Always get perfect catches", function(state)
     flags['perfectcatchmode'] = state
-    if InstantReel then
-        InstantReel.setPerfectCatch(state)
+    if InstantReel and InstantReel.setPerfectCatch then
+        local success, error = pcall(function()
+            InstantReel.setPerfectCatch(state)
+        end)
+        if not success then
+            print("⚠️ Error setting perfect catch: " .. tostring(error))
+        end
     end
     print(state and "🎯 Perfect catch mode!" or "📊 Normal catch rates!")
 end)
 
 InstantReelSection:NewToggle("Instant Catch at 100%", "Auto-catch when lure reaches 100%", function(state)
     flags['instantcatchmode'] = state
-    if InstantReel then
-        InstantReel.setInstantCatch(state)
+    if InstantReel and InstantReel.setInstantCatch then
+        local success, error = pcall(function()
+            InstantReel.setInstantCatch(state)
+        end)
+        if not success then
+            print("⚠️ Error setting instant catch: " .. tostring(error))
+        end
     end
     print(state and "⚡ Instant catch at 100%!" or "🎣 Manual catch required!")
 end)
 
 InstantReelSection:NewButton("Manual Instant Catch", "Manually trigger instant catch", function()
-    if InstantReel then
-        local success = InstantReel.manualInstantCatch()
-        print(success and "✅ Manual instant catch!" or "❌ No active reel!")
+    if InstantReel and InstantReel.manualInstantCatch then
+        local success, result = pcall(function()
+            return InstantReel.manualInstantCatch()
+        end)
+        if success then
+            print(result and "✅ Manual instant catch!" or "❌ No active reel!")
+        else
+            print("⚠️ Error during manual catch: " .. tostring(result))
+        end
     else
         print("❌ Instant Reel module not loaded!")
     end
 end)
 
 InstantReelSection:NewButton("Check Status", "Check instant reel status", function()
-    if InstantReel then
-        local status = InstantReel.getStatus()
-        print("📊 Instant Reel Status:")
-        print("• Enabled: " .. tostring(status.enabled))
-        print("• Bypass Mode: " .. tostring(status.bypassReelGame))
-        print("• Perfect Catch: " .. tostring(status.perfectCatch))
-        print("• Instant Catch: " .. tostring(status.instantCatch))
-        print("• Active Reels: " .. tostring(status.activeReels))
+    if InstantReel and InstantReel.getStatus then
+        local success, status = pcall(function()
+            return InstantReel.getStatus()
+        end)
+        if success and status then
+            print("📊 Instant Reel Status:")
+            print("• Enabled: " .. tostring(status.enabled))
+            print("• Bypass Mode: " .. tostring(status.bypassReelGame))
+            print("• Perfect Catch: " .. tostring(status.perfectCatch))
+            print("• Instant Catch: " .. tostring(status.instantCatch))
+            print("• Active Reels: " .. tostring(status.activeReels))
+        else
+            print("⚠️ Error getting status: " .. tostring(status))
+        end
     else
         print("❌ Instant Reel module not available!")
     end
@@ -1849,8 +1960,31 @@ RunService.Heartbeat:Connect(function()
     
     -- Advanced Instant Reel Module Integration
     if flags['instantreelmode'] and InstantReel then
-        -- Module handles everything automatically
-        -- No additional logic needed here as module monitors internally
+        -- For embedded version, handle instant reel logic here
+        if InstantReel.config and InstantReel.config.enabled then
+            local rod = FindRod()
+            local playerGui = lp.PlayerGui
+            local reelGui = playerGui:FindFirstChild("reel")
+            
+            -- Check for reel GUI and instant catch
+            if reelGui and reelGui.Enabled then
+                if InstantReel.config.bypassReelGame then
+                    -- Bypass mode - hide GUI and complete instantly
+                    reelGui.Enabled = false
+                    task.wait(0.1)
+                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                    if InstantReel.config.debugMode then
+                        print("🚀 Bypassed reel game!")
+                    end
+                elseif InstantReel.config.instantCatch and rod and rod.values.lure.Value >= 95 then
+                    -- Instant catch at high lure value
+                    ReplicatedStorage.events.reelfinished:FireServer(100, InstantReel.config.perfectCatch)
+                    if InstantReel.config.debugMode then
+                        print("⚡ Instant catch executed!")
+                    end
+                end
+            end
+        end
     end
 
     -- Visuals
