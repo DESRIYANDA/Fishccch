@@ -13862,7 +13862,7 @@ ModuleScript: CoreGui.RobloxGui.Modules.Shell.Models.ScreenItem
 ModuleScript: CoreGui.RobloxGui.Modules.Shell.PageHeartbeatTimer
 ModuleScript: CoreGui.RobloxGui.Modules.Shell.Reducers.AppShellReducer
 ModuleScript: CoreGui.RobloxGui.Modules.Shell.Reducers.ScreenList
-ModuleScript: CoreGui.RobloxGui.Modules.Shell.ScreenManager
+ModuleScript: CoreGui.RobloxGui.Modules.Shell.ScreenManagerLocalized Events
 ModuleScript: CoreGui.RobloxGui.Modules.Shell.SideBar
 ModuleScript: CoreGui.RobloxGui.Modules.Shell.SoundManager
 ModuleScript: CoreGui.RobloxGui.Modules.Shell.Utility

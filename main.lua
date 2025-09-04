@@ -1417,6 +1417,29 @@ FishSection:NewToggle("Free Fish Radar", "Show fish abundance zones", function(s
     flags['fishabundance'] = state
 end)
 
+-- Load Event ESP Module
+print("🌟 Loading Event ESP module...")
+local EventESP
+local eventESPSuccess, eventESPError = pcall(function()
+    EventESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/DESRIYANDA/Fishccch/main/event_esp.lua"))()
+end)
+
+if not eventESPSuccess then
+    print("⚠️ Failed to load Event ESP from GitHub, trying local file...")
+    eventESPSuccess, eventESPError = pcall(function()
+        EventESP = dofile("/workspaces/Fishccch/event_esp.lua")
+    end)
+end
+
+if eventESPSuccess and EventESP then
+    print("✅ Event ESP module loaded successfully!")
+    -- Initialize Event ESP with Visual Tab
+    EventESP:Initialize(VisualTab)
+else
+    print("❌ Event ESP module failed to load: " .. tostring(eventESPError))
+    EventESP = nil
+end
+
 -- Premium Section
 if PremiumTab and PremiumBobber then
     local BobberSection = PremiumTab:NewSection("🎣 Advanced Bobber")
