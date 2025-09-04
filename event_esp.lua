@@ -175,78 +175,74 @@ local LocalizedEvents = {
 }
 
 -- ESP Functions
-function EventESP:CreateESPBox(part, eventType, eventInfo)
-    if not part or not part.Parent then return end
+function EventESP.createESPBox(object, name, eventType)
+    if not object or object.Parent == nil then
+        return
+    end
     
-    local espData = {
-        part = part,
-        eventType = eventType,
-        eventInfo = eventInfo
-    }
+    local pos = object:FindFirstChild("PrimaryPart") and object.PrimaryPart.Position or 
+                object:FindFirstChild("Head") and object.Head.Position or 
+                object:FindFirstChildOfClass("BasePart") and object:FindFirstChildOfClass("BasePart").Position
     
-    -- Create BillboardGui
+    if not pos then
+        return
+    end
+    
+    -- Create simple BillboardGui
     local billboardGui = Instance.new("BillboardGui")
-    billboardGui.Name = "EventESP_" .. eventType
-    billboardGui.Adornee = part
+    billboardGui.Name = "EventESP"
     billboardGui.Size = UDim2.new(0, 200, 0, 50)
     billboardGui.StudsOffset = Vector3.new(0, 5, 0)
     billboardGui.AlwaysOnTop = true
-    billboardGui.Parent = part
+    billboardGui.LightInfluence = 0
     
-    -- Background Frame
-    local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(1, 0, 1, 0)
-    frame.BackgroundColor3 = eventInfo.color
-    frame.BackgroundTransparency = 0.3
-    frame.BorderSizePixel = 2
-    frame.BorderColor3 = Color3.new(1, 1, 1)
-    frame.Parent = billboardGui
+    -- Create simple text label
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Parent = billboardGui
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.Text = string.format("%s
+[%s]", name, eventType)
+    textLabel.TextColor3 = Color3.fromRGB(255, 255, 0) -- Yellow color
+    textLabel.TextSize = 12 -- Small font
+    textLabel.Font = Enum.Font.Arial
+    textLabel.TextStrokeTransparency = 0.5
+    textLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    textLabel.TextScaled = true
     
-    -- Event Label
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, 0, 0.6, 0)
-    label.Position = UDim2.new(0, 0, 0, 0)
-    label.BackgroundTransparency = 1
-    label.Text = eventType
-    label.TextColor3 = Color3.new(1, 1, 1)
-    label.TextScaled = true
-    label.Font = Enum.Font.GothamBold
-    label.Parent = frame
+    -- Attach to object
+    if object:FindFirstChild("PrimaryPart") then
+        billboardGui.Parent = object.PrimaryPart
+    elseif object:FindFirstChild("Head") then
+        billboardGui.Parent = object.Head
+    elseif object:FindFirstChildOfClass("BasePart") then
+        billboardGui.Parent = object:FindFirstChildOfClass("BasePart")
+    else
+        billboardGui.Parent = object
+    end
     
-    -- Description Label
-    local descLabel = Instance.new("TextLabel")
-    descLabel.Size = UDim2.new(1, 0, 0.4, 0)
-    descLabel.Position = UDim2.new(0, 0, 0.6, 0)
-    descLabel.BackgroundTransparency = 1
-    descLabel.Text = eventInfo.description
-    descLabel.TextColor3 = Color3.new(0.8, 0.8, 0.8)
-    descLabel.TextScaled = true
-    descLabel.Font = Enum.Font.Gotham
-    descLabel.Parent = frame
+    -- Store reference for cleanup
+    if not EventESP.activeESPs then
+        EventESP.activeESPs = {}
+    end
     
-    -- Distance tracking
-    spawn(function()
-        while billboardGui.Parent and flags['eventesp'] do
-            if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
-                local distance = (lp.Character.HumanoidRootPart.Position - part.Position).Magnitude
-                descLabel.Text = eventInfo.description .. " [" .. math.floor(distance) .. "m]"
+    EventESP.activeESPs[object] = billboardGui
+    
+    -- Auto cleanup when object is removed
+    local connection
+    connection = object.AncestryChanged:Connect(function()
+        if object.Parent == nil then
+            if billboardGui and billboardGui.Parent then
+                billboardGui:Destroy()
             end
-            task.wait(0.5)
+            if EventESP.activeESPs then
+                EventESP.activeESPs[object] = nil
+            end
+            connection:Disconnect()
         end
     end)
     
-    -- Glowing effect
-    local selectionBox = Instance.new("SelectionBox")
-    selectionBox.Adornee = part
-    selectionBox.Color3 = eventInfo.color
-    selectionBox.LineThickness = 0.2
-    selectionBox.Transparency = 0.3
-    selectionBox.Parent = part
-    
-    espData.billboardGui = billboardGui
-    espData.selectionBox = selectionBox
-    
-    return espData
+    return billboardGui
 end
 
 function EventESP:ScanForEvents()

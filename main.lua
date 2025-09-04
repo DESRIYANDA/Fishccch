@@ -1441,21 +1441,155 @@ else
 end
 
 -- Premium Section
-if PremiumTab and PremiumBobber then
-    local BobberSection = PremiumTab:NewSection("🎣 Advanced Bobber")
-    
-    -- Premium flags
-    flags = flags or {}
-    flags['premiumbobber'] = false
-    flags['selectedzone'] = 'Deep Ocean'
-    flags['autozonebobber'] = false
-    
-    BobberSection:NewToggle("Premium Bobber", "Enable advanced bobber features", function(state)
-        flags['premiumbobber'] = state
-        if not state then
+if PremiumTab then
+    if PremiumBobber then
+        -- Advanced Premium Features (if module loaded)
+        local BobberSection = PremiumTab:NewSection("🎣 Advanced Bobber")
+        
+        -- Premium flags
+        flags = flags or {}
+        flags['premiumbobber'] = false
+        flags['selectedzone'] = 'Deep Ocean'
+        flags['autozonebobber'] = false
+        
+        BobberSection:NewToggle("Premium Bobber", "Enable advanced bobber features", function(state)
+            flags['premiumbobber'] = state
+            if not state then
+                PremiumBobber.ResetBobber()
+            end
+        end)
+        
+        -- Zone selection dropdown
+        local availableZones = PremiumBobber.GetAvailableZones()
+        BobberSection:NewDropdown("Select Zone", "Choose zone for bobber teleportation", availableZones, function(zone)
+            flags['selectedzone'] = zone
+        end)
+        
+        BobberSection:NewButton("Manual Teleport", "Manually teleport bobber to selected zone", function()
+            if flags['premiumbobber'] and flags['selectedzone'] then
+                local success = PremiumBobber.TeleportBobberToZone(flags['selectedzone'])
+                if success then
+                    print("✅ Bobber teleported successfully!")
+                else
+                    print("❌ Failed to teleport bobber!")
+                end
+            end
+        end)
+        
+        BobberSection:NewToggle("Auto Zone Bobber", "Automatically teleport bobber to zones", function(state)
+            flags['autozonebobber'] = state
+            if state and flags['selectedzone'] then
+                PremiumBobber.AutoZoneCast(flags['selectedzone'], state)
+            else
+                PremiumBobber.ResetBobber()
+            end
+        end)
+        
+        local RopeSection = PremiumTab:NewSection("🔗 Rope Control")
+        
+        RopeSection:NewButton("Extend Rope", "Extend rope to unlimited length", function()
+            local tool = PremiumBobber.GetCurrentTool()
+            if tool then
+                local bobber = PremiumBobber.GetBobber(tool)
+                if bobber then
+                    local success = PremiumBobber.ExtendRopeLength(bobber)
+                    print(success and "✅ Rope extended!" or "❌ Failed to extend rope!")
+                else
+                    print("❌ No bobber found - cast your rod first!")
+                end
+            else
+                print("❌ No fishing rod equipped!")
+            end
+        end)
+        
+        RopeSection:NewButton("Create Platform", "Create platform under bobber", function()
+            local tool = PremiumBobber.GetCurrentTool()
+            if tool then
+                local bobber = PremiumBobber.GetBobber(tool)
+                if bobber then
+                    local platform = PremiumBobber.CreatePlatform(bobber)
+                    print(platform and "✅ Platform created!" or "❌ Failed to create platform!")
+                else
+                    print("❌ No bobber found - cast your rod first!")
+                end
+            else
+                print("❌ No fishing rod equipped!")
+            end
+        end)
+        
+        RopeSection:NewButton("Reset Bobber", "Reset all bobber modifications", function()
             PremiumBobber.ResetBobber()
-        end
-    end)
+            print("🔄 Bobber reset!")
+        end)
+        
+        local StatusSection = PremiumTab:NewSection("📊 Status")
+        
+        StatusSection:NewButton("Check Status", "Check premium bobber status", function()
+            local status = PremiumBobber.GetStatus()
+            print("📊 Premium Bobber Status: " .. tostring(status))
+        end)
+        
+        local InfoSection = PremiumTab:NewSection("ℹ️ Premium Info")
+        
+        InfoSection:NewLabel("🎯 Zone Teleport: Instantly move bobber to any zone")
+        InfoSection:NewLabel("🔗 Rope Extension: Unlimited casting range")
+        InfoSection:NewLabel("🏗️ Platform Creation: Stable bobber positioning")
+        InfoSection:NewLabel("🔄 Auto Mode: Continuous zone-based fishing")
+        InfoSection:NewLabel("⚠️ Use responsibly to avoid detection")
+        
+    else
+        -- Fallback Premium Features (if module failed to load)
+        local FallbackSection = PremiumTab:NewSection("💎 Premium Features")
+        
+        FallbackSection:NewLabel("⚠️ Premium Bobber module failed to load")
+        FallbackSection:NewLabel("Available Premium Features:")
+        
+        -- Basic premium flags for fallback
+        flags = flags or {}
+        flags['premiummode'] = false
+        flags['quickcast'] = false
+        flags['autoplatform'] = false
+        
+        FallbackSection:NewToggle("Premium Mode", "Enable basic premium enhancements", function(state)
+            flags['premiummode'] = state
+            print(state and "💎 Premium mode enabled!" or "💎 Premium mode disabled!")
+        end)
+        
+        FallbackSection:NewToggle("Quick Cast", "Faster casting with premium timing", function(state)
+            flags['quickcast'] = state
+            print(state and "⚡ Quick cast enabled!" or "⚡ Quick cast disabled!")
+        end)
+        
+        FallbackSection:NewToggle("Auto Platform", "Automatically create fishing platforms", function(state)
+            flags['autoplatform'] = state
+            print(state and "🏗️ Auto platform enabled!" or "🏗️ Auto platform disabled!")
+        end)
+        
+        FallbackSection:NewButton("Manual Quick Cast", "Perform a quick cast manually", function()
+            if flags['premiummode'] then
+                local rod = FindRod()
+                if rod and rod.events and rod.events.cast then
+                    rod.events.cast:FireServer(100, flags['quickcast'] and 0.3 or 1)
+                    print("⚡ Quick cast executed!")
+                else
+                    print("❌ No rod equipped!")
+                end
+            else
+                print("⚠️ Enable Premium Mode first!")
+            end
+        end)
+        
+        local PremiumInfoSection = PremiumTab:NewSection("ℹ️ Premium Information")
+        
+        PremiumInfoSection:NewLabel("💎 Premium Mode: Enhanced fishing performance")
+        PremiumInfoSection:NewLabel("⚡ Quick Cast: Faster rod casting")
+        PremiumInfoSection:NewLabel("🏗️ Auto Platform: Automatic platform creation")
+        PremiumInfoSection:NewLabel("📡 Advanced Features: Bobber teleportation (requires module)")
+        PremiumInfoSection:NewLabel("🔄 Module Status: Check console for loading errors")
+    end
+else
+    print("⚠️ Premium Tab not available")
+end
     
     -- Zone selection dropdown
     local availableZones = PremiumBobber.GetAvailableZones()
