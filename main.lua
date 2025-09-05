@@ -1257,7 +1257,15 @@ ShakeSection:NewToggle("Auto Shake", "Automatically shake when fish bites (Signa
     if state then
         message('\<b><font color = \"#9eff80\">Auto Shake</font></b>\ is now \<b><font color = \"#9eff80\">enabled</font></b>\ - Signal Method + GUI Detection - Compatible with Always Catch', 3)
     else
-        message('\<b><font color = \"#ff8080\">Auto Shake</font></b>\ is now \<b><font color = \"#ff8080\">disabled</font></b>', 3)
+        -- Clean up when disabled
+        if _G.autoShakeConnections then
+            for _, connection in ipairs(_G.autoShakeConnections) do
+                pcall(function() connection:Disconnect() end)
+            end
+            _G.autoShakeConnections = {}
+            _G.shakeInProgress = false
+        end
+        message('\<b><font color = \"#ff8080\">Auto Shake</font></b>\ is now \<b><font color = \"#ff8080\">disabled</font></b>\ - All connections cleaned up', 3)
     end
 end)
 
@@ -1414,16 +1422,20 @@ RunService.Heartbeat:Connect(function()
     end
     if flags['autoshake'] then
         -- Enhanced Auto Shake with optimized Signal + GUI Detection methods
+        -- === PERSISTENT VARIABLES (outside pcall to maintain state) ===
+        if not _G.autoShakeConnections then
+            _G.autoShakeConnections = {}
+            _G.lastShakeTime = 0
+            _G.shakeInProgress = false
+        end
+        
         pcall(function()
             -- === OPTIMIZED SIGNAL METHOD (Lag-Free) ===
             -- Method 0: Signal-based detection with lag prevention
-            local signalConnections = {} -- Track connections to prevent duplicates
-            local lastShakeTime = 0 -- Prevent spam execution
-            local shakeInProgress = false -- Prevent concurrent executions
             
             local function setupSignalShake()
                 -- Only setup if not already connected (prevent duplicates)
-                if #signalConnections > 0 then return end
+                if #_G.autoShakeConnections > 0 then return end
                 
                 -- Monitor ReplicatedStorage for shake events
                 if ReplicatedStorage:FindFirstChild("events") then
@@ -1437,9 +1449,9 @@ RunService.Heartbeat:Connect(function()
                             local connection = shakeEvent.OnClientEvent:Connect(function(...)
                                 if flags['autoshake'] and not shakeInProgress then
                                     local currentTime = tick()
-                                    if currentTime - lastShakeTime > 0.1 then -- Debounce 100ms
-                                        shakeInProgress = true
-                                        lastShakeTime = currentTime
+                                    if currentTime - _G.lastShakeTime > 0.1 then -- Debounce 100ms
+                                        _G.shakeInProgress = true
+                                        _G.lastShakeTime = currentTime
                                         
                                         -- Optimized completion without delay
                                         pcall(function()
@@ -1449,25 +1461,25 @@ RunService.Heartbeat:Connect(function()
                                         -- Reset flag quickly
                                         task.spawn(function()
                                             task.wait(0.05)
-                                            shakeInProgress = false
+                                            _G.shakeInProgress = false
                                         end)
                                     end
                                 end
                             end)
-                            table.insert(signalConnections, connection)
+                            table.insert(_G.autoShakeConnections, connection)
                         end
                     end
                     
                     -- Method 0B: Optimized new event monitoring (with limits)
-                    if #signalConnections < 10 then -- Limit connections to prevent lag
+                    if #_G.autoShakeConnections < 10 then -- Limit connections to prevent lag
                         local newEventConnection = events.ChildAdded:Connect(function(newEvent)
-                            if flags['autoshake'] and newEvent:IsA("RemoteEvent") and not shakeInProgress then
+                            if flags['autoshake'] and newEvent:IsA("RemoteEvent") and not _G.shakeInProgress then
                                 local eventName = string.lower(newEvent.Name)
                                 if string.find(eventName, "shake") then
                                     local currentTime = tick()
-                                    if currentTime - lastShakeTime > 0.1 then
-                                        shakeInProgress = true
-                                        lastShakeTime = currentTime
+                                    if currentTime - _G.lastShakeTime > 0.1 then
+                                        _G.shakeInProgress = true
+                                        _G.lastShakeTime = currentTime
                                         
                                         pcall(function()
                                             newEvent:FireServer(100, true)
@@ -1475,24 +1487,24 @@ RunService.Heartbeat:Connect(function()
                                         
                                         task.spawn(function()
                                             task.wait(0.05)
-                                            shakeInProgress = false
+                                            _G.shakeInProgress = false
                                         end)
                                     end
                                 end
                             end
                         end)
-                        table.insert(signalConnections, newEventConnection)
+                        table.insert(_G.autoShakeConnections, newEventConnection)
                     end
                 end
             end
             
             -- Cleanup function to prevent memory leaks
             local function cleanupSignals()
-                for _, connection in ipairs(signalConnections) do
+                for _, connection in ipairs(_G.autoShakeConnections) do
                     connection:Disconnect()
                 end
-                signalConnections = {}
-                shakeInProgress = false
+                _G.autoShakeConnections = {}
+                _G.shakeInProgress = false
             end
             
             -- Initialize optimized signal monitoring
@@ -1500,13 +1512,13 @@ RunService.Heartbeat:Connect(function()
             
             -- === FALLBACK GUI METHOD (Lag-Free) ===
             -- Only run if signal method didn't handle it
-            if not shakeInProgress then
+            if not _G.shakeInProgress then
                 -- Method 1: Primary GUI detection (optimized)
                 if FindChild(lp.PlayerGui, 'shakeui') and FindChild(lp.PlayerGui['shakeui'], 'safezone') and FindChild(lp.PlayerGui['shakeui']['safezone'], 'button') then
                     local currentTime = tick()
-                    if currentTime - lastShakeTime > 0.1 then
-                        shakeInProgress = true
-                        lastShakeTime = currentTime
+                    if currentTime - _G.lastShakeTime > 0.1 then
+                        _G.shakeInProgress = true
+                        _G.lastShakeTime = currentTime
                         
                         local button = lp.PlayerGui['shakeui']['safezone']['button']
                         
@@ -1519,7 +1531,7 @@ RunService.Heartbeat:Connect(function()
                         
                         task.spawn(function()
                             task.wait(0.05)
-                            shakeInProgress = false
+                            _G.shakeInProgress = false
                         end)
                         
                         if not flags['alwayscatch'] then
@@ -1532,14 +1544,14 @@ RunService.Heartbeat:Connect(function()
                 -- Method 2: Alternative GUI detection (simplified)
                 local shakeGuis = {'shake', 'fishShake', 'shakeBar'}
                 for _, guiName in ipairs(shakeGuis) do
-                    if shakeInProgress then break end
+                    if _G.shakeInProgress then break end
                     
                     local shakeGui = lp.PlayerGui:FindFirstChild(guiName)
                     if shakeGui then
                         local currentTime = tick()
-                        if currentTime - lastShakeTime > 0.1 then
-                            shakeInProgress = true
-                            lastShakeTime = currentTime
+                        if currentTime - _G.lastShakeTime > 0.1 then
+                            _G.shakeInProgress = true
+                            _G.lastShakeTime = currentTime
                             
                             local button = shakeGui:FindFirstChildOfClass('TextButton')
                             if button then
@@ -1549,7 +1561,7 @@ RunService.Heartbeat:Connect(function()
                                 
                                 task.spawn(function()
                                     task.wait(0.05)
-                                    shakeInProgress = false
+                                    _G.shakeInProgress = false
                                 end)
                                 return
                             end
@@ -1559,7 +1571,7 @@ RunService.Heartbeat:Connect(function()
             end
             
             -- Cleanup connections when disabled
-            if not flags['autoshake'] and #signalConnections > 0 then
+            if not flags['autoshake'] and #_G.autoShakeConnections > 0 then
                 cleanupSignals()
             end
         end)
