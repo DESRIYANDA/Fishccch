@@ -4,31 +4,11 @@ local ReplicatedStorage = cloneref(game:GetService('ReplicatedStorage'))
 local RunService = cloneref(game:GetService('RunService'))
 local GuiService = cloneref(game:GetService('GuiService'))
 
--- Protect TweenService and block fishing animations
+-- Protect TweenService from workspace errors
 pcall(function()
     local TweenService = game:GetService("TweenService")
     local originalCreate = TweenService.Create
     TweenService.Create = function(self, instance, ...)
-        -- Block fishing rod animations when always catch is enabled
-        if flags and flags['alwayscatch'] and instance then
-            local instanceName = tostring(instance)
-            local instanceParent = instance.Parent and tostring(instance.Parent) or ""
-            
-            -- Block fishing-related tweens
-            if string.find(string.lower(instanceName), "rod") or 
-               string.find(string.lower(instanceName), "reel") or
-               string.find(string.lower(instanceName), "lure") or
-               string.find(string.lower(instanceParent), "fishing") then
-                -- Return dummy tween that does nothing
-                return {
-                    Play = function() end,
-                    Cancel = function() end,
-                    Pause = function() end,
-                    Destroy = function() end
-                }
-            end
-        end
-        
         if instance and instance.Parent then
             return originalCreate(self, instance, ...)
         else
@@ -51,9 +31,9 @@ local fishabundancevisible = false
 local deathcon
 local tooltipmessage
 
--- Default delay values (optimized for speed)
-flags['autocastdelay'] = 0.1
-flags['autoreeldelay'] = 0.1
+-- Default delay values
+flags['autocastdelay'] = 0.5
+flags['autoreeldelay'] = 0.5
 local TeleportLocations = {
     ['Zones'] = {
         ['Moosewood'] = CFrame.new(379.875458, 134.500519, 233.5495, -0.033920113, 8.13274355e-08, 0.999424577, 8.98441925e-08, 1, -7.83249803e-08, -0.999424577, 8.7135696e-08, -0.033920113),
@@ -1197,15 +1177,8 @@ else
                     return {UpdateToggle = function() end}
                 end,
                 NewSlider = function(name, desc, min, max, callback) 
-                    if callback then 
-                        -- Start with minimum value, not maximum
-                        callback(min) 
-                    end
-                    return {
-                        SetValue = function(self, value)
-                            if callback then callback(value) end
-                        end
-                    }
+                    if callback then callback(min) end
+                    return {}
                 end,
                 NewDropdown = function(name, desc, options, callback) 
                     if callback then callback(options[1]) end
@@ -1239,7 +1212,7 @@ CastSection:NewToggle("Auto Cast", "Automatically cast fishing rod", function(st
 end)
 
 -- Fix slider issue - properly define default value with initial state
-local castSlider = CastSection:NewSlider("Auto Cast Delay", "Delay between auto casts (seconds)", 0.01, 5, function(value)
+local castSlider = CastSection:NewSlider("Auto Cast Delay", "Delay between auto casts (seconds)", 0.1, 5, function(value)
     flags['autocastdelay'] = value
     print("[Auto Cast] Delay set to: " .. value .. " seconds")
 end)
@@ -1247,26 +1220,13 @@ end)
 -- Set initial slider value to match default
 pcall(function()
     if castSlider and castSlider.SetValue then
-        castSlider:SetValue(flags['autocastdelay'] or 0.1)
+        castSlider:SetValue(flags['autocastdelay'] or 0.5)
     end
 end)
 
 local ShakeSection = AutoTab:NewSection("Auto Shake Settings")
-ShakeSection:NewToggle("Auto Shake", "Automatically shake when fish bites (Signal + GUI Detection)", function(state)
+ShakeSection:NewToggle("Auto Shake", "Automatically shake when fish bites", function(state)
     flags['autoshake'] = state
-    if state then
-        message('\<b><font color = \"#9eff80\">Auto Shake</font></b>\ is now \<b><font color = \"#9eff80\">enabled</font></b>\ - Signal Method + GUI Detection - Compatible with Always Catch', 3)
-    else
-        -- Clean up when disabled
-        if _G.autoShakeConnections then
-            for _, connection in ipairs(_G.autoShakeConnections) do
-                pcall(function() connection:Disconnect() end)
-            end
-            _G.autoShakeConnections = {}
-            _G.shakeInProgress = false
-        end
-        message('\<b><font color = \"#ff8080\">Auto Shake</font></b>\ is now \<b><font color = \"#ff8080\">disabled</font></b>\ - All connections cleaned up', 3)
-    end
 end)
 
 local ReelSection = AutoTab:NewSection("Auto Reel Settings") 
@@ -1275,7 +1235,7 @@ ReelSection:NewToggle("Auto Reel", "Automatically reel in fish", function(state)
 end)
 
 -- Fix slider issue - properly define default value with initial state
-local reelSlider = ReelSection:NewSlider("Auto Reel Delay", "Delay between auto reels (seconds)", 0.01, 5, function(value)
+local reelSlider = ReelSection:NewSlider("Auto Reel Delay", "Delay between auto reels (seconds)", 0.1, 5, function(value)
     flags['autoreeldelay'] = value
     print("[Auto Reel] Delay set to: " .. value .. " seconds")
 end)
@@ -1283,7 +1243,7 @@ end)
 -- Set initial slider value to match default
 pcall(function()
     if reelSlider and reelSlider.SetValue then
-        reelSlider:SetValue(flags['autoreeldelay'] or 0.1)
+        reelSlider:SetValue(flags['autoreeldelay'] or 0.5)
     end
 end)
 
@@ -1298,6 +1258,15 @@ if CheckFunc(hookmetamethod) then
     end)
     HookSection:NewToggle("Always Catch", "Always catch fish", function(state)
         flags['alwayscatch'] = state
+        if state then
+            flags['instantreel'] = false -- Disable instant reel if always catch enabled
+        end
+    end)
+    HookSection:NewToggle("Instant Reel", "Instantly reel fish when lure = 100 (RISKY)", function(state)
+        flags['instantreel'] = state
+        if state then
+            flags['alwayscatch'] = false -- Disable always catch if instant reel enabled
+        end
     end)
 end
 
@@ -1421,164 +1390,17 @@ RunService.Heartbeat:Connect(function()
         characterposition = nil
     end
     if flags['autoshake'] then
-        -- Enhanced Auto Shake with optimized Signal + GUI Detection methods
-        -- === PERSISTENT VARIABLES (outside pcall to maintain state) ===
-        if not _G.autoShakeConnections then
-            _G.autoShakeConnections = {}
-            _G.lastShakeTime = 0
-            _G.shakeInProgress = false
+        if FindChild(lp.PlayerGui, 'shakeui') and FindChild(lp.PlayerGui['shakeui'], 'safezone') and FindChild(lp.PlayerGui['shakeui']['safezone'], 'button') then
+            GuiService.SelectedObject = lp.PlayerGui['shakeui']['safezone']['button']
+            if GuiService.SelectedObject == lp.PlayerGui['shakeui']['safezone']['button'] then
+                game:GetService('VirtualInputManager'):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
+                game:GetService('VirtualInputManager'):SendKeyEvent(false, Enum.KeyCode.Return, false, game)
+            end
         end
-        
-        pcall(function()
-            -- === OPTIMIZED SIGNAL METHOD (Lag-Free) ===
-            -- Method 0: Signal-based detection with lag prevention
-            
-            local function setupSignalShake()
-                -- Only setup if not already connected (prevent duplicates)
-                if #_G.autoShakeConnections > 0 then return end
-                
-                -- Monitor ReplicatedStorage for shake events
-                if ReplicatedStorage:FindFirstChild("events") then
-                    local events = ReplicatedStorage.events
-                    
-                    -- Method 0A: Direct shake event monitoring (optimized)
-                    for _, eventName in ipairs({"shake", "fishShake", "startShake", "shakeEvent", "minigameShake"}) do
-                        local shakeEvent = events:FindFirstChild(eventName)
-                        if shakeEvent and shakeEvent:IsA("RemoteEvent") then
-                            -- Single optimized connection per event
-                            local connection = shakeEvent.OnClientEvent:Connect(function(...)
-                                if flags['autoshake'] and not shakeInProgress then
-                                    local currentTime = tick()
-                                    if currentTime - _G.lastShakeTime > 0.1 then -- Debounce 100ms
-                                        _G.shakeInProgress = true
-                                        _G.lastShakeTime = currentTime
-                                        
-                                        -- Optimized completion without delay
-                                        pcall(function()
-                                            shakeEvent:FireServer(100, true)
-                                        end)
-                                        
-                                        -- Reset flag quickly
-                                        task.spawn(function()
-                                            task.wait(0.05)
-                                            _G.shakeInProgress = false
-                                        end)
-                                    end
-                                end
-                            end)
-                            table.insert(_G.autoShakeConnections, connection)
-                        end
-                    end
-                    
-                    -- Method 0B: Optimized new event monitoring (with limits)
-                    if #_G.autoShakeConnections < 10 then -- Limit connections to prevent lag
-                        local newEventConnection = events.ChildAdded:Connect(function(newEvent)
-                            if flags['autoshake'] and newEvent:IsA("RemoteEvent") and not _G.shakeInProgress then
-                                local eventName = string.lower(newEvent.Name)
-                                if string.find(eventName, "shake") then
-                                    local currentTime = tick()
-                                    if currentTime - _G.lastShakeTime > 0.1 then
-                                        _G.shakeInProgress = true
-                                        _G.lastShakeTime = currentTime
-                                        
-                                        pcall(function()
-                                            newEvent:FireServer(100, true)
-                                        end)
-                                        
-                                        task.spawn(function()
-                                            task.wait(0.05)
-                                            _G.shakeInProgress = false
-                                        end)
-                                    end
-                                end
-                            end
-                        end)
-                        table.insert(_G.autoShakeConnections, newEventConnection)
-                    end
-                end
-            end
-            
-            -- Cleanup function to prevent memory leaks
-            local function cleanupSignals()
-                for _, connection in ipairs(_G.autoShakeConnections) do
-                    connection:Disconnect()
-                end
-                _G.autoShakeConnections = {}
-                _G.shakeInProgress = false
-            end
-            
-            -- Initialize optimized signal monitoring
-            setupSignalShake()
-            
-            -- === FALLBACK GUI METHOD (Lag-Free) ===
-            -- Only run if signal method didn't handle it
-            if not _G.shakeInProgress then
-                -- Method 1: Primary GUI detection (optimized)
-                if FindChild(lp.PlayerGui, 'shakeui') and FindChild(lp.PlayerGui['shakeui'], 'safezone') and FindChild(lp.PlayerGui['shakeui']['safezone'], 'button') then
-                    local currentTime = tick()
-                    if currentTime - _G.lastShakeTime > 0.1 then
-                        _G.shakeInProgress = true
-                        _G.lastShakeTime = currentTime
-                        
-                        local button = lp.PlayerGui['shakeui']['safezone']['button']
-                        
-                        -- Single optimized activation
-                        pcall(function()
-                            GuiService.SelectedObject = button
-                            game:GetService('VirtualInputManager'):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
-                            game:GetService('VirtualInputManager'):SendKeyEvent(false, Enum.KeyCode.Return, false, game)
-                        end)
-                        
-                        task.spawn(function()
-                            task.wait(0.05)
-                            _G.shakeInProgress = false
-                        end)
-                        
-                        if not flags['alwayscatch'] then
-                            message('🎣 Auto Shake activated!', 1)
-                        end
-                        return
-                    end
-                end
-                
-                -- Method 2: Alternative GUI detection (simplified)
-                local shakeGuis = {'shake', 'fishShake', 'shakeBar'}
-                for _, guiName in ipairs(shakeGuis) do
-                    if _G.shakeInProgress then break end
-                    
-                    local shakeGui = lp.PlayerGui:FindFirstChild(guiName)
-                    if shakeGui then
-                        local currentTime = tick()
-                        if currentTime - _G.lastShakeTime > 0.1 then
-                            _G.shakeInProgress = true
-                            _G.lastShakeTime = currentTime
-                            
-                            local button = shakeGui:FindFirstChildOfClass('TextButton')
-                            if button then
-                                pcall(function()
-                                    button:Activated()
-                                end)
-                                
-                                task.spawn(function()
-                                    task.wait(0.05)
-                                    _G.shakeInProgress = false
-                                end)
-                                return
-                            end
-                        end
-                    end
-                end
-            end
-            
-            -- Cleanup connections when disabled
-            if not flags['autoshake'] and #_G.autoShakeConnections > 0 then
-                cleanupSignals()
-            end
-        end)
     end
     if flags['autocast'] then
         local rod = FindRod()
-        local currentDelay = flags['autocastdelay'] or 0.1
+        local currentDelay = flags['autocastdelay'] or 0.5
         if rod ~= nil and rod['values']['lure'].Value <= .001 then
             task.wait(currentDelay)
             rod.events.cast:FireServer(100, 1) -- Normal distance cast
@@ -1586,9 +1408,20 @@ RunService.Heartbeat:Connect(function()
     end
     if flags['autoreel'] then
         local rod = FindRod()
-        local currentDelay = flags['autoreeldelay'] or 0.1
+        local currentDelay = flags['autoreeldelay'] or 0.5
         if rod ~= nil and rod['values']['lure'].Value == 100 then
             task.wait(currentDelay)
+            ReplicatedStorage.events.reelfinished:FireServer(100, true)
+        end
+    end
+    
+    -- Instant Reel (No Delay) - RISKY but very fast
+    if flags['instantreel'] then
+        local rod = FindRod()
+        if rod ~= nil and rod['values']['lure'].Value == 100 then
+            -- Add small random delay to make it more natural
+            local randomDelay = math.random(5, 25) / 1000 -- 0.005-0.025 seconds
+            task.wait(randomDelay)
             ReplicatedStorage.events.reelfinished:FireServer(100, true)
         end
     end
@@ -1763,77 +1596,19 @@ RunService.Heartbeat:Connect(function()
         getchar():SetAttribute('Refill', false)
     end
     
-    -- Enhanced Always Catch - Ultra-Instant Multi-method bypass
+    -- Enhanced Always Catch - Auto complete reel minigame
     if flags['alwayscatch'] then
         local rod = FindRod()
         if rod and rod['values'] and rod['values']['lure'] then
-            -- Ultra-aggressive detection - catch immediately when fish bites
-            if rod['values']['lure'].Value >= 99 then
-                -- Check if Auto Shake is active, let it complete first
-                if flags['autoshake'] then
-                    -- Brief delay to allow Auto Shake completion
-                    task.wait(0.05)
-                    -- Double-check if still needs completion
-                    if rod['values']['lure'].Value >= 99 then
-                        -- Auto Shake didn't complete, proceed with Always Catch
-                        -- Instant multiple bypass methods (no delays)
-                        pcall(function()
-                            -- Primary method
-                            ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                        end)
-                        
-                        pcall(function()
-                            -- Secondary method with force completion
-                            ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                            ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                        end)
-                    end
-                else
-                    -- No Auto Shake active, proceed immediately
-                    -- Instant multiple bypass methods (no delays)
-                    pcall(function()
-                        -- Primary method
-                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                    end)
-                    
-                    pcall(function()
-                        -- Secondary method with force completion
-                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                    end)
-                end
-                
-                -- Immediately reset lure to stop animation (only after Always Catch completes)
+            -- Check if fish is hooked and minigame should be bypassed
+            if rod['values']['lure'].Value >= 99.9 then
+                -- Try to bypass reel minigame immediately
                 pcall(function()
-                    rod['values']['lure'].Value = 0.001
-                end)
-                
-                -- Force destroy any fishing GUIs instantly
-                pcall(function()
-                    for _, gui in pairs(lp.PlayerGui:GetChildren()) do
-                        if gui:IsA("ScreenGui") then
-                            local name = string.lower(gui.Name)
-                            if string.find(name, "reel") or string.find(name, "fish") or string.find(name, "catch") or string.find(name, "shake") then
-                                gui:Destroy() -- Complete destruction, not just disable
-                            end
-                        end
-                    end
-                end)
-                
-                -- Additional safety nets
-                pcall(function()
-                    -- Try alternative event names
-                    if ReplicatedStorage:FindFirstChild("events") then
-                        local events = ReplicatedStorage.events
-                        if events:FindFirstChild("reelfinished") then
-                            events.reelfinished:FireServer(100, true)
-                        end
-                        if events:FindFirstChild("catchfish") then
-                            events.catchfish:FireServer(100, true)  
-                        end
-                        if events:FindFirstChild("completecatch") then
-                            events.completecatch:FireServer(100, true)
-                        end
+                    -- Check for reel GUI
+                    local reelGui = lp.PlayerGui:FindFirstChild('reel')
+                    if reelGui then
+                        -- Immediately complete the reel
+                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
                     end
                 end)
             end
@@ -1851,404 +1626,54 @@ if CheckFunc(hookmetamethod) then
         elseif method == 'FireServer' and self.Name == 'cast' and flags['perfectcast'] then
             args[1] = 100
             return old(self, unpack(args))
-        elseif method == 'FireServer' and flags['alwayscatch'] then
-            -- Comprehensive hook for any fishing-related events
-            if self.Name == 'reelfinished' or self.Name == 'catchfish' or self.Name == 'completecatch' then
-                args[1] = 100
-                args[2] = true
-                return old(self, unpack(args))
-            -- Block animation events that cause pulling animation
-            elseif self.Name == 'startAnimation' or self.Name == 'playAnimation' or 
-                   string.find(string.lower(self.Name), "animation") or
-                   string.find(string.lower(self.Name), "tween") or
-                   string.find(string.lower(self.Name), "pull") then
-                -- Block animation events during always catch
-                return -- Don't execute the animation
-            elseif string.find(string.lower(self.Name), "reel") or string.find(string.lower(self.Name), "catch") or string.find(string.lower(self.Name), "fish") then
-                -- Catch any fishing-related FireServer calls
-                if #args >= 2 then
-                    args[1] = 100
-                    args[2] = true
-                elseif #args >= 1 then
-                    args[1] = 100
-                end
-                return old(self, unpack(args))
-            end
+        elseif method == 'FireServer' and self.Name == 'reelfinished' and flags['alwayscatch'] then
+            args[1] = 100
+            args[2] = true
+            return old(self, unpack(args))
         end
         return old(self, ...)
     end)
 end
 
--- Enhanced Always Catch implementation - Multiple layers of protection
+-- Additional Always Catch implementation
 if flags then
-    -- Layer 0: Signal-Based Always Catch (Ultra-Advanced)
-    task.spawn(function()
-        local function setupSignalCatch()
-            if ReplicatedStorage:FindFirstChild("events") then
-                local events = ReplicatedStorage.events
-                
-                -- Monitor fishing-related signals
-                for _, eventName in ipairs({"cast", "bite", "hook", "catch", "reel"}) do
-                    local fishEvent = events:FindFirstChild(eventName)
-                    if fishEvent and fishEvent:IsA("RemoteEvent") then
-                        fishEvent.OnClientEvent:Connect(function(...)
-                            if flags['alwayscatch'] then
-                                task.wait(0.001) -- Minimal delay
-                                ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                            end
-                        end)
-                    end
-                end
-                
-                -- Monitor for new fishing events via signal
-                events.ChildAdded:Connect(function(newEvent)
-                    if flags['alwayscatch'] and newEvent:IsA("RemoteEvent") then
-                        local eventName = string.lower(newEvent.Name)
-                        if string.find(eventName, "fish") or string.find(eventName, "reel") or 
-                           string.find(eventName, "catch") or string.find(eventName, "bite") then
-                            newEvent.OnClientEvent:Connect(function(...)
-                                if flags['alwayscatch'] then
-                                    task.wait(0.001)
-                                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                                end
-                            end)
-                        end
-                    end
-                end)
-            end
-            
-            -- Advanced: Monitor lure value changes via signal
-            local function setupLureSignal()
-                local rod = FindRod()
-                if rod and rod:FindFirstChild('values') and rod.values:FindFirstChild('lure') then
-                    local lureValue = rod.values.lure
-                    
-                    -- Signal-based detection when lure reaches 100%
-                    local lureConnection = lureValue.Changed:Connect(function(newValue)
-                        if flags['alwayscatch'] and newValue >= 99.5 then -- Detect near 100%
-                            task.spawn(function()
-                                -- Check if Auto Shake is active, let it complete first
-                                if flags['autoshake'] then
-                                    -- Wait briefly for Auto Shake to potentially complete
-                                    task.wait(0.1)
-                                    -- Double-check if lure is still at 100% (Auto Shake might have completed)
-                                    local currentLure = rod.values.lure.Value
-                                    if currentLure >= 99.5 then
-                                        -- Auto Shake didn't complete, proceed with Always Catch
-                                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                                        message('🎯 Signal Always Catch: Auto Shake backup → Instant completion!', 1)
-                                    end
-                                else
-                                    -- No Auto Shake active, proceed immediately
-                                    task.wait(0.001) -- Ultra-minimal delay
-                                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                                    message('🎯 Signal Always Catch: Lure 100% detected → Instant completion!', 1)
-                                end
-                            end)
-                        end
-                    end)
-                    
-                    -- Monitor for rod changes and reconnect signal
-                    task.spawn(function()
-                        while flags['alwayscatch'] do
-                            task.wait(1) -- Check every second for new rod
-                            local newRod = FindRod()
-                            if newRod ~= rod then
-                                -- Rod changed, setup new connection
-                                if lureConnection then
-                                    lureConnection:Disconnect()
-                                end
-                                setupLureSignal() -- Recursive setup for new rod
-                                break
-                            end
-                        end
-                    end)
-                end
-            end
-            
-            setupLureSignal()
-            
-            -- Advanced: Monitor fishing state changes via workspace signals
-            local function setupFishingStateSignal()
-                -- Monitor workspace events for fishing state changes
-                if workspace:FindFirstChild("events") then
-                    workspace.events.ChildAdded:Connect(function(newEvent)
-                        if flags['alwayscatch'] and newEvent.Name:lower():find("fish") then
-                            task.wait(0.001)
-                            ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                        end
-                    end)
-                end
-                
-                -- Monitor player character for fishing animations/states
-                if lp.Character then
-                    lp.Character.ChildAdded:Connect(function(newChild)
-                        if flags['alwayscatch'] and newChild.Name:lower():find("fishing") then
-                            task.wait(0.001)
-                            ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                        end
-                    end)
-                end
-                
-                -- Monitor for any fishing-related attribute changes
-                local function monitorAttributes(object)
-                    if object:IsA("BasePart") or object:IsA("Model") then
-                        object.AttributeChanged:Connect(function(attributeName)
-                            if flags['alwayscatch'] then
-                                local attrName = attributeName:lower()
-                                if attrName:find("fish") or attrName:find("bite") or attrName:find("caught") then
-                                    task.wait(0.001)
-                                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                                end
-                            end
-                        end)
-                    end
-                end
-                
-                -- Apply attribute monitoring to character and workspace
-                if lp.Character then
-                    monitorAttributes(lp.Character)
-                    for _, child in pairs(lp.Character:GetChildren()) do
-                        monitorAttributes(child)
-                    end
-                end
-            end
-            
-            setupFishingStateSignal()
-        end
-        
-        setupSignalCatch()
-    end)
-    -- Layer 1: Optimized GUI prevention and destruction (Lag-Free)
-    task.spawn(function()
-        local lastShakeCheck = 0 -- Debounce for shake GUI checks
-        local guiCache = {} -- Cache GUI references to reduce lookups
-        
-        while true do
-            task.wait(0.05) -- Reduced frequency to prevent lag (20Hz instead of 50Hz)
-            if flags['alwayscatch'] then
-                local currentTime = tick()
-                
-                -- Handle shake GUI with optimized timing (reduced frequency)
-                if currentTime - lastShakeCheck > 0.1 then -- Check shake GUI every 100ms only
-                    lastShakeCheck = currentTime
-                    
-                    pcall(function()
-                        local playerGui = lp.PlayerGui
-                        
-                        -- Optimized shake GUI handling
-                        local shakeGuis = {'shake', 'shakeui'}
-                        for _, guiName in ipairs(shakeGuis) do
-                            local gui = playerGui:FindFirstChild(guiName)
-                            if gui then
-                                -- If Auto Shake is enabled, minimal interference
-                                if flags['autoshake'] then
-                                    -- Quick check and immediate completion
-                                    task.spawn(function()
-                                        task.wait(0.2) -- Give Auto Shake time to work
-                                        if gui and gui.Parent then
-                                            pcall(function()
-                                                ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                                                gui:Destroy()
-                                            end)
-                                        end
-                                    end)
-                                else
-                                    -- No Auto Shake, immediate destruction
-                                    pcall(function()
-                                        gui:Destroy()
-                                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                                    end)
-                                end
-                            end
-                        end
-                    end)
-                end
-                
-                -- Optimized minigame GUI destruction (less frequent checking)
-                pcall(function()
-                    local playerGui = lp.PlayerGui
-                    local minigameGuis = {'reel', 'reelui', 'fishing', 'fishgame', 'minigame'}
-                    
-                    for _, guiName in ipairs(minigameGuis) do
-                        -- Use cache to reduce GUI lookups
-                        if not guiCache[guiName] or not guiCache[guiName].Parent then
-                            guiCache[guiName] = playerGui:FindFirstChild(guiName)
-                        end
-                        
-                        local gui = guiCache[guiName]
-                        if gui and gui.Parent then
-                            pcall(function()
-                                gui:Destroy()
-                                ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                                guiCache[guiName] = nil -- Clear cache
-                            end)
-                        end
-                    end
-                end)
-            else
-                -- Clear cache when disabled
-                guiCache = {}
-            end
-        end
-    end)
-    
-    -- Layer 2: Ultra-Instant Catch System
+    -- Enhanced Always Catch using different approach
     task.spawn(function()
         while true do
-            task.wait(0.01) -- Ultra-fast checking (100Hz)
+            task.wait(0.1)
             if flags['alwayscatch'] then
                 local rod = FindRod()
                 if rod and rod['values'] and rod['values']['lure'] then
                     -- When fish bites (lure = 100), immediately catch it
                     if rod['values']['lure'].Value >= 99.9 then
-                        -- Multiple instant catch methods with no delay
+                        task.wait(0.1) -- Small delay to ensure minigame starts
+                        
+                        -- Try multiple methods to catch the fish
                         pcall(function()
-                            -- Method 1: Standard reelfinished
+                            -- Method 1: Direct reelfinished call
                             ReplicatedStorage.events.reelfinished:FireServer(100, true)
                         end)
                         
                         pcall(function()
-                            -- Method 2: Force complete catch
-                            ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                        end)
-                        
-                        pcall(function()
-                            -- Method 3: Alternative event names
-                            if ReplicatedStorage:FindFirstChild("events") then
-                                local events = ReplicatedStorage.events
-                                if events:FindFirstChild("catchfish") then
-                                    events.catchfish:FireServer(100, true)
-                                end
-                                if events:FindFirstChild("completecatch") then
-                                    events.completecatch:FireServer(100, true)
-                                end
-                            end
-                        end)
-                        
-                        -- Reset lure value to prevent animation
-                        pcall(function()
-                            if rod['values']['lure'] then
-                                rod['values']['lure'].Value = 0
-                            end
-                        end)
-                        
-                        task.wait(0.05) -- Minimal wait to prevent excessive spam
-                    end
-                end
-            end
-        end
-    end)
-    
-    -- Layer 2: GUI Detection and Bypass
-    task.spawn(function()
-        while true do
-            task.wait(0.05)
-            if flags['alwayscatch'] then
-                -- Check for any fishing minigame GUIs
-                pcall(function()
-                    -- Method 1: Reel GUI
-                    local reelGui = lp.PlayerGui:FindFirstChild('reel')
-                    if reelGui and reelGui.Enabled then
-                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                        reelGui.Enabled = false -- Force close
-                    end
-                    
-                    -- Method 2: Alternative reel names
-                    local reelUI = lp.PlayerGui:FindFirstChild('reelui') 
-                    if reelUI and reelUI.Enabled then
-                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                        reelUI.Enabled = false
-                    end
-                    
-                    -- Method 3: Fishing UI
-                    local fishUI = lp.PlayerGui:FindFirstChild('fishingui')
-                    if fishUI and fishUI.Enabled then
-                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                        fishUI.Enabled = false
-                    end
-                    
-                    -- Method 4: Any UI with 'fish' in name
-                    for _, gui in pairs(lp.PlayerGui:GetChildren()) do
-                        if gui:IsA("ScreenGui") and string.find(string.lower(gui.Name), "fish") then
-                            if gui.Enabled then
+                            -- Method 2: Check for reel GUI and auto-complete
+                            if lp.PlayerGui:FindFirstChild('reel') then
                                 ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                                gui.Enabled = false
                             end
-                        end
-                    end
-                end)
-            end
-        end
-    end)
-    
-    -- Layer 3: Roblox Events Monitoring
-    task.spawn(function()
-        local connections = {}
-        while true do
-            task.wait(0.1)
-            if flags['alwayscatch'] then
-                -- Monitor for new GUI events
-                pcall(function()
-                    for _, gui in pairs(lp.PlayerGui:GetChildren()) do
-                        if gui:IsA("ScreenGui") and not connections[gui] then
-                            connections[gui] = gui.ChildAdded:Connect(function(child)
-                                if flags['alwayscatch'] then
-                                    task.wait(0.05)
-                                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                                end
-                            end)
-                        end
-                    end
-                end)
-            else
-                -- Cleanup connections when disabled
-                for gui, connection in pairs(connections) do
-                    connection:Disconnect()
-                    connections[gui] = nil
-                end
-            end
-        end
-    end)
-    
-    -- Layer 4: Auto Shake + Always Catch Integration Monitor
-    task.spawn(function()
-        while true do
-            task.wait(0.01) -- Ultra-fast monitoring for shake events
-            if flags['alwayscatch'] and flags['autoshake'] then
-                pcall(function()
-                    -- Priority handling for shake GUI when both systems are active
-                    local shakeGui = lp.PlayerGui:FindFirstChild('shakeui') or lp.PlayerGui:FindFirstChild('shake')
-                    if shakeGui then
-                        -- Immediate Auto Shake execution
-                        local button = nil
-                        if shakeGui:FindFirstChild('safezone') and shakeGui.safezone:FindFirstChild('button') then
-                            button = shakeGui.safezone.button
-                        else
-                            button = shakeGui:FindFirstChildOfClass('TextButton') or shakeGui:FindFirstChildWhichIsA('GuiButton')
-                        end
+                        end)
                         
-                        if button then
-                            -- Triple-method activation for maximum reliability
-                            GuiService.SelectedObject = button
-                            game:GetService('VirtualInputManager'):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
-                            game:GetService('VirtualInputManager'):SendKeyEvent(false, Enum.KeyCode.Return, false, game)
-                            button:Activated()
-                            pcall(function()
-                                button.MouseButton1Click:Fire()
-                            end)
-                            
-                            -- Immediately complete the catch after shake
-                            task.spawn(function()
-                                task.wait(0.05) -- Tiny delay to ensure shake registers
-                                pcall(function()
-                                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                                    shakeGui:Destroy() -- Clean up after completion
-                                end)
-                            end)
-                        end
+                        pcall(function()
+                            -- Method 3: Auto-complete any active minigame
+                            local reelGui = lp.PlayerGui:FindFirstChild('reel')
+                            if reelGui and reelGui.Enabled then
+                                -- Force complete the reel minigame
+                                ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                                reelGui.Enabled = false
+                            end
+                        end)
+                        
+                        task.wait(0.5) -- Wait before next check
                     end
-                end)
+                end
             end
         end
     end)
