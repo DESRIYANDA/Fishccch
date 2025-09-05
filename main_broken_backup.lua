@@ -4,31 +4,61 @@ local ReplicatedStorage = cloneref(game:GetService('ReplicatedStorage'))
 local RunService = cloneref(game:GetService('RunService'))
 local GuiService = cloneref(game:GetService('GuiService'))
 
--- Protect TweenService and block fishing animations
+--// Variables
+local lp = Players.LocalPlayer
+local flags = {}
+local characterposition
+local deathcon
+local fishabundancevisible = false
+local tooltipmessage
+
+-- Ensure LocalPlayer is loaded
+if not lp then
+    repeat
+        lp = Players.LocalPlayer
+        task.wait()
+    until lp
+end
+
+print("🔄 Initializing Fisch Script...")
+print("👤 Player: " .. lp.Name)
+
+-- Load Speed Booster Module
+local SpeedBooster
+pcall(function()
+    SpeedBooster = loadstring(game:HttpGet("https://raw.githubusercontent.com/DESRIYANDA/Fishccch/main/speed_booster.lua"))()
+end)
+
+-- Fallback if GitHub fails
+if not SpeedBooster then
+    pcall(function()
+        SpeedBooster = require(script.Parent:FindFirstChild("speed_booster"))
+    end)
+end
+
+-- Load FPS Booster Module
+local FPSBooster
+pcall(function()
+    FPSBooster = loadstring(game:HttpGet("https://raw.githubusercontent.com/DESRIYANDA/Fishccch/main/fps_booster_integrated.lua"))()
+end)
+
+-- Fallback if GitHub fails
+if not FPSBooster then
+    pcall(function()
+        FPSBooster = dofile("/workspaces/Fishccch/fps_booster_integrated.lua")
+    end)
+end
+
+-- Also load original FPS script for compatibility
+pcall(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/DESRIYANDA/Fishccch/main/fps.lua"))()
+end)
+
+-- Protect TweenService from workspace errors
 pcall(function()
     local TweenService = game:GetService("TweenService")
     local originalCreate = TweenService.Create
     TweenService.Create = function(self, instance, ...)
-        -- Block fishing rod animations when always catch is enabled
-        if flags and flags['alwayscatch'] and instance then
-            local instanceName = tostring(instance)
-            local instanceParent = instance.Parent and tostring(instance.Parent) or ""
-            
-            -- Block fishing-related tweens
-            if string.find(string.lower(instanceName), "rod") or 
-               string.find(string.lower(instanceName), "reel") or
-               string.find(string.lower(instanceName), "lure") or
-               string.find(string.lower(instanceParent), "fishing") then
-                -- Return dummy tween that does nothing
-                return {
-                    Play = function() end,
-                    Cancel = function() end,
-                    Pause = function() end,
-                    Destroy = function() end
-                }
-            end
-        end
-        
         if instance and instance.Parent then
             return originalCreate(self, instance, ...)
         else
@@ -43,17 +73,15 @@ pcall(function()
     end
 end)
 
---// Variables
-local flags = {}
+--// Variables (removed duplicates - lp already defined above)
 local characterposition
-local lp = Players.LocalPlayer
 local fishabundancevisible = false
 local deathcon
 local tooltipmessage
 
--- Default delay values (optimized for speed)
-flags['autocastdelay'] = 0.1
-flags['autoreeldelay'] = 0.1
+-- Default delay values
+flags['autocastdelay'] = 0.5
+flags['autoreeldelay'] = 0.5
 local TeleportLocations = {
     ['Zones'] = {
         ['Moosewood'] = CFrame.new(379.875458, 134.500519, 233.5495, -0.033920113, 8.13274355e-08, 0.999424577, 8.98441925e-08, 1, -7.83249803e-08, -0.999424577, 8.7135696e-08, -0.033920113),
@@ -805,28 +833,32 @@ local isMinimized = false
 local floatingButton = nil
 
 -- Load Kavo UI from GitHub repository (always fresh)
+print("📡 Loading Kavo UI library...")
 local kavoUrl = 'https://raw.githubusercontent.com/MELLISAEFFENDY/fffish/main/Kavo.lua'
 
 -- Try to load library with multiple methods (always from GitHub)
 local success = false
 
 -- Method 1: Load directly from current repo
+print("🔄 Trying primary Kavo URL...")
 pcall(function()
     library = loadstring(game:HttpGet(kavoUrl))()
     if library and library.CreateLib then
         success = true
-        print("✅ Kavo loaded from GitHub repo")
+        print("✅ Kavo loaded from primary GitHub repo")
     end
 end)
 
 -- Method 2: Load from backup URLs
 if not success then
+    print("⚠️ Primary URL failed, trying backup URLs...")
     local backupUrls = {
         'https://github.com/MELLISAEFFENDY/fffish/raw/main/Kavo.lua',
         'https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua'
     }
     
     for i, url in ipairs(backupUrls) do
+        print("🔄 Trying backup URL " .. i .. "...")
         pcall(function()
             library = loadstring(game:HttpGet(url))()
             if library and library.CreateLib then
@@ -838,12 +870,58 @@ if not success then
     end
 end
 
--- Check if Kavo loaded successfully
+-- Final check with detailed error info
 if not success or not library then
-    error("❌ Failed to load Kavo UI library from all sources!")
+    warn("❌ Failed to load Kavo UI library from all sources!")
+    warn("🔧 Creating emergency fallback UI...")
+    
+    -- Emergency fallback - create minimal UI structure
+    library = {
+        CreateLib = function(title, theme)
+            print("⚠️ Using fallback UI: " .. title)
+            return {
+                NewTab = function(name)
+                    print("📝 Created fallback tab: " .. name)
+                    return {
+                        NewSection = function(sectionName)
+                            print("📋 Created fallback section: " .. sectionName)
+                            return {
+                                NewToggle = function(name, desc, callback) 
+                                    print("🔘 Fallback toggle: " .. name)
+                                    return {}
+                                end,
+                                NewButton = function(name, desc, callback)
+                                    print("🔲 Fallback button: " .. name) 
+                                    return {}
+                                end,
+                                NewSlider = function(name, desc, min, max, callback)
+                                    print("🎚️ Fallback slider: " .. name)
+                                    return {}
+                                end,
+                                NewDropdown = function(name, desc, options, callback)
+                                    print("📋 Fallback dropdown: " .. name)
+                                    return {}
+                                end,
+                                NewTextBox = function(name, desc, callback)
+                                    print("📝 Fallback textbox: " .. name)
+                                    return {}
+                                end,
+                                NewLabel = function(text)
+                                    print("�️ Fallback label: " .. text)
+                                    return {}
+                                end
+                            }
+                        end
+                    }
+                end
+            }
+        end
+    }
+    success = true
+    print("✅ Emergency fallback UI created!")
+else
+    print("�🎣 Kavo UI library loaded successfully!")
 end
-
-print("🎣 Kavo UI library loaded successfully!")
 
 -- Load Shop Module
 local Shop
@@ -1032,6 +1110,8 @@ local function createFloatingButton()
     
     -- Click event
     button.MouseButton1Click:Connect(function()
+        print("🎣 Floating button clicked!")
+        
         if isMinimized then
             -- Show main UI
             pcall(function()
@@ -1043,7 +1123,40 @@ local function createFloatingButton()
                         isMinimized = false
                         screenGui:Destroy()
                         floatingButton = nil
+                        print("✅ UI restored from minimized state")
                     end
+                else
+                    print("⚠️ Kavo UI not found, recreating...")
+                    -- Recreate UI if not found
+                    task.spawn(function()
+                        if library and library.CreateLib then
+                            Window = library.CreateLib("🎣 Fisch Script", "Ocean")
+                            if Window then
+                                print("✅ UI recreated successfully!")
+                                screenGui:Destroy()
+                                floatingButton = nil
+                                isMinimized = false
+                            end
+                        end
+                    end)
+                end
+            end)
+        else
+            -- Create new UI if none exists
+            print("🔄 Attempting to create new UI...")
+            task.spawn(function()
+                if library and library.CreateLib then
+                    local newWindow = library.CreateLib("🎣 Fisch Script", "Ocean")
+                    if newWindow then
+                        Window = newWindow
+                        print("✅ New UI created successfully!")
+                        screenGui:Destroy()
+                        floatingButton = nil
+                    else
+                        print("❌ Failed to create new UI")
+                    end
+                else
+                    print("❌ Library not available for UI creation")
                 end
             end)
         end
@@ -1066,11 +1179,16 @@ local function createFloatingButton()
     floatingButton = screenGui
 end
 
--- Create UI Window with better error handling
+-- Create UI Window with enhanced error handling
+print("🎨 Creating main UI window...")
 local Window
-local success = pcall(function()
+local windowSuccess = false
+
+-- Attempt 1: Normal creation
+pcall(function()
     if library and library.CreateLib then
         -- Hook TweenService to prevent workspace errors
+        print("🔧 Setting up TweenService protection...")
         if game:GetService("TweenService") then
             local TweenService = game:GetService("TweenService")
             local originalCreate = TweenService.Create
@@ -1078,34 +1196,108 @@ local success = pcall(function()
                 if instance and instance.Parent then
                     return originalCreate(self, instance, ...)
                 else
-                    return {Play = function() end, Cancel = function() end}
+                    return {Play = function() end, Cancel = function() end, Pause = function() end}
                 end
             end
         end
         
+        print("🎨 Creating Kavo window...")
         Window = library.CreateLib("🎣 Fisch Script", "Ocean")
-        print("✅ Main UI window created successfully")
+        
+        if Window and Window.NewTab then
+            windowSuccess = true
+            print("✅ Main UI window created successfully!")
+        else
+            error("Window object is invalid")
+        end
     else
         error("❌ Library not available")
     end
 end)
 
-if not success or not Window then
-    warn("⚠️ Failed to create UI window, retrying with alternative method...")
+-- Attempt 2: Delayed retry
+if not windowSuccess then
+    warn("⚠️ First attempt failed, retrying with delay...")
+    task.wait(2)
     
-    -- Try alternative creation
     pcall(function()
-        task.wait(1)
-        Window = library.CreateLib("🎣 Fisch Script", "Ocean")
+        if library and library.CreateLib then
+            Window = library.CreateLib("🎣 Fisch Script", "Ocean")
+            if Window and Window.NewTab then
+                windowSuccess = true
+                print("✅ UI window created on retry!")
+            end
+        end
     end)
+end
+
+-- Attempt 3: Alternative theme
+if not windowSuccess then
+    warn("⚠️ Trying alternative theme...")
+    pcall(function()
+        if library and library.CreateLib then
+            Window = library.CreateLib("🎣 Fisch Script", "DarkTheme")
+            if Window and Window.NewTab then
+                windowSuccess = true
+                print("✅ UI window created with alternative theme!")
+            end
+        end
+    end)
+end
+
+-- Final validation
+if not windowSuccess or not Window then
+    warn("❌ All UI creation attempts failed!")
+    warn("🔧 Script will continue with console-only mode")
+    warn("🎣 Creating floating button for manual UI access...")
     
-    if not Window then
-        warn("⚠️ UI window creation failed, script will continue without GUI")
-    end
+    -- Create floating button for manual access
+    createFloatingButton()
+    
+    -- Create dummy window for script continuation
+    Window = {
+        NewTab = function(name)
+            print("📝 Console Tab: " .. name)
+            return {
+                NewSection = function(sectionName)
+                    print("📋 Console Section: " .. sectionName)
+                    return {
+                        NewToggle = function(name, desc, callback) 
+                            print("🔘 Console Toggle: " .. name)
+                            return {}
+                        end,
+                        NewButton = function(name, desc, callback)
+                            print("🔲 Console Button: " .. name) 
+                            return {}
+                        end,
+                        NewSlider = function(name, desc, min, max, callback)
+                            print("🎚️ Console Slider: " .. name)
+                            return {}
+                        end,
+                        NewDropdown = function(name, desc, options, callback)
+                            print("📋 Console Dropdown: " .. name)
+                            return {}
+                        end,
+                        NewTextBox = function(name, desc, callback)
+                            print("📝 Console TextBox: " .. name)
+                            return {}
+                        end,
+                        NewLabel = function(text)
+                            print("🏷️ Console Label: " .. text)
+                            return {}
+                        end
+                    }
+                end
+            }
+        end
+    }
+else
+    print("🎉 UI successfully initialized!")
+    print("💡 If UI doesn't appear, look for the floating 🎣 button to manually open it")
 end
 
 -- Create Tabs
-local AutoTab, ModTab, TeleTab, VisualTab, ShopTab
+local AutoTab, ModTab, TeleTab, VisualTab, ShopTab, SpeedTab
 
 if Window and Window.NewTab then
     pcall(function()
@@ -1113,6 +1305,28 @@ if Window and Window.NewTab then
         ModTab = Window:NewTab("⚙️ Modifications") 
         TeleTab = Window:NewTab("🌍 Teleports")
         VisualTab = Window:NewTab("👁️ Visuals")
+        PremiumTab = Window:NewTab("💎 Premium")
+        SpeedTab = Window:NewTab("⚡ Speed Boost")
+        
+        -- Load Premium Bobber Module
+        print("💎 Loading Premium Bobber module...")
+        local success, PremiumBobber = pcall(function()
+            return loadstring(game:HttpGet("https://raw.githubusercontent.com/DESRIYANDA/Fishccch/main/premium_bobber.lua"))()
+        end)
+        
+        if not success then
+            print("⚠️ Failed to load Premium Bobber from GitHub, trying local file...")
+            success, PremiumBobber = pcall(function()
+                return dofile("/workspaces/Fishccch/premium_bobber.lua")
+            end)
+        end
+        
+        if success and PremiumBobber then
+            print("✅ Premium Bobber module loaded successfully!")
+        else
+            print("❌ Premium Bobber module failed to load")
+            PremiumBobber = nil
+        end
         
         -- Create Shop Tab using Shop Module
         print("🛒 Creating Shop tab...")
@@ -1232,7 +1446,7 @@ CastSection:NewToggle("Auto Cast", "Automatically cast fishing rod", function(st
 end)
 
 -- Fix slider issue - properly define default value with initial state
-local castSlider = CastSection:NewSlider("Auto Cast Delay", "Delay between auto casts (seconds)", 0.01, 5, function(value)
+local castSlider = CastSection:NewSlider("Auto Cast Delay", "Delay between auto casts (seconds)", 0.1, 5, function(value)
     flags['autocastdelay'] = value
     print("[Auto Cast] Delay set to: " .. value .. " seconds")
 end)
@@ -1240,7 +1454,7 @@ end)
 -- Set initial slider value to match default
 pcall(function()
     if castSlider and castSlider.SetValue then
-        castSlider:SetValue(flags['autocastdelay'] or 0.1)
+        castSlider:SetValue(flags['autocastdelay'] or 0.5)
     end
 end)
 
@@ -1252,10 +1466,50 @@ end)
 local ReelSection = AutoTab:NewSection("Auto Reel Settings") 
 ReelSection:NewToggle("Auto Reel", "Automatically reel in fish", function(state)
     flags['autoreel'] = state
+    if state then
+        flags['instantreel'] = false -- Disable instant reel if auto reel enabled
+    end
+end)
+
+ReelSection:NewToggle("Instant Reel", "Instantly reel fish with no delay (RISKY)", function(state)
+    flags['instantreel'] = state
+    if state then
+        flags['autoreel'] = false -- Disable auto reel if instant reel enabled
+        print("⚡ Instant Reel enabled - fish will be caught instantly!")
+    else
+        print("🔄 Instant Reel disabled")
+    end
+end)
+
+-- Advanced Instant Reel Settings
+local InstantSection = AutoTab:NewSection("⚡ Instant Reel Advanced")
+
+InstantSection:NewToggle("Natural Delay", "Add tiny delay to appear more natural", function(state)
+    flags['instantreeldelay'] = state and 0.05 or nil
+    print(state and "🕐 Natural delay enabled (0.05s)" or "⚡ Pure instant mode")
+end)
+
+InstantSection:NewToggle("Perfect Catch Only", "Only instant reel when perfect catch is guaranteed", function(state)
+    flags['perfectcatchonly'] = state
+    print(state and "🎯 Perfect catch only mode" or "🎣 Catch all fish instantly")
+end)
+
+InstantSection:NewButton("Test Instant Reel", "Test instant reel functionality", function()
+    local rod = FindRod()
+    if rod then
+        if rod['values']['lure'].Value == 100 then
+            ReplicatedStorage.events.reelfinished:FireServer(100, true)
+            print("✅ Instant reel test successful!")
+        else
+            print("⚠️ No fish on hook - cast your rod first!")
+        end
+    else
+        print("❌ No fishing rod equipped!")
+    end
 end)
 
 -- Fix slider issue - properly define default value with initial state
-local reelSlider = ReelSection:NewSlider("Auto Reel Delay", "Delay between auto reels (seconds)", 0.01, 5, function(value)
+local reelSlider = ReelSection:NewSlider("Auto Reel Delay", "Delay between auto reels (seconds)", 0.1, 5, function(value)
     flags['autoreeldelay'] = value
     print("[Auto Reel] Delay set to: " .. value .. " seconds")
 end)
@@ -1263,7 +1517,7 @@ end)
 -- Set initial slider value to match default
 pcall(function()
     if reelSlider and reelSlider.SetValue then
-        reelSlider:SetValue(flags['autoreeldelay'] or 0.1)
+        reelSlider:SetValue(flags['autoreeldelay'] or 0.5)
     end
 end)
 
@@ -1377,6 +1631,548 @@ FishSection:NewToggle("Free Fish Radar", "Show fish abundance zones", function(s
     flags['fishabundance'] = state
 end)
 
+-- FPS Booster Section
+local FPSSection = VisualTab:NewSection("⚡ FPS Booster")
+
+-- FPS flags initialization
+flags = flags or {}
+flags['fpsbooster'] = false
+flags['lowwatergraphics'] = false
+flags['noshadows'] = false
+flags['lowrendering'] = false
+flags['noparticles'] = false
+flags['nocameraeffects'] = false
+flags['noclothes'] = false
+flags['lowqualityparts'] = false
+flags['fpscap'] = 240
+flags['resetmaterials'] = false
+
+-- Initialize FPS Settings (only set if not already set)
+if not _G.Settings then
+    _G.Settings = {
+        Players = {
+            ["Ignore Me"] = true,
+            ["Ignore Others"] = true
+        },
+        Meshes = {
+            Destroy = false,
+            LowDetail = true
+        },
+        Images = {
+            Invisible = true,
+            LowDetail = true,
+            Destroy = false,
+        },
+        Other = {
+            ["No Particles"] = false,
+            ["No Camera Effects"] = false,
+            ["No Explosions"] = true,
+            ["No Clothes"] = false,
+            ["Low Water Graphics"] = false,
+            ["No Shadows"] = false,
+            ["Low Rendering"] = false,
+            ["Low Quality Parts"] = false,
+            ["FPS Cap"] = 240,
+            ["Reset Materials"] = false
+        }
+    }
+end
+
+FPSSection:NewToggle("Enable FPS Booster", "Enable comprehensive FPS optimization", function(state)
+    flags['fpsbooster'] = state
+    if state then
+        -- Apply basic FPS optimizations
+        _G.Settings.Other["No Particles"] = true
+        _G.Settings.Other["No Camera Effects"] = true
+        _G.Settings.Other["Low Water Graphics"] = true
+        _G.Settings.Other["No Shadows"] = true
+        _G.Settings.Other["Low Rendering"] = true
+        _G.Settings.Other["Low Quality Parts"] = true
+        _G.Settings.Other["Reset Materials"] = true
+        
+        print("⚡ FPS Booster enabled - applying optimizations...")
+        
+        -- Apply optimizations to existing objects
+        pcall(function()
+            if FPSBooster then
+                print("✅ FPS optimizations applied!")
+            else
+                -- Manual optimizations if FPS module failed to load
+                local Lighting = game:GetService("Lighting")
+                local MaterialService = game:GetService("MaterialService")
+                
+                -- Apply lighting optimizations
+                Lighting.GlobalShadows = false
+                Lighting.FogEnd = 9e9
+                Lighting.ShadowSoftness = 0
+                
+                -- Apply rendering optimizations
+                settings().Rendering.QualityLevel = 1
+                settings().Rendering.MeshPartDetailLevel = Enum.MeshPartDetailLevel.Level04
+                
+                -- Reset materials
+                MaterialService.Use2022Materials = false
+                
+                -- Apply water optimizations
+                if workspace:FindFirstChildOfClass("Terrain") then
+                    local terrain = workspace:FindFirstChildOfClass("Terrain")
+                    terrain.WaterWaveSize = 0
+                    terrain.WaterWaveSpeed = 0
+                    terrain.WaterReflectance = 0
+                    terrain.WaterTransparency = 0
+                end
+                
+                print("✅ Manual FPS optimizations applied!")
+            end
+        end)
+    else
+        -- Reset to default settings
+        _G.Settings.Other["No Particles"] = false
+        _G.Settings.Other["No Camera Effects"] = false
+        _G.Settings.Other["Low Water Graphics"] = false
+        _G.Settings.Other["No Shadows"] = false
+        _G.Settings.Other["Low Rendering"] = false
+        _G.Settings.Other["Low Quality Parts"] = false
+        _G.Settings.Other["Reset Materials"] = false
+        
+        print("🔄 FPS Booster disabled")
+    end
+end)
+
+local FPSOptimizationSection = VisualTab:NewSection("🔧 FPS Optimization Settings")
+
+FPSOptimizationSection:NewToggle("Low Water Graphics", "Reduce water quality for better FPS", function(state)
+    flags['lowwatergraphics'] = state
+    _G.Settings.Other["Low Water Graphics"] = state
+    
+    if state and workspace:FindFirstChildOfClass("Terrain") then
+        local terrain = workspace:FindFirstChildOfClass("Terrain")
+        terrain.WaterWaveSize = 0
+        terrain.WaterWaveSpeed = 0
+        terrain.WaterReflectance = 0
+        terrain.WaterTransparency = 0
+        if sethiddenproperty then
+            sethiddenproperty(terrain, "Decoration", false)
+        end
+        print("🌊 Low water graphics enabled")
+    end
+end)
+
+FPSOptimizationSection:NewToggle("No Shadows", "Disable shadows for better performance", function(state)
+    flags['noshadows'] = state
+    _G.Settings.Other["No Shadows"] = state
+    
+    if state then
+        local Lighting = game:GetService("Lighting")
+        Lighting.GlobalShadows = false
+        Lighting.FogEnd = 9e9
+        Lighting.ShadowSoftness = 0
+        if sethiddenproperty then
+            sethiddenproperty(Lighting, "Technology", 2)
+        end
+        print("🌑 Shadows disabled")
+    end
+end)
+
+FPSOptimizationSection:NewToggle("Low Rendering", "Lower rendering quality", function(state)
+    flags['lowrendering'] = state
+    _G.Settings.Other["Low Rendering"] = state
+    
+    if state then
+        settings().Rendering.QualityLevel = 1
+        settings().Rendering.MeshPartDetailLevel = Enum.MeshPartDetailLevel.Level04
+        print("📉 Low rendering enabled")
+    end
+end)
+
+FPSOptimizationSection:NewToggle("No Particles", "Disable particle effects", function(state)
+    flags['noparticles'] = state
+    _G.Settings.Other["No Particles"] = state
+    print(state and "✨ Particles disabled" or "✨ Particles enabled")
+end)
+
+FPSOptimizationSection:NewToggle("No Camera Effects", "Disable camera post-effects", function(state)
+    flags['nocameraeffects'] = state
+    _G.Settings.Other["No Camera Effects"] = state
+    print(state and "📷 Camera effects disabled" or "📷 Camera effects enabled")
+end)
+
+FPSOptimizationSection:NewToggle("No Clothes", "Remove clothing for better performance", function(state)
+    flags['noclothes'] = state
+    _G.Settings.Other["No Clothes"] = state
+    print(state and "👔 Clothes disabled" or "👔 Clothes enabled")
+end)
+
+local FPSAdvancedSection = VisualTab:NewSection("⚙️ Advanced FPS Settings")
+
+FPSAdvancedSection:NewSlider("FPS Cap", "Set FPS limit (60-999)", 999, 60, function(value)
+    flags['fpscap'] = value
+    _G.Settings.Other["FPS Cap"] = value
+    
+    if setfpscap then
+        setfpscap(value)
+        print("🎯 FPS capped to " .. value)
+    else
+        print("⚠️ FPS cap not supported by executor")
+    end
+end)
+
+FPSAdvancedSection:NewToggle("Reset Materials", "Reset all materials to plastic", function(state)
+    flags['resetmaterials'] = state
+    _G.Settings.Other["Reset Materials"] = state
+    
+    if state then
+        local MaterialService = game:GetService("MaterialService")
+        for i, v in pairs(MaterialService:GetChildren()) do
+            pcall(function() v:Destroy() end)
+        end
+        MaterialService.Use2022Materials = false
+        print("🎨 Materials reset to plastic")
+    end
+end)
+
+FPSAdvancedSection:NewToggle("Low Quality Parts", "Reduce part quality", function(state)
+    flags['lowqualityparts'] = state
+    _G.Settings.Other["Low Quality Parts"] = state
+    print(state and "🧱 Low quality parts enabled" or "🧱 Normal quality parts")
+end)
+
+local FPSInfoSection = VisualTab:NewSection("ℹ️ FPS Information")
+
+FPSInfoSection:NewLabel("⚡ FPS Booster: Comprehensive performance optimization")
+FPSInfoSection:NewLabel("🌊 Water Graphics: Removes water effects")
+FPSInfoSection:NewLabel("🌑 No Shadows: Disables lighting shadows")
+FPSInfoSection:NewLabel("📉 Low Rendering: Reduces render quality")
+FPSInfoSection:NewLabel("✨ No Particles: Removes particle effects")
+FPSInfoSection:NewLabel("🎯 FPS Cap: Limits maximum FPS")
+FPSInfoSection:NewLabel("⚠️ Lower graphics = higher FPS")
+
+FPSInfoSection:NewButton("Apply All Optimizations", "Enable all FPS optimizations", function()
+    flags['fpsbooster'] = true
+    flags['lowwatergraphics'] = true
+    flags['noshadows'] = true
+    flags['lowrendering'] = true
+    flags['noparticles'] = true
+    flags['nocameraeffects'] = true
+    flags['noclothes'] = true
+    flags['lowqualityparts'] = true
+    flags['resetmaterials'] = true
+    
+    -- Apply all settings
+    for setting, value in pairs({
+        ["Low Water Graphics"] = true,
+        ["No Shadows"] = true,
+        ["Low Rendering"] = true,
+        ["No Particles"] = true,
+        ["No Camera Effects"] = true,
+        ["No Clothes"] = true,
+        ["Low Quality Parts"] = true,
+        ["Reset Materials"] = true
+    }) do
+        _G.Settings.Other[setting] = value
+    end
+    
+    print("🚀 All FPS optimizations applied!")
+end)
+
+FPSInfoSection:NewButton("Reset All Settings", "Reset to default graphics", function()
+    flags['fpsbooster'] = false
+    flags['lowwatergraphics'] = false
+    flags['noshadows'] = false
+    flags['lowrendering'] = false
+    flags['noparticles'] = false
+    flags['nocameraeffects'] = false
+    flags['noclothes'] = false
+    flags['lowqualityparts'] = false
+    flags['resetmaterials'] = false
+    
+    -- Reset all settings
+    for setting, value in pairs({
+        ["Low Water Graphics"] = false,
+        ["No Shadows"] = false,
+        ["Low Rendering"] = false,
+        ["No Particles"] = false,
+        ["No Camera Effects"] = false,
+        ["No Clothes"] = false,
+        ["Low Quality Parts"] = false,
+        ["Reset Materials"] = false
+    }) do
+        _G.Settings.Other[setting] = value
+    end
+    
+    print("🔄 FPS settings reset to default!")
+end)
+
+-- Load Event ESP Module
+print("🌟 Loading Event ESP module...")
+local EventESP
+local eventESPSuccess, eventESPError = pcall(function()
+    EventESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/DESRIYANDA/Fishccch/main/event_esp.lua"))()
+end)
+
+if not eventESPSuccess then
+    print("⚠️ Failed to load Event ESP from GitHub, trying local file...")
+    eventESPSuccess, eventESPError = pcall(function()
+        EventESP = dofile("/workspaces/Fishccch/event_esp.lua")
+    end)
+end
+
+if eventESPSuccess and EventESP then
+    print("✅ Event ESP module loaded successfully!")
+    -- Initialize Event ESP with Visual Tab
+    EventESP:Initialize(VisualTab)
+else
+    print("❌ Event ESP module failed to load: " .. tostring(eventESPError))
+    EventESP = nil
+end
+
+-- Premium Section
+if PremiumTab then
+    if PremiumBobber then
+        -- Advanced Premium Features (if module loaded)
+        local BobberSection = PremiumTab:NewSection("🎣 Advanced Bobber")
+        
+        -- Premium flags
+        flags = flags or {}
+        flags['premiumbobber'] = false
+        flags['selectedzone'] = 'Deep Ocean'
+        flags['autozonebobber'] = false
+        
+        BobberSection:NewToggle("Premium Bobber", "Enable advanced bobber features", function(state)
+            flags['premiumbobber'] = state
+            if not state then
+                PremiumBobber.ResetBobber()
+            end
+        end)
+        
+        -- Zone selection dropdown
+        local availableZones = PremiumBobber.GetAvailableZones()
+        BobberSection:NewDropdown("Select Zone", "Choose zone for bobber teleportation", availableZones, function(zone)
+            flags['selectedzone'] = zone
+        end)
+        
+        BobberSection:NewButton("Manual Teleport", "Manually teleport bobber to selected zone", function()
+            if flags['premiumbobber'] and flags['selectedzone'] then
+                local success = PremiumBobber.TeleportBobberToZone(flags['selectedzone'])
+                if success then
+                    print("✅ Bobber teleported successfully!")
+                else
+                    print("❌ Failed to teleport bobber!")
+                end
+            end
+        end)
+        
+        BobberSection:NewToggle("Auto Zone Bobber", "Automatically teleport bobber to zones", function(state)
+            flags['autozonebobber'] = state
+            if state and flags['selectedzone'] then
+                PremiumBobber.AutoZoneCast(flags['selectedzone'], state)
+            else
+                PremiumBobber.ResetBobber()
+            end
+        end)
+        
+        local RopeSection = PremiumTab:NewSection("🔗 Rope Control")
+        
+        RopeSection:NewButton("Extend Rope", "Extend rope to unlimited length", function()
+            local tool = PremiumBobber.GetCurrentTool()
+            if tool then
+                local bobber = PremiumBobber.GetBobber(tool)
+                if bobber then
+                    local success = PremiumBobber.ExtendRopeLength(bobber)
+                    print(success and "✅ Rope extended!" or "❌ Failed to extend rope!")
+                else
+                    print("❌ No bobber found - cast your rod first!")
+                end
+            else
+                print("❌ No fishing rod equipped!")
+            end
+        end)
+        
+        RopeSection:NewButton("Create Platform", "Create platform under bobber", function()
+            local tool = PremiumBobber.GetCurrentTool()
+            if tool then
+                local bobber = PremiumBobber.GetBobber(tool)
+                if bobber then
+                    local platform = PremiumBobber.CreatePlatform(bobber)
+                    print(platform and "✅ Platform created!" or "❌ Failed to create platform!")
+                else
+                    print("❌ No bobber found - cast your rod first!")
+                end
+            else
+                print("❌ No fishing rod equipped!")
+            end
+        end)
+        
+        RopeSection:NewButton("Reset Bobber", "Reset all bobber modifications", function()
+            PremiumBobber.ResetBobber()
+            print("🔄 Bobber reset!")
+        end)
+        
+        local StatusSection = PremiumTab:NewSection("📊 Status")
+        
+        StatusSection:NewButton("Check Status", "Check premium bobber status", function()
+            local status = PremiumBobber.GetStatus()
+            print("📊 Premium Bobber Status: " .. tostring(status))
+        end)
+        
+        local InfoSection = PremiumTab:NewSection("ℹ️ Premium Info")
+        
+        InfoSection:NewLabel("🎯 Zone Teleport: Instantly move bobber to any zone")
+        InfoSection:NewLabel("🔗 Rope Extension: Unlimited casting range")
+        InfoSection:NewLabel("🏗️ Platform Creation: Stable bobber positioning")
+        InfoSection:NewLabel("🔄 Auto Mode: Continuous zone-based fishing")
+        InfoSection:NewLabel("⚠️ Use responsibly to avoid detection")
+        
+    else
+        -- Fallback Premium Features (if module failed to load)
+        local FallbackSection = PremiumTab:NewSection("💎 Premium Features")
+        
+        FallbackSection:NewLabel("⚠️ Premium Bobber module failed to load")
+        FallbackSection:NewLabel("Available Premium Features:")
+        
+        -- Basic premium flags for fallback
+        flags = flags or {}
+        flags['premiummode'] = false
+        flags['quickcast'] = false
+        flags['autoplatform'] = false
+        
+        FallbackSection:NewToggle("Premium Mode", "Enable basic premium enhancements", function(state)
+            flags['premiummode'] = state
+            print(state and "💎 Premium mode enabled!" or "💎 Premium mode disabled!")
+        end)
+        
+        FallbackSection:NewToggle("Quick Cast", "Faster casting with premium timing", function(state)
+            flags['quickcast'] = state
+            print(state and "⚡ Quick cast enabled!" or "⚡ Quick cast disabled!")
+        end)
+        
+        FallbackSection:NewToggle("Auto Platform", "Automatically create fishing platforms", function(state)
+            flags['autoplatform'] = state
+            print(state and "🏗️ Auto platform enabled!" or "🏗️ Auto platform disabled!")
+        end)
+        
+        FallbackSection:NewButton("Manual Quick Cast", "Perform a quick cast manually", function()
+            if flags['premiummode'] then
+                local rod = FindRod()
+                if rod and rod.events and rod.events.cast then
+                    rod.events.cast:FireServer(100, flags['quickcast'] and 0.3 or 1)
+                    print("⚡ Quick cast executed!")
+                else
+                    print("❌ No rod equipped!")
+                end
+            else
+                print("⚠️ Enable Premium Mode first!")
+            end
+        end)
+        
+        local PremiumInfoSection = PremiumTab:NewSection("ℹ️ Premium Information")
+        
+        PremiumInfoSection:NewLabel("💎 Premium Mode: Enhanced fishing performance")
+        PremiumInfoSection:NewLabel("⚡ Quick Cast: Faster rod casting")
+        PremiumInfoSection:NewLabel("🏗️ Auto Platform: Automatic platform creation")
+        PremiumInfoSection:NewLabel("📡 Advanced Features: Bobber teleportation (requires module)")
+        PremiumInfoSection:NewLabel("🔄 Module Status: Check console for loading errors")
+    end
+else
+    print("⚠️ Premium Tab not available")
+end
+    
+    -- Zone selection dropdown
+    local availableZones = PremiumBobber.GetAvailableZones()
+    BobberSection:NewDropdown("Target Zone", "Select zone for bobber teleportation", availableZones, function(currentOption)
+        flags['selectedzone'] = currentOption
+        print("[Premium] Selected zone: " .. currentOption)
+    end)
+    
+    BobberSection:NewButton("Teleport Bobber", "Teleport bobber to selected zone", function()
+        if flags['premiumbobber'] and flags['selectedzone'] then
+            local success = PremiumBobber.TeleportBobberToZone(flags['selectedzone'])
+            if success then
+                print("✅ Bobber teleported to: " .. flags['selectedzone'])
+            else
+                print("❌ Failed to teleport bobber to: " .. flags['selectedzone'])
+            end
+        else
+            print("⚠️ Enable Premium Bobber first or select a zone!")
+        end
+    end)
+    
+    BobberSection:NewToggle("Auto Zone Bobber", "Automatically teleport bobber to zones", function(state)
+        flags['autozonebobber'] = state
+        if state and flags['selectedzone'] then
+            PremiumBobber.AutoZoneCast(flags['selectedzone'], state)
+        end
+    end)
+    
+    BobberSection:NewButton("Reset Bobber", "Reset bobber to normal state", function()
+        PremiumBobber.ResetBobber()
+        print("🔄 Bobber reset to normal state")
+    end)
+    
+    BobberSection:NewButton("Bobber Status", "Show current bobber information", function()
+        local status = PremiumBobber.GetStatus()
+        print("📊 " .. status)
+    end)
+    
+    local RopeSection = PremiumTab:NewSection("🔗 Rope Control")
+    
+    RopeSection:NewButton("Extend Rope", "Extend rope to maximum length", function()
+        local tool = PremiumBobber.GetCurrentTool()
+        if tool then
+            local bobber = PremiumBobber.GetBobber(tool)
+            if bobber then
+                local success = PremiumBobber.ExtendRopeLength(bobber)
+                if success then
+                    print("✅ Rope extended to maximum length!")
+                else
+                    print("❌ Failed to extend rope")
+                end
+            else
+                print("⚠️ No bobber found!")
+            end
+        else
+            print("⚠️ No fishing rod equipped!")
+        end
+    end)
+    
+    RopeSection:NewButton("Create Platform", "Create stability platform under bobber", function()
+        local tool = PremiumBobber.GetCurrentTool()
+        if tool then
+            local bobber = PremiumBobber.GetBobber(tool)
+            if bobber then
+                local platform = PremiumBobber.CreatePlatform(bobber)
+                if platform then
+                    print("✅ Platform created under bobber!")
+                else
+                    print("❌ Failed to create platform")
+                end
+            else
+                print("⚠️ No bobber found!")
+            end
+        else
+            print("⚠️ No fishing rod equipped!")
+        end
+    end)
+    
+    local InfoSection = PremiumTab:NewSection("ℹ️ Premium Info")
+    
+    InfoSection:NewButton("Premium Features", "Show available premium features", function()
+        local info = "💎 Premium Bobber Features:\n\n"
+        info = info .. "🎯 Zone Teleportation - Instantly move bobber to any zone\n"
+        info = info .. "🔗 Rope Extension - Unlimited casting range\n"
+        info = info .. "🏗️ Platform Creation - Stability platform under bobber\n"
+        info = info .. "🤖 Auto Zone Cast - Automatically teleport to selected zones\n"
+        info = info .. "📊 Bobber Status - Real-time bobber information\n"
+        info = info .. "🔄 Reset Function - Return to normal fishing\n\n"
+        info = info .. "Available Zones: " .. #availableZones .. " zones"
+        print(info)
+    end)
+    
+    print("💎 Premium Tab created successfully!")
+else
+    print("⚠️ Premium Tab or PremiumBobber module not available")
+end
+
 --// Loops
 RunService.Heartbeat:Connect(function()
     -- Autofarm
@@ -1401,68 +2197,56 @@ RunService.Heartbeat:Connect(function()
         characterposition = nil
     end
     if flags['autoshake'] then
-        -- Enhanced Auto Shake with multiple detection methods
-        pcall(function()
-            -- Method 1: Original shakeui detection
-            if FindChild(lp.PlayerGui, 'shakeui') and FindChild(lp.PlayerGui['shakeui'], 'safezone') and FindChild(lp.PlayerGui['shakeui']['safezone'], 'button') then
-                GuiService.SelectedObject = lp.PlayerGui['shakeui']['safezone']['button']
-                if GuiService.SelectedObject == lp.PlayerGui['shakeui']['safezone']['button'] then
-                    game:GetService('VirtualInputManager'):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
-                    game:GetService('VirtualInputManager'):SendKeyEvent(false, Enum.KeyCode.Return, false, game)
-                end
+        if FindChild(lp.PlayerGui, 'shakeui') and FindChild(lp.PlayerGui['shakeui'], 'safezone') and FindChild(lp.PlayerGui['shakeui']['safezone'], 'button') then
+            GuiService.SelectedObject = lp.PlayerGui['shakeui']['safezone']['button']
+            if GuiService.SelectedObject == lp.PlayerGui['shakeui']['safezone']['button'] then
+                game:GetService('VirtualInputManager'):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
+                game:GetService('VirtualInputManager'):SendKeyEvent(false, Enum.KeyCode.Return, false, game)
             end
-            
-            -- Method 2: Alternative shake GUI names
-            local shakeGuis = {'shakeui', 'shake', 'fishShake', 'shakeBar', 'shakegame'}
-            for _, guiName in ipairs(shakeGuis) do
-                local shakeGui = lp.PlayerGui:FindFirstChild(guiName)
-                if shakeGui then
-                    -- Try different button paths
-                    local button = shakeGui:FindFirstChild('button') or 
-                                 (shakeGui:FindFirstChild('safezone') and shakeGui.safezone:FindFirstChild('button')) or
-                                 shakeGui:FindFirstChildOfClass('TextButton') or
-                                 shakeGui:FindFirstChildWhichIsA('GuiButton')
-                    
-                    if button then
-                        GuiService.SelectedObject = button
-                        game:GetService('VirtualInputManager'):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
-                        game:GetService('VirtualInputManager'):SendKeyEvent(false, Enum.KeyCode.Return, false, game)
-                        break
-                    end
-                end
-            end
-            
-            -- Method 3: Search for any GUI with shake-related content
-            for _, gui in pairs(lp.PlayerGui:GetChildren()) do
-                if gui:IsA("ScreenGui") then
-                    local name = string.lower(gui.Name)
-                    if string.find(name, "shake") then
-                        -- Find any button in this GUI
-                        for _, child in pairs(gui:GetDescendants()) do
-                            if child:IsA("TextButton") or child:IsA("ImageButton") then
-                                child:Activated() -- Direct activation
-                                break
-                            end
-                        end
-                    end
-                end
-            end
-        end)
+        end
     end
     if flags['autocast'] then
         local rod = FindRod()
-        local currentDelay = flags['autocastdelay'] or 0.1
+        local currentDelay = flags['autocastdelay'] or 0.5
         if rod ~= nil and rod['values']['lure'].Value <= .001 then
             task.wait(currentDelay)
-            rod.events.cast:FireServer(100, 1) -- Normal distance cast
+            rod.events.cast:FireServer(100, 1) -- Normal distance
         end
     end
     if flags['autoreel'] then
         local rod = FindRod()
-        local currentDelay = flags['autoreeldelay'] or 0.1
+        local currentDelay = flags['autoreeldelay'] or 0.5
         if rod ~= nil and rod['values']['lure'].Value == 100 then
             task.wait(currentDelay)
             ReplicatedStorage.events.reelfinished:FireServer(100, true)
+        end
+    end
+    
+    -- Instant Reel (No Delay) - RISKY but very fast
+    if flags['instantreel'] then
+        local rod = FindRod()
+        if rod ~= nil and rod['values']['lure'].Value == 100 then
+            -- Check if perfect catch only mode is enabled
+            local shouldCatch = true
+            if flags['perfectcatchonly'] then
+                -- Only catch if we can guarantee a perfect catch
+                -- This checks the fish tension and other factors for optimal catch
+                local fishTension = rod['values']['tension'] and rod['values']['tension'].Value or 0
+                shouldCatch = fishTension <= 0.3 -- Safe tension level for perfect catch
+            end
+            
+            if shouldCatch then
+                -- Advanced instant reel with perfect catch
+                task.spawn(function()
+                    -- Fire with maximum power for guaranteed catch
+                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                    
+                    -- Optional: Add small delay to appear more natural
+                    if flags['instantreeldelay'] then
+                        task.wait(flags['instantreeldelay'] or 0.05)
+                    end
+                end)
+            end
         end
     end
 
@@ -1636,61 +2420,145 @@ RunService.Heartbeat:Connect(function()
         getchar():SetAttribute('Refill', false)
     end
     
-    -- Enhanced Always Catch - Ultra-Instant Multi-method bypass
-    if flags['alwayscatch'] then
-        local rod = FindRod()
-        if rod and rod['values'] and rod['values']['lure'] then
-            -- Ultra-aggressive detection - catch immediately when fish bites
-            if rod['values']['lure'].Value >= 99 then
-                -- Instant multiple bypass methods (no delays)
-                pcall(function()
-                    -- Primary method
-                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                end)
-                
-                pcall(function()
-                    -- Secondary method with force completion
-                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                end)
-                
-                -- Immediately reset lure to stop animation
-                pcall(function()
-                    rod['values']['lure'].Value = 0.001
-                end)
-                
-                -- Force destroy any fishing GUIs instantly
-                pcall(function()
-                    for _, gui in pairs(lp.PlayerGui:GetChildren()) do
-                        if gui:IsA("ScreenGui") then
-                            local name = string.lower(gui.Name)
-                            if string.find(name, "reel") or string.find(name, "fish") or string.find(name, "catch") or string.find(name, "shake") then
-                                gui:Destroy() -- Complete destruction, not just disable
-                            end
-                        end
-                    end
-                end)
-                
-                -- Additional safety nets
-                pcall(function()
-                    -- Try alternative event names
-                    if ReplicatedStorage:FindFirstChild("events") then
-                        local events = ReplicatedStorage.events
-                        if events:FindFirstChild("reelfinished") then
-                            events.reelfinished:FireServer(100, true)
-                        end
-                        if events:FindFirstChild("catchfish") then
-                            events.catchfish:FireServer(100, true)  
-                        end
-                        if events:FindFirstChild("completecatch") then
-                            events.completecatch:FireServer(100, true)
-                        end
-                    end
-                end)
+    -- Premium Bobber Auto Zone Cast
+    if flags['autozonebobber'] and flags['premiumbobber'] and flags['selectedzone'] and PremiumBobber then
+        local tool = PremiumBobber.GetCurrentTool()
+        if tool then
+            local bobber = PremiumBobber.GetBobber(tool)
+            if bobber then
+                -- Check if bobber needs repositioning (every 5 seconds)
+                if not flags['lastzonebobbertime'] or tick() - flags['lastzonebobbertime'] > 5 then
+                    PremiumBobber.TeleportBobberToZone(flags['selectedzone'])
+                    flags['lastzonebobbertime'] = tick()
+                end
             end
         end
     end
 end)
+
+-- Speed Booster Section
+if SpeedTab and SpeedBooster then
+    local SpeedSection = SpeedTab:NewSection("⚡ Speed Controls")
+    
+    -- Speed flags
+    flags = flags or {}
+    flags['masterspeed'] = false
+    flags['autospeed'] = false
+    flags['walkspeed'] = 60
+    flags['jumppower'] = 120
+    flags['vehiclespeed'] = 3
+    flags['boostmultiplier'] = 2.5
+    
+    SpeedSection:NewToggle("Master Speed Boost", "Enable all speed enhancements", function(state)
+        flags['masterspeed'] = state
+        if state then
+            local config = {
+                walkSpeed = flags['walkspeed'],
+                jumpPower = flags['jumppower'],
+                vehicleMultiplier = flags['vehiclespeed'],
+                boostMultiplier = flags['boostmultiplier']
+            }
+            SpeedBooster.enableMasterSpeed(config)
+        else
+            SpeedBooster.disableAllSpeed()
+        end
+    end)
+    
+    SpeedSection:NewToggle("Auto Speed Maintenance", "Maintain enhanced speeds automatically", function(state)
+        flags['autospeed'] = state
+        if state then
+            SpeedBooster.startAutoSpeed()
+        else
+            SpeedBooster.stopAutoSpeed()
+        end
+    end)
+    
+    local MovementSection = SpeedTab:NewSection("🏃 Movement Settings")
+    
+    MovementSection:NewSlider("Walk Speed", "Set walk speed (16-100)", 100, 16, function(value)
+        flags['walkspeed'] = value
+        if flags['masterspeed'] then
+            SpeedBooster.enhanceMovement(value, flags['jumppower'])
+        end
+    end)
+    
+    MovementSection:NewSlider("Jump Power", "Set jump power (50-200)", 200, 50, function(value)
+        flags['jumppower'] = value
+        if flags['masterspeed'] then
+            SpeedBooster.enhanceMovement(flags['walkspeed'], value)
+        end
+    end)
+    
+    local VehicleSection = SpeedTab:NewSection("🚤 Vehicle Speed")
+    
+    VehicleSection:NewSlider("Vehicle Multiplier", "Vehicle speed multiplier (1-5)", 5, 1, function(value)
+        flags['vehiclespeed'] = value
+        if flags['masterspeed'] then
+            SpeedBooster.enhanceVehicleSpeed(value)
+        end
+    end)
+    
+    VehicleSection:NewSlider("Boost Multiplier", "General boost multiplier (1-5)", 5, 1, function(value)
+        flags['boostmultiplier'] = value
+        if flags['masterspeed'] then
+            SpeedBooster.applyBoostModifiers(value)
+        end
+    end)
+    
+    local PerformanceSection = SpeedTab:NewSection("🔧 Performance")
+    
+    PerformanceSection:NewButton("Enable Performance Mode", "Optimize game for better speed", function()
+        SpeedBooster.enablePerformanceMode()
+    end)
+    
+    PerformanceSection:NewButton("Disable Performance Flags", "Remove speed limitations", function()
+        SpeedBooster.disablePerformanceFlags()
+    end)
+    
+    PerformanceSection:NewButton("Check Speed Status", "Display current speed configuration", function()
+        local status = SpeedBooster.getStatus()
+        print("📊 Speed Status:")
+        print("   Walk Speed: " .. tostring(status.walkSpeed))
+        print("   Jump Power: " .. tostring(status.jumpPower))
+        print("   Vehicle Multiplier: x" .. tostring(status.vehicleMultiplier))
+        print("   Performance Mode: " .. tostring(status.performanceMode))
+        print("   Auto Speed: " .. tostring(status.autoSpeed))
+    end)
+    
+    local TeleportSection = SpeedTab:NewSection("🌐 Fast Travel")
+    
+    TeleportSection:NewToggle("Instant Teleport", "Enable instant teleportation", function(state)
+        if SpeedBooster then
+            SpeedBooster.config.teleportSpeed = state
+        end
+    end)
+    
+    TeleportSection:NewButton("Teleport to Moosewood", "Fast travel to Moosewood", function()
+        if SpeedBooster then
+            local pos = Vector3.new(379.875458, 134.500519, 233.5495)
+            SpeedBooster.fastTeleport(pos)
+        end
+    end)
+    
+    TeleportSection:NewButton("Teleport to Roslit Bay", "Fast travel to Roslit Bay", function()
+        if SpeedBooster then
+            local pos = Vector3.new(-1472.9812, 132.525513, 707.644531)
+            SpeedBooster.fastTeleport(pos)
+        end
+    end)
+    
+    local InfoSection = SpeedTab:NewSection("ℹ️ Speed Information")
+    
+    InfoSection:NewLabel("⚡ Master Speed: Enhanced movement + vehicles")
+    InfoSection:NewLabel("🏃 Movement: Walk speed + jump power")
+    InfoSection:NewLabel("🚤 Vehicles: Speed boost for all boats/jetskis")
+    InfoSection:NewLabel("🔧 Performance: Optimizes game for speed")
+    InfoSection:NewLabel("🌐 Fast Travel: Instant teleportation system")
+    InfoSection:NewLabel("⚠️ Based on dump.txt analysis - use carefully!")
+    
+else
+    print("⚠️ Speed Booster module not loaded or SpeedTab not available")
+end
 
 --// Hooks
 if CheckFunc(hookmetamethod) then
@@ -1702,212 +2570,11 @@ if CheckFunc(hookmetamethod) then
         elseif method == 'FireServer' and self.Name == 'cast' and flags['perfectcast'] then
             args[1] = 100
             return old(self, unpack(args))
-        elseif method == 'FireServer' and flags['alwayscatch'] then
-            -- Comprehensive hook for any fishing-related events
-            if self.Name == 'reelfinished' or self.Name == 'catchfish' or self.Name == 'completecatch' then
-                args[1] = 100
-                args[2] = true
-                return old(self, unpack(args))
-            -- Block animation events that cause pulling animation
-            elseif self.Name == 'startAnimation' or self.Name == 'playAnimation' or 
-                   string.find(string.lower(self.Name), "animation") or
-                   string.find(string.lower(self.Name), "tween") or
-                   string.find(string.lower(self.Name), "pull") then
-                -- Block animation events during always catch
-                return -- Don't execute the animation
-            elseif string.find(string.lower(self.Name), "reel") or string.find(string.lower(self.Name), "catch") or string.find(string.lower(self.Name), "fish") then
-                -- Catch any fishing-related FireServer calls
-                if #args >= 2 then
-                    args[1] = 100
-                    args[2] = true
-                elseif #args >= 1 then
-                    args[1] = 100
-                end
-                return old(self, unpack(args))
-            end
+        elseif method == 'FireServer' and self.Name == 'reelfinished' and flags['alwayscatch'] then
+            args[1] = 100
+            args[2] = true
+            return old(self, unpack(args))
         end
         return old(self, ...)
-    end)
-end
-
--- Enhanced Always Catch implementation - Multiple layers of protection
-if flags then
-    -- Layer 1: Real-time GUI prevention and destruction
-    task.spawn(function()
-        while true do
-            task.wait(0.02) -- Ultra-fast checking (50Hz)
-            if flags['alwayscatch'] then
-                -- Handle shake GUI separately to allow Auto Shake to work
-                pcall(function()
-                    local playerGui = lp.PlayerGui
-                    
-                    -- Handle shake GUI with delay to allow Auto Shake
-                    local shakeGuis = {'shake', 'shakeui'}
-                    for _, guiName in ipairs(shakeGuis) do
-                        local gui = playerGui:FindFirstChild(guiName)
-                        if gui then
-                            -- If Auto Shake is enabled, give it time to work
-                            if flags['autoshake'] then
-                                task.spawn(function()
-                                    task.wait(0.1) -- Allow Auto Shake to work first
-                                    if gui and gui.Parent then
-                                        gui:Destroy()
-                                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                                    end
-                                end)
-                            else
-                                -- If Auto Shake disabled, destroy immediately
-                                gui:Destroy()
-                                ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                            end
-                        end
-                    end
-                    
-                    -- Destroy other fishing minigame GUIs immediately
-                    local minigameGuis = {
-                        'reel', 'reelui', 'fishing', 'fishgame', 'minigame',
-                        'catchfish', 'fishcatch', 'progressbar', 'reelbar', 'fishbar'
-                    }
-                    
-                    for _, guiName in ipairs(minigameGuis) do
-                        local gui = playerGui:FindFirstChild(guiName)
-                        if gui then
-                            gui:Destroy()
-                            -- Immediately complete the catch
-                            ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                        end
-                    end
-                    
-                    -- Also check for any GUI with "reel" or "fish" in the name
-                    for _, gui in ipairs(playerGui:GetChildren()) do
-                        if gui:IsA("ScreenGui") then
-                            local name = string.lower(gui.Name)
-                            if string.find(name, "reel") or string.find(name, "fish") or string.find(name, "catch") then
-                                gui:Destroy()
-                                ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                            end
-                        end
-                    end
-                end)
-            end
-        end
-    end)
-    
-    -- Layer 2: Ultra-Instant Catch System
-    task.spawn(function()
-        while true do
-            task.wait(0.01) -- Ultra-fast checking (100Hz)
-            if flags['alwayscatch'] then
-                local rod = FindRod()
-                if rod and rod['values'] and rod['values']['lure'] then
-                    -- When fish bites (lure = 100), immediately catch it
-                    if rod['values']['lure'].Value >= 99.9 then
-                        -- Multiple instant catch methods with no delay
-                        pcall(function()
-                            -- Method 1: Standard reelfinished
-                            ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                        end)
-                        
-                        pcall(function()
-                            -- Method 2: Force complete catch
-                            ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                        end)
-                        
-                        pcall(function()
-                            -- Method 3: Alternative event names
-                            if ReplicatedStorage:FindFirstChild("events") then
-                                local events = ReplicatedStorage.events
-                                if events:FindFirstChild("catchfish") then
-                                    events.catchfish:FireServer(100, true)
-                                end
-                                if events:FindFirstChild("completecatch") then
-                                    events.completecatch:FireServer(100, true)
-                                end
-                            end
-                        end)
-                        
-                        -- Reset lure value to prevent animation
-                        pcall(function()
-                            if rod['values']['lure'] then
-                                rod['values']['lure'].Value = 0
-                            end
-                        end)
-                        
-                        task.wait(0.05) -- Minimal wait to prevent excessive spam
-                    end
-                end
-            end
-        end
-    end)
-    
-    -- Layer 2: GUI Detection and Bypass
-    task.spawn(function()
-        while true do
-            task.wait(0.05)
-            if flags['alwayscatch'] then
-                -- Check for any fishing minigame GUIs
-                pcall(function()
-                    -- Method 1: Reel GUI
-                    local reelGui = lp.PlayerGui:FindFirstChild('reel')
-                    if reelGui and reelGui.Enabled then
-                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                        reelGui.Enabled = false -- Force close
-                    end
-                    
-                    -- Method 2: Alternative reel names
-                    local reelUI = lp.PlayerGui:FindFirstChild('reelui') 
-                    if reelUI and reelUI.Enabled then
-                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                        reelUI.Enabled = false
-                    end
-                    
-                    -- Method 3: Fishing UI
-                    local fishUI = lp.PlayerGui:FindFirstChild('fishingui')
-                    if fishUI and fishUI.Enabled then
-                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                        fishUI.Enabled = false
-                    end
-                    
-                    -- Method 4: Any UI with 'fish' in name
-                    for _, gui in pairs(lp.PlayerGui:GetChildren()) do
-                        if gui:IsA("ScreenGui") and string.find(string.lower(gui.Name), "fish") then
-                            if gui.Enabled then
-                                ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                                gui.Enabled = false
-                            end
-                        end
-                    end
-                end)
-            end
-        end
-    end)
-    
-    -- Layer 3: Roblox Events Monitoring
-    task.spawn(function()
-        local connections = {}
-        while true do
-            task.wait(0.1)
-            if flags['alwayscatch'] then
-                -- Monitor for new GUI events
-                pcall(function()
-                    for _, gui in pairs(lp.PlayerGui:GetChildren()) do
-                        if gui:IsA("ScreenGui") and not connections[gui] then
-                            connections[gui] = gui.ChildAdded:Connect(function(child)
-                                if flags['alwayscatch'] then
-                                    task.wait(0.05)
-                                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                                end
-                            end)
-                        end
-                    end
-                end)
-            else
-                -- Cleanup connections when disabled
-                for gui, connection in pairs(connections) do
-                    connection:Disconnect()
-                    connections[gui] = nil
-                end
-            end
-        end
     end)
 end
