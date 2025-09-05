@@ -1872,6 +1872,92 @@ if flags then
                     end
                 end)
             end
+            
+            -- Advanced: Monitor lure value changes via signal
+            local function setupLureSignal()
+                local rod = FindRod()
+                if rod and rod:FindFirstChild('values') and rod.values:FindFirstChild('lure') then
+                    local lureValue = rod.values.lure
+                    
+                    -- Signal-based detection when lure reaches 100%
+                    local lureConnection = lureValue.Changed:Connect(function(newValue)
+                        if flags['alwayscatch'] and newValue >= 99.5 then -- Detect near 100%
+                            task.spawn(function()
+                                task.wait(0.001) -- Ultra-minimal delay
+                                -- Instant completion when lure is full
+                                ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                                message('🎯 Signal Always Catch: Lure 100% detected → Instant completion!', 1)
+                            end)
+                        end
+                    end)
+                    
+                    -- Monitor for rod changes and reconnect signal
+                    task.spawn(function()
+                        while flags['alwayscatch'] do
+                            task.wait(1) -- Check every second for new rod
+                            local newRod = FindRod()
+                            if newRod ~= rod then
+                                -- Rod changed, setup new connection
+                                if lureConnection then
+                                    lureConnection:Disconnect()
+                                end
+                                setupLureSignal() -- Recursive setup for new rod
+                                break
+                            end
+                        end
+                    end)
+                end
+            end
+            
+            setupLureSignal()
+            
+            -- Advanced: Monitor fishing state changes via workspace signals
+            local function setupFishingStateSignal()
+                -- Monitor workspace events for fishing state changes
+                if workspace:FindFirstChild("events") then
+                    workspace.events.ChildAdded:Connect(function(newEvent)
+                        if flags['alwayscatch'] and newEvent.Name:lower():find("fish") then
+                            task.wait(0.001)
+                            ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                        end
+                    end)
+                end
+                
+                -- Monitor player character for fishing animations/states
+                if lp.Character then
+                    lp.Character.ChildAdded:Connect(function(newChild)
+                        if flags['alwayscatch'] and newChild.Name:lower():find("fishing") then
+                            task.wait(0.001)
+                            ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                        end
+                    end)
+                end
+                
+                -- Monitor for any fishing-related attribute changes
+                local function monitorAttributes(object)
+                    if object:IsA("BasePart") or object:IsA("Model") then
+                        object.AttributeChanged:Connect(function(attributeName)
+                            if flags['alwayscatch'] then
+                                local attrName = attributeName:lower()
+                                if attrName:find("fish") or attrName:find("bite") or attrName:find("caught") then
+                                    task.wait(0.001)
+                                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                                end
+                            end
+                        end)
+                    end
+                end
+                
+                -- Apply attribute monitoring to character and workspace
+                if lp.Character then
+                    monitorAttributes(lp.Character)
+                    for _, child in pairs(lp.Character:GetChildren()) do
+                        monitorAttributes(child)
+                    end
+                end
+            end
+            
+            setupFishingStateSignal()
         end
         
         setupSignalCatch()
