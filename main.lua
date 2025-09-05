@@ -1757,19 +1757,41 @@ RunService.Heartbeat:Connect(function()
         if rod and rod['values'] and rod['values']['lure'] then
             -- Ultra-aggressive detection - catch immediately when fish bites
             if rod['values']['lure'].Value >= 99 then
-                -- Instant multiple bypass methods (no delays)
-                pcall(function()
-                    -- Primary method
-                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                end)
+                -- Check if Auto Shake is active, let it complete first
+                if flags['autoshake'] then
+                    -- Brief delay to allow Auto Shake completion
+                    task.wait(0.05)
+                    -- Double-check if still needs completion
+                    if rod['values']['lure'].Value >= 99 then
+                        -- Auto Shake didn't complete, proceed with Always Catch
+                        -- Instant multiple bypass methods (no delays)
+                        pcall(function()
+                            -- Primary method
+                            ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                        end)
+                        
+                        pcall(function()
+                            -- Secondary method with force completion
+                            ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                            ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                        end)
+                    end
+                else
+                    -- No Auto Shake active, proceed immediately
+                    -- Instant multiple bypass methods (no delays)
+                    pcall(function()
+                        -- Primary method
+                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                    end)
+                    
+                    pcall(function()
+                        -- Secondary method with force completion
+                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                    end)
+                end
                 
-                pcall(function()
-                    -- Secondary method with force completion
-                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                end)
-                
-                -- Immediately reset lure to stop animation
+                -- Immediately reset lure to stop animation (only after Always Catch completes)
                 pcall(function()
                     rod['values']['lure'].Value = 0.001
                 end)
@@ -1893,10 +1915,23 @@ if flags then
                     local lureConnection = lureValue.Changed:Connect(function(newValue)
                         if flags['alwayscatch'] and newValue >= 99.5 then -- Detect near 100%
                             task.spawn(function()
-                                task.wait(0.001) -- Ultra-minimal delay
-                                -- Instant completion when lure is full
-                                ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                                message('🎯 Signal Always Catch: Lure 100% detected → Instant completion!', 1)
+                                -- Check if Auto Shake is active, let it complete first
+                                if flags['autoshake'] then
+                                    -- Wait briefly for Auto Shake to potentially complete
+                                    task.wait(0.1)
+                                    -- Double-check if lure is still at 100% (Auto Shake might have completed)
+                                    local currentLure = rod.values.lure.Value
+                                    if currentLure >= 99.5 then
+                                        -- Auto Shake didn't complete, proceed with Always Catch
+                                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                                        message('🎯 Signal Always Catch: Auto Shake backup → Instant completion!', 1)
+                                    end
+                                else
+                                    -- No Auto Shake active, proceed immediately
+                                    task.wait(0.001) -- Ultra-minimal delay
+                                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                                    message('🎯 Signal Always Catch: Lure 100% detected → Instant completion!', 1)
+                                end
                             end)
                         end
                     end)
