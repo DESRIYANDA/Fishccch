@@ -1219,12 +1219,12 @@ function Kavo.CreateLib(kavName, themeList)
                     return TogFunction
             end
 
-            function Elements:NewSlider(slidInf, slidTip, maxvalue, minvalue, callback)
+            function Elements:NewSlider(slidInf, slidTip, minvalue, maxvalue, callback)
                 slidInf = slidInf or "Slider"
                 slidTip = slidTip or "Slider tip here"
+                minvalue = minvalue or 0
                 maxvalue = maxvalue or 500
-                minvalue = minvalue or 16
-                startVal = startVal or 0
+                startVal = startVal or minvalue
                 callback = callback or function() end
 
                 local sliderElement = Instance.new("TextButton")
@@ -1329,6 +1329,9 @@ function Kavo.CreateLib(kavName, themeList)
                 val.TextSize = 14.000
                 val.TextTransparency = 1.000
                 val.TextXAlignment = Enum.TextXAlignment.Right
+                
+                -- Initialize slider to minimum value
+                sliderDrag.Size = UDim2.new(0, 0, 1, 0) -- Start at leftmost position (minvalue)
 
                 local moreInfo = Instance.new("TextLabel")
                 local UICorner = Instance.new("UICorner")
@@ -1399,7 +1402,7 @@ function Kavo.CreateLib(kavName, themeList)
                     end
                 end)()
 
-                local Value
+                local Value = minvalue -- Initialize with minimum value
                 sliderBtn.MouseButton1Down:Connect(function()
                     if not focusing then
                         game.TweenService:Create(val, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
@@ -1461,6 +1464,20 @@ function Kavo.CreateLib(kavName, themeList)
                         viewDe = false
                     end
                 end)        
+                
+                local SliderFunction = {}
+                function SliderFunction:SetValue(newValue)
+                    newValue = math.clamp(newValue, minvalue, maxvalue)
+                    Value = newValue
+                    val.Text = newValue
+                    local percentage = (newValue - minvalue) / (maxvalue - minvalue)
+                    sliderDrag:TweenSize(UDim2.new(0, math.floor(149 * percentage), 0, 6), "InOut", "Linear", 0.05, true)
+                    pcall(function()
+                        callback(newValue)
+                    end)
+                end
+                
+                return SliderFunction
             end
 
             function Elements:NewDropdown(dropname, dropinf, list, callback)

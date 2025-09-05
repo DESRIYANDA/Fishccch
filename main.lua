@@ -1197,8 +1197,15 @@ else
                     return {UpdateToggle = function() end}
                 end,
                 NewSlider = function(name, desc, min, max, callback) 
-                    if callback then callback(min) end
-                    return {}
+                    if callback then 
+                        -- Start with minimum value, not maximum
+                        callback(min) 
+                    end
+                    return {
+                        SetValue = function(self, value)
+                            if callback then callback(value) end
+                        end
+                    }
                 end,
                 NewDropdown = function(name, desc, options, callback) 
                     if callback then callback(options[1]) end
