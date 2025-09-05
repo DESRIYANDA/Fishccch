@@ -54,7 +54,6 @@ local tooltipmessage
 -- Default delay values (optimized for speed)
 flags['autocastdelay'] = 0.1
 flags['autoreeldelay'] = 0.1
-flags['shakemethodtype'] = "All Methods (Best)" -- Default shake method
 local TeleportLocations = {
     ['Zones'] = {
         ['Moosewood'] = CFrame.new(379.875458, 134.500519, 233.5495, -0.033920113, 8.13274355e-08, 0.999424577, 8.98441925e-08, 1, -7.83249803e-08, -0.999424577, 8.7135696e-08, -0.033920113),
@@ -1253,31 +1252,13 @@ pcall(function()
 end)
 
 local ShakeSection = AutoTab:NewSection("Auto Shake Settings")
-ShakeSection:NewToggle("Auto Shake", "Automatically shake when fish bites", function(state)
+ShakeSection:NewToggle("Auto Shake", "Automatically shake when fish bites (Signal + GUI Detection)", function(state)
     flags['autoshake'] = state
     if state then
-        message('\<b><font color = \"#9eff80\">Auto Shake</font></b>\ is now \<b><font color = \"#9eff80\">enabled</font></b>\ - Compatible with Always Catch', 3)
+        message('\<b><font color = \"#9eff80\">Auto Shake</font></b>\ is now \<b><font color = \"#9eff80\">enabled</font></b>\ - Signal Method + GUI Detection - Compatible with Always Catch', 3)
     else
         message('\<b><font color = \"#ff8080\">Auto Shake</font></b>\ is now \<b><font color = \"#ff8080\">disabled</font></b>', 3)
     end
-end)
-
--- Auto Shake Method Selection
-local shakeMethodOptions = {
-    "All Methods (Best)",
-    "VirtualInputManager Only", 
-    "Direct Activation Only",
-    "MouseClick Fire Only",
-    "State Manipulation",
-    "Event Bypassing",
-    "Context Action",
-    "Hybrid (VIM + Direct)",
-    "Experimental Mix"
-}
-
-ShakeSection:NewDropdown("Shake Method", "Choose Auto Shake method for testing effectiveness", shakeMethodOptions, function(selectedMethod)
-    flags['shakemethodtype'] = selectedMethod
-    message('🎣 Auto Shake Method: \<b><font color = \"#9eff80\">' .. selectedMethod .. '</font></b>', 3)
 end)
 
 local ReelSection = AutoTab:NewSection("Auto Reel Settings") 
@@ -1431,114 +1412,100 @@ RunService.Heartbeat:Connect(function()
     else
         characterposition = nil
     end
-    
--- Auto Shake method functions
-local function executeShakeMethod(button, methodType)
-    local success = false
-    
-    if methodType == "All Methods (Best)" then
-        -- Original triple method + extras
-        pcall(function()
-            GuiService.SelectedObject = button
-            game:GetService('VirtualInputManager'):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
-            game:GetService('VirtualInputManager'):SendKeyEvent(false, Enum.KeyCode.Return, false, game)
-            button:Activated()
-            button.MouseButton1Click:Fire()
-            success = true
-        end)
-        
-    elseif methodType == "VirtualInputManager Only" then
-        pcall(function()
-            GuiService.SelectedObject = button
-            game:GetService('VirtualInputManager'):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
-            game:GetService('VirtualInputManager'):SendKeyEvent(false, Enum.KeyCode.Return, false, game)
-            success = true
-        end)
-        
-    elseif methodType == "Direct Activation Only" then
-        pcall(function()
-            button:Activated()
-            success = true
-        end)
-        
-    elseif methodType == "MouseClick Fire Only" then
-        pcall(function()
-            button.MouseButton1Click:Fire()
-            success = true
-        end)
-        
-    elseif methodType == "State Manipulation" then
-        pcall(function()
-            button.Active = false
-            task.wait(0.001)
-            button.Active = true
-            button:Activated()
-            button.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-            success = true
-        end)
-        
-    elseif methodType == "Event Bypassing" then
-        pcall(function()
-            -- Bypass GUI completely - direct server events
-            ReplicatedStorage.events.reelfinished:FireServer(100, true)
-            if ReplicatedStorage.events:FindFirstChild("shakeComplete") then
-                ReplicatedStorage.events.shakeComplete:FireServer(true)
-            end
-            success = true
-        end)
-        
-    elseif methodType == "Context Action" then
-        pcall(function()
-            local ContextActionService = game:GetService("ContextActionService")
-            ContextActionService:BindAction("AutoShake", function() 
-                button:Activated() 
-            end, false, Enum.KeyCode.Return)
-            ContextActionService:CallFunction("AutoShake", Enum.UserInputState.Begin)
-            success = true
-        end)
-        
-    elseif methodType == "Hybrid (VIM + Direct)" then
-        pcall(function()
-            -- Combine best of both worlds
-            GuiService.SelectedObject = button
-            game:GetService('VirtualInputManager'):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
-            button:Activated()
-            success = true
-        end)
-        
-    elseif methodType == "Experimental Mix" then
-        pcall(function()
-            -- All experimental methods
-            button.Text = "COMPLETED"
-            button.Active = false
-            button:Activated()
-            button.MouseButton1Click:Fire()
-            ReplicatedStorage.events.reelfinished:FireServer(100, true)
-            success = true
-        end)
-    end
-    
-    return success
-end
-
     if flags['autoshake'] then
-        -- Enhanced Auto Shake with selectable methods
-        local selectedMethod = flags['shakemethodtype'] or "All Methods (Best)"
-        
+        -- Enhanced Auto Shake with Signal Detection + GUI Detection methods
         pcall(function()
-            -- Method 1: Original shakeui detection with selected method
+            -- === SIGNAL METHOD (Advanced) ===
+            -- Method 0: Signal-based detection - Fastest response
+            local function setupSignalShake()
+                -- Monitor ReplicatedStorage for shake events
+                if ReplicatedStorage:FindFirstChild("events") then
+                    local events = ReplicatedStorage.events
+                    
+                    -- Method 0A: Direct shake event monitoring
+                    for _, eventName in ipairs({"shake", "fishShake", "startShake", "shakeEvent", "minigameShake"}) do
+                        local shakeEvent = events:FindFirstChild(eventName)
+                        if shakeEvent and shakeEvent:IsA("RemoteEvent") then
+                            -- Respond immediately when shake signal is received
+                            shakeEvent.OnClientEvent:Connect(function(...)
+                                if flags['autoshake'] then
+                                    task.wait(0.001) -- Tiny delay to ensure shake is fully initialized
+                                    -- Send completion signal back immediately
+                                    shakeEvent:FireServer(100, true) -- Complete shake with perfect score
+                                end
+                            end)
+                        end
+                    end
+                    
+                    -- Method 0B: Monitor for any new events that contain "shake"
+                    events.ChildAdded:Connect(function(newEvent)
+                        if flags['autoshake'] and newEvent:IsA("RemoteEvent") then
+                            local eventName = string.lower(newEvent.Name)
+                            if string.find(eventName, "shake") then
+                                newEvent.OnClientEvent:Connect(function(...)
+                                    if flags['autoshake'] then
+                                        task.wait(0.001)
+                                        newEvent:FireServer(100, true)
+                                    end
+                                end)
+                            end
+                        end
+                    end)
+                end
+                
+                -- Method 0C: PlayerGui signal monitoring
+                lp.PlayerGui.ChildAdded:Connect(function(newGui)
+                    if flags['autoshake'] and newGui:IsA("ScreenGui") then
+                        local guiName = string.lower(newGui.Name)
+                        if string.find(guiName, "shake") then
+                            -- GUI detected via signal - immediate response
+                            task.spawn(function()
+                                task.wait(0.01) -- Allow GUI to fully load
+                                -- Find and activate button immediately
+                                for _, button in ipairs(newGui:GetDescendants()) do
+                                    if button:IsA("TextButton") or button:IsA("ImageButton") then
+                                        -- Triple activation via signal response
+                                        GuiService.SelectedObject = button
+                                        game:GetService('VirtualInputManager'):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
+                                        game:GetService('VirtualInputManager'):SendKeyEvent(false, Enum.KeyCode.Return, false, game)
+                                        button:Activated()
+                                        pcall(function()
+                                            button.MouseButton1Click:Fire()
+                                        end)
+                                        return
+                                    end
+                                end
+                            end)
+                        end
+                    end
+                end)
+            end
+            
+            -- Initialize signal monitoring
+            setupSignalShake()
+            
+            -- === GUI METHOD (Fallback) ===
+            -- Method 1: Original shakeui detection with faster execution
             if FindChild(lp.PlayerGui, 'shakeui') and FindChild(lp.PlayerGui['shakeui'], 'safezone') and FindChild(lp.PlayerGui['shakeui']['safezone'], 'button') then
                 local button = lp.PlayerGui['shakeui']['safezone']['button']
-                local success = executeShakeMethod(button, selectedMethod)
-                
-                -- Debug message for shake activation
-                if success and not flags['alwayscatch'] then
-                    message('🎣 Auto Shake activated (' .. selectedMethod .. ')!', 2)
+                GuiService.SelectedObject = button
+                if GuiService.SelectedObject == button then
+                    -- Faster input execution
+                    game:GetService('VirtualInputManager'):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
+                    game:GetService('VirtualInputManager'):SendKeyEvent(false, Enum.KeyCode.Return, false, game)
+                    -- Direct button activation as backup
+                    button:Activated()
+                    -- Debug message for shake activation
+                    if flags['alwayscatch'] then
+                        -- Don't show debug when always catch is on to avoid spam
+                    else
+                        message('🎣 Auto Shake activated successfully!', 2)
+                    end
                 end
                 return -- Exit early if found
             end
             
-            -- Method 2: Alternative shake GUI names with selected method
+            -- Method 2: Alternative shake GUI names with immediate activation
             local shakeGuis = {'shakeui', 'shake', 'fishShake', 'shakeBar', 'shakegame'}
             for _, guiName in ipairs(shakeGuis) do
                 local shakeGui = lp.PlayerGui:FindFirstChild(guiName)
@@ -1553,14 +1520,15 @@ end
                     
                     for _, button in ipairs(buttons) do
                         if button then
-                            local success = executeShakeMethod(button, selectedMethod)
-                            
-                            if success then
-                                if not flags['alwayscatch'] then
-                                    message('🎣 Auto Shake success (' .. selectedMethod .. ')!', 2)
-                                end
-                                return -- Exit early if successful
-                            end
+                            -- Multi-method activation for reliability
+                            GuiService.SelectedObject = button
+                            game:GetService('VirtualInputManager'):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
+                            game:GetService('VirtualInputManager'):SendKeyEvent(false, Enum.KeyCode.Return, false, game)
+                            button:Activated() -- Direct activation
+                            pcall(function()
+                                button.MouseButton1Click:Fire() -- Alternative activation
+                            end)
+                            return -- Exit early if successful
                         end
                     end
                 end
@@ -1571,17 +1539,14 @@ end
                 if gui:IsA("ScreenGui") then
                     local name = string.lower(gui.Name)
                     if string.find(name, "shake") then
-                        -- Find and activate any button with selected method
+                        -- Find and activate any button immediately
                         for _, child in pairs(gui:GetDescendants()) do
                             if child:IsA("TextButton") or child:IsA("ImageButton") then
-                                local success = executeShakeMethod(child, selectedMethod)
-                                
-                                if success then
-                                    if not flags['alwayscatch'] then
-                                        message('🎣 Auto Shake found (' .. selectedMethod .. ')!', 2)
-                                    end
-                                    return -- Exit early if found
-                                end
+                                child:Activated() -- Direct activation
+                                pcall(function()
+                                    child.MouseButton1Click:Fire() -- Alternative activation
+                                end)
+                                return -- Exit early if found
                             end
                         end
                     end
@@ -1872,6 +1837,45 @@ end
 
 -- Enhanced Always Catch implementation - Multiple layers of protection
 if flags then
+    -- Layer 0: Signal-Based Always Catch (Ultra-Advanced)
+    task.spawn(function()
+        local function setupSignalCatch()
+            if ReplicatedStorage:FindFirstChild("events") then
+                local events = ReplicatedStorage.events
+                
+                -- Monitor fishing-related signals
+                for _, eventName in ipairs({"cast", "bite", "hook", "catch", "reel"}) do
+                    local fishEvent = events:FindFirstChild(eventName)
+                    if fishEvent and fishEvent:IsA("RemoteEvent") then
+                        fishEvent.OnClientEvent:Connect(function(...)
+                            if flags['alwayscatch'] then
+                                task.wait(0.001) -- Minimal delay
+                                ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                            end
+                        end)
+                    end
+                end
+                
+                -- Monitor for new fishing events via signal
+                events.ChildAdded:Connect(function(newEvent)
+                    if flags['alwayscatch'] and newEvent:IsA("RemoteEvent") then
+                        local eventName = string.lower(newEvent.Name)
+                        if string.find(eventName, "fish") or string.find(eventName, "reel") or 
+                           string.find(eventName, "catch") or string.find(eventName, "bite") then
+                            newEvent.OnClientEvent:Connect(function(...)
+                                if flags['alwayscatch'] then
+                                    task.wait(0.001)
+                                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                                end
+                            end)
+                        end
+                    end
+                end)
+            end
+        end
+        
+        setupSignalCatch()
+    end)
     -- Layer 1: Real-time GUI prevention and destruction
     task.spawn(function()
         while true do
@@ -2062,13 +2066,11 @@ if flags then
         while true do
             task.wait(0.01) -- Ultra-fast monitoring for shake events
             if flags['alwayscatch'] and flags['autoshake'] then
-                local selectedMethod = flags['shakemethodtype'] or "All Methods (Best)"
-                
                 pcall(function()
                     -- Priority handling for shake GUI when both systems are active
                     local shakeGui = lp.PlayerGui:FindFirstChild('shakeui') or lp.PlayerGui:FindFirstChild('shake')
                     if shakeGui then
-                        -- Immediate Auto Shake execution with selected method
+                        -- Immediate Auto Shake execution
                         local button = nil
                         if shakeGui:FindFirstChild('safezone') and shakeGui.safezone:FindFirstChild('button') then
                             button = shakeGui.safezone.button
@@ -2077,19 +2079,23 @@ if flags then
                         end
                         
                         if button then
-                            -- Use selected method for activation
-                            local success = executeShakeMethod(button, selectedMethod)
+                            -- Triple-method activation for maximum reliability
+                            GuiService.SelectedObject = button
+                            game:GetService('VirtualInputManager'):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
+                            game:GetService('VirtualInputManager'):SendKeyEvent(false, Enum.KeyCode.Return, false, game)
+                            button:Activated()
+                            pcall(function()
+                                button.MouseButton1Click:Fire()
+                            end)
                             
-                            if success then
-                                -- Immediately complete the catch after shake
-                                task.spawn(function()
-                                    task.wait(0.05) -- Tiny delay to ensure shake registers
-                                    pcall(function()
-                                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                                        shakeGui:Destroy() -- Clean up after completion
-                                    end)
+                            -- Immediately complete the catch after shake
+                            task.spawn(function()
+                                task.wait(0.05) -- Tiny delay to ensure shake registers
+                                pcall(function()
+                                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                                    shakeGui:Destroy() -- Clean up after completion
                                 end)
-                            end
+                            end)
                         end
                     end
                 end)
