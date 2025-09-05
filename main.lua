@@ -1413,144 +1413,154 @@ RunService.Heartbeat:Connect(function()
         characterposition = nil
     end
     if flags['autoshake'] then
-        -- Enhanced Auto Shake with Signal Detection + GUI Detection methods
+        -- Enhanced Auto Shake with optimized Signal + GUI Detection methods
         pcall(function()
-            -- === SIGNAL METHOD (Advanced) ===
-            -- Method 0: Signal-based detection - Fastest response
+            -- === OPTIMIZED SIGNAL METHOD (Lag-Free) ===
+            -- Method 0: Signal-based detection with lag prevention
+            local signalConnections = {} -- Track connections to prevent duplicates
+            local lastShakeTime = 0 -- Prevent spam execution
+            local shakeInProgress = false -- Prevent concurrent executions
+            
             local function setupSignalShake()
+                -- Only setup if not already connected (prevent duplicates)
+                if #signalConnections > 0 then return end
+                
                 -- Monitor ReplicatedStorage for shake events
                 if ReplicatedStorage:FindFirstChild("events") then
                     local events = ReplicatedStorage.events
                     
-                    -- Method 0A: Direct shake event monitoring
+                    -- Method 0A: Direct shake event monitoring (optimized)
                     for _, eventName in ipairs({"shake", "fishShake", "startShake", "shakeEvent", "minigameShake"}) do
                         local shakeEvent = events:FindFirstChild(eventName)
                         if shakeEvent and shakeEvent:IsA("RemoteEvent") then
-                            -- Respond immediately when shake signal is received
-                            shakeEvent.OnClientEvent:Connect(function(...)
-                                if flags['autoshake'] then
-                                    task.wait(0.001) -- Tiny delay to ensure shake is fully initialized
-                                    -- Send completion signal back immediately
-                                    shakeEvent:FireServer(100, true) -- Complete shake with perfect score
+                            -- Single optimized connection per event
+                            local connection = shakeEvent.OnClientEvent:Connect(function(...)
+                                if flags['autoshake'] and not shakeInProgress then
+                                    local currentTime = tick()
+                                    if currentTime - lastShakeTime > 0.1 then -- Debounce 100ms
+                                        shakeInProgress = true
+                                        lastShakeTime = currentTime
+                                        
+                                        -- Optimized completion without delay
+                                        pcall(function()
+                                            shakeEvent:FireServer(100, true)
+                                        end)
+                                        
+                                        -- Reset flag quickly
+                                        task.spawn(function()
+                                            task.wait(0.05)
+                                            shakeInProgress = false
+                                        end)
+                                    end
                                 end
                             end)
+                            table.insert(signalConnections, connection)
                         end
                     end
                     
-                    -- Method 0B: Monitor for any new events that contain "shake"
-                    events.ChildAdded:Connect(function(newEvent)
-                        if flags['autoshake'] and newEvent:IsA("RemoteEvent") then
-                            local eventName = string.lower(newEvent.Name)
-                            if string.find(eventName, "shake") then
-                                newEvent.OnClientEvent:Connect(function(...)
-                                    if flags['autoshake'] then
-                                        task.wait(0.001)
-                                        newEvent:FireServer(100, true)
-                                    end
-                                end)
-                            end
-                        end
-                    end)
-                end
-                
-                -- Method 0C: PlayerGui signal monitoring
-                lp.PlayerGui.ChildAdded:Connect(function(newGui)
-                    if flags['autoshake'] and newGui:IsA("ScreenGui") then
-                        local guiName = string.lower(newGui.Name)
-                        if string.find(guiName, "shake") then
-                            -- GUI detected via signal - immediate response
-                            task.spawn(function()
-                                task.wait(0.01) -- Allow GUI to fully load
-                                -- Find and activate button immediately
-                                for _, button in ipairs(newGui:GetDescendants()) do
-                                    if button:IsA("TextButton") or button:IsA("ImageButton") then
-                                        -- Triple activation via signal response
-                                        GuiService.SelectedObject = button
-                                        game:GetService('VirtualInputManager'):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
-                                        game:GetService('VirtualInputManager'):SendKeyEvent(false, Enum.KeyCode.Return, false, game)
-                                        button:Activated()
+                    -- Method 0B: Optimized new event monitoring (with limits)
+                    if #signalConnections < 10 then -- Limit connections to prevent lag
+                        local newEventConnection = events.ChildAdded:Connect(function(newEvent)
+                            if flags['autoshake'] and newEvent:IsA("RemoteEvent") and not shakeInProgress then
+                                local eventName = string.lower(newEvent.Name)
+                                if string.find(eventName, "shake") then
+                                    local currentTime = tick()
+                                    if currentTime - lastShakeTime > 0.1 then
+                                        shakeInProgress = true
+                                        lastShakeTime = currentTime
+                                        
                                         pcall(function()
-                                            button.MouseButton1Click:Fire()
+                                            newEvent:FireServer(100, true)
                                         end)
-                                        return
+                                        
+                                        task.spawn(function()
+                                            task.wait(0.05)
+                                            shakeInProgress = false
+                                        end)
                                     end
                                 end
-                            end)
-                        end
+                            end
+                        end)
+                        table.insert(signalConnections, newEventConnection)
                     end
-                end)
+                end
             end
             
-            -- Initialize signal monitoring
+            -- Cleanup function to prevent memory leaks
+            local function cleanupSignals()
+                for _, connection in ipairs(signalConnections) do
+                    connection:Disconnect()
+                end
+                signalConnections = {}
+                shakeInProgress = false
+            end
+            
+            -- Initialize optimized signal monitoring
             setupSignalShake()
             
-            -- === GUI METHOD (Fallback) ===
-            -- Method 1: Original shakeui detection with faster execution
-            if FindChild(lp.PlayerGui, 'shakeui') and FindChild(lp.PlayerGui['shakeui'], 'safezone') and FindChild(lp.PlayerGui['shakeui']['safezone'], 'button') then
-                local button = lp.PlayerGui['shakeui']['safezone']['button']
-                GuiService.SelectedObject = button
-                if GuiService.SelectedObject == button then
-                    -- Faster input execution
-                    game:GetService('VirtualInputManager'):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
-                    game:GetService('VirtualInputManager'):SendKeyEvent(false, Enum.KeyCode.Return, false, game)
-                    -- Direct button activation as backup
-                    button:Activated()
-                    -- Debug message for shake activation
-                    if flags['alwayscatch'] then
-                        -- Don't show debug when always catch is on to avoid spam
-                    else
-                        message('🎣 Auto Shake activated successfully!', 2)
-                    end
-                end
-                return -- Exit early if found
-            end
-            
-            -- Method 2: Alternative shake GUI names with immediate activation
-            local shakeGuis = {'shakeui', 'shake', 'fishShake', 'shakeBar', 'shakegame'}
-            for _, guiName in ipairs(shakeGuis) do
-                local shakeGui = lp.PlayerGui:FindFirstChild(guiName)
-                if shakeGui then
-                    -- Try multiple button paths simultaneously
-                    local buttons = {
-                        shakeGui:FindFirstChild('button'),
-                        (shakeGui:FindFirstChild('safezone') and shakeGui.safezone:FindFirstChild('button')),
-                        shakeGui:FindFirstChildOfClass('TextButton'),
-                        shakeGui:FindFirstChildWhichIsA('GuiButton')
-                    }
-                    
-                    for _, button in ipairs(buttons) do
-                        if button then
-                            -- Multi-method activation for reliability
+            -- === FALLBACK GUI METHOD (Lag-Free) ===
+            -- Only run if signal method didn't handle it
+            if not shakeInProgress then
+                -- Method 1: Primary GUI detection (optimized)
+                if FindChild(lp.PlayerGui, 'shakeui') and FindChild(lp.PlayerGui['shakeui'], 'safezone') and FindChild(lp.PlayerGui['shakeui']['safezone'], 'button') then
+                    local currentTime = tick()
+                    if currentTime - lastShakeTime > 0.1 then
+                        shakeInProgress = true
+                        lastShakeTime = currentTime
+                        
+                        local button = lp.PlayerGui['shakeui']['safezone']['button']
+                        
+                        -- Single optimized activation
+                        pcall(function()
                             GuiService.SelectedObject = button
                             game:GetService('VirtualInputManager'):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
                             game:GetService('VirtualInputManager'):SendKeyEvent(false, Enum.KeyCode.Return, false, game)
-                            button:Activated() -- Direct activation
-                            pcall(function()
-                                button.MouseButton1Click:Fire() -- Alternative activation
-                            end)
-                            return -- Exit early if successful
+                        end)
+                        
+                        task.spawn(function()
+                            task.wait(0.05)
+                            shakeInProgress = false
+                        end)
+                        
+                        if not flags['alwayscatch'] then
+                            message('🎣 Auto Shake activated!', 1)
+                        end
+                        return
+                    end
+                end
+                
+                -- Method 2: Alternative GUI detection (simplified)
+                local shakeGuis = {'shake', 'fishShake', 'shakeBar'}
+                for _, guiName in ipairs(shakeGuis) do
+                    if shakeInProgress then break end
+                    
+                    local shakeGui = lp.PlayerGui:FindFirstChild(guiName)
+                    if shakeGui then
+                        local currentTime = tick()
+                        if currentTime - lastShakeTime > 0.1 then
+                            shakeInProgress = true
+                            lastShakeTime = currentTime
+                            
+                            local button = shakeGui:FindFirstChildOfClass('TextButton')
+                            if button then
+                                pcall(function()
+                                    button:Activated()
+                                end)
+                                
+                                task.spawn(function()
+                                    task.wait(0.05)
+                                    shakeInProgress = false
+                                end)
+                                return
+                            end
                         end
                     end
                 end
             end
             
-            -- Method 3: Fast search for any GUI with shake-related content
-            for _, gui in pairs(lp.PlayerGui:GetChildren()) do
-                if gui:IsA("ScreenGui") then
-                    local name = string.lower(gui.Name)
-                    if string.find(name, "shake") then
-                        -- Find and activate any button immediately
-                        for _, child in pairs(gui:GetDescendants()) do
-                            if child:IsA("TextButton") or child:IsA("ImageButton") then
-                                child:Activated() -- Direct activation
-                                pcall(function()
-                                    child.MouseButton1Click:Fire() -- Alternative activation
-                                end)
-                                return -- Exit early if found
-                            end
-                        end
-                    end
-                end
+            -- Cleanup connections when disabled
+            if not flags['autoshake'] and #signalConnections > 0 then
+                cleanupSignals()
             end
         end)
     end
@@ -1962,69 +1972,76 @@ if flags then
         
         setupSignalCatch()
     end)
-    -- Layer 1: Real-time GUI prevention and destruction
+    -- Layer 1: Optimized GUI prevention and destruction (Lag-Free)
     task.spawn(function()
+        local lastShakeCheck = 0 -- Debounce for shake GUI checks
+        local guiCache = {} -- Cache GUI references to reduce lookups
+        
         while true do
-            task.wait(0.02) -- Ultra-fast checking (50Hz)
+            task.wait(0.05) -- Reduced frequency to prevent lag (20Hz instead of 50Hz)
             if flags['alwayscatch'] then
-                -- Handle shake GUI separately to allow Auto Shake to work
-                pcall(function()
-                    local playerGui = lp.PlayerGui
+                local currentTime = tick()
+                
+                -- Handle shake GUI with optimized timing (reduced frequency)
+                if currentTime - lastShakeCheck > 0.1 then -- Check shake GUI every 100ms only
+                    lastShakeCheck = currentTime
                     
-                    -- Handle shake GUI with proper Auto Shake integration
-                    local shakeGuis = {'shake', 'shakeui'}
-                    for _, guiName in ipairs(shakeGuis) do
-                        local gui = playerGui:FindFirstChild(guiName)
-                        if gui then
-                            -- If Auto Shake is enabled, let it work without interference
-                            if flags['autoshake'] then
-                                -- Don't destroy shake GUI, let Auto Shake handle it
-                                -- Auto Shake will complete the action, then we finish the catch
-                                task.spawn(function()
-                                    local startTime = tick()
-                                    -- Wait for Auto Shake to work (max 1 second)
-                                    while gui and gui.Parent and tick() - startTime < 1 do
-                                        task.wait(0.05)
-                                    end
-                                    -- Complete the catch after Auto Shake is done
+                    pcall(function()
+                        local playerGui = lp.PlayerGui
+                        
+                        -- Optimized shake GUI handling
+                        local shakeGuis = {'shake', 'shakeui'}
+                        for _, guiName in ipairs(shakeGuis) do
+                            local gui = playerGui:FindFirstChild(guiName)
+                            if gui then
+                                -- If Auto Shake is enabled, minimal interference
+                                if flags['autoshake'] then
+                                    -- Quick check and immediate completion
+                                    task.spawn(function()
+                                        task.wait(0.2) -- Give Auto Shake time to work
+                                        if gui and gui.Parent then
+                                            pcall(function()
+                                                ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                                                gui:Destroy()
+                                            end)
+                                        end
+                                    end)
+                                else
+                                    -- No Auto Shake, immediate destruction
                                     pcall(function()
+                                        gui:Destroy()
                                         ReplicatedStorage.events.reelfinished:FireServer(100, true)
                                     end)
-                                end)
-                            else
-                                -- If Auto Shake disabled, destroy immediately and complete catch
-                                gui:Destroy()
-                                ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                                end
                             end
                         end
-                    end
-                    
-                    -- Destroy other fishing minigame GUIs immediately
-                    local minigameGuis = {
-                        'reel', 'reelui', 'fishing', 'fishgame', 'minigame',
-                        'catchfish', 'fishcatch', 'progressbar', 'reelbar', 'fishbar'
-                    }
+                    end)
+                end
+                
+                -- Optimized minigame GUI destruction (less frequent checking)
+                pcall(function()
+                    local playerGui = lp.PlayerGui
+                    local minigameGuis = {'reel', 'reelui', 'fishing', 'fishgame', 'minigame'}
                     
                     for _, guiName in ipairs(minigameGuis) do
-                        local gui = playerGui:FindFirstChild(guiName)
-                        if gui then
-                            gui:Destroy()
-                            -- Immediately complete the catch
-                            ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                        -- Use cache to reduce GUI lookups
+                        if not guiCache[guiName] or not guiCache[guiName].Parent then
+                            guiCache[guiName] = playerGui:FindFirstChild(guiName)
                         end
-                    end
-                    
-                    -- Also check for any GUI with "reel" or "fish" in the name
-                    for _, gui in ipairs(playerGui:GetChildren()) do
-                        if gui:IsA("ScreenGui") then
-                            local name = string.lower(gui.Name)
-                            if string.find(name, "reel") or string.find(name, "fish") or string.find(name, "catch") then
+                        
+                        local gui = guiCache[guiName]
+                        if gui and gui.Parent then
+                            pcall(function()
                                 gui:Destroy()
                                 ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                            end
+                                guiCache[guiName] = nil -- Clear cache
+                            end)
                         end
                     end
                 end)
+            else
+                -- Clear cache when disabled
+                guiCache = {}
             end
         end
     end)
